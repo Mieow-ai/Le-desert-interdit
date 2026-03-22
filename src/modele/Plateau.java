@@ -14,10 +14,10 @@ public class Plateau {
     public void initialiseGrille(){
         for(int i = 0;i<5;i++) {
             for (int j = 0; j < 5; j++) {
-                boolean estOeil = (i == 2 && j == 2);
-                grille[i][j] = new Zone(estOeil);
+                grille[i][j] = new Zone();
             }
         }
+        grille[2][2].set_estOeil(true);
 
         int[][] posSable = {{0,2}, {1,1}, {1,3}, {2,0}, {2,4}, {3,1}, {3,3}, {4,2}};
 

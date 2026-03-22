@@ -2,12 +2,15 @@ package modele;
 
 public class Zone {
     private int nbSable;
-    private boolean oeilTempete;
+    private boolean oeilTempete = false;
 
     // Constructeur Zone
-    public Zone(boolean estOeil) {
-        this.oeilTempete = estOeil;
+    public Zone() {
         this.nbSable = 0;
+    }
+
+    public void set_estOeil(boolean estOeil){
+        this.oeilTempete = estOeil;
     }
 
     // Ajoute du sable selon une quantité
