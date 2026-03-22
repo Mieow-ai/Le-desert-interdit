@@ -27,11 +27,12 @@ public class Plateau {
     }
 
     // Convertisseur en String
-    public String ToString(){
+    @Override
+    public String toString() {
         String res = "";
-        for(int i = 0;i<5;i++){
-            for(int j = 0;j<5;j++){
-                res += grille[i][j].getString() + " ";
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                res += grille[i][j].toString() + " ";
             }
             res += "\n";
         }

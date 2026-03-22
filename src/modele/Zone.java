@@ -17,7 +17,7 @@ public class Zone {
     }
 
     // Format String d'une Zone
-    public String getString() {
+    public String toString() {
         if (this.oeilTempete){
             return "X";
         }
