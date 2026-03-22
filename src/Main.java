@@ -1,4 +1,5 @@
 import modele.Plateau;
+import vue.FenetreJeu;
 
 public class Main {
     public static void main(String[] args){
@@ -6,5 +7,8 @@ public class Main {
         Plateau p = new Plateau();
         System.out.println("--- État initial du désert ---");
         System.out.println(p.toString());
+
+        FenetreJeu f = new FenetreJeu(p);
+        f.setVisible(true);
     }
 }
