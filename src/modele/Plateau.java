@@ -1,4 +1,40 @@
 package modele;
 
 public class Plateau {
+    private Zone[][] grille;
+    private int niveauTempete;
+
+    public Plateau() {
+        this.grille = new Zone[5][5];
+        this.niveauTempete = 2;
+        initialiseGrille();
+    }
+
+    // Initialise la Grille/Plateau
+    public void initialiseGrille(){
+        for(int i = 0;i<5;i++) {
+            for (int j = 0; j < 5; j++) {
+                boolean estOeil = (i == 2 && j == 2);
+                grille[i][j] = new Zone(estOeil);
+            }
+        }
+
+        int[][] posSable = {{0,2}, {1,1}, {1,3}, {2,0}, {2,4}, {3,1}, {3,3}, {4,2}};
+
+        for( int[] pos : posSable){
+            grille[pos[0]][pos[1]].ajouterSable(1);
+        }
+    }
+
+    // Convertisseur en String
+    public String ToString(){
+        String res = "";
+        for(int i = 0;i<5;i++){
+            for(int j = 0;j<5;j++){
+                res += grille[i][j].getString() + " ";
+            }
+            res += "\n";
+        }
+        return res;
+    }
 }

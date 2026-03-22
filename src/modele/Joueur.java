@@ -1,4 +1,8 @@
 package modele;
 
-public class Joueur {
+public abstract class Joueur {
+}
+
+
+class Archeologue extends Joueur {
 }
