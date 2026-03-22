@@ -9,7 +9,7 @@ public class Zone {
         this.nbSable = 0;
     }
 
-    public void set_estOeil(boolean estOeil){
+    public void set_oeilTempete(boolean estOeil){
         this.oeilTempete = estOeil;
     }
 

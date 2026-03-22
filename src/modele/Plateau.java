@@ -17,7 +17,7 @@ public class Plateau {
                 grille[i][j] = new Zone();
             }
         }
-        grille[2][2].set_estOeil(true);
+        grille[2][2].set_oeilTempete(true);
 
         int[][] posSable = {{0,2}, {1,1}, {1,3}, {2,0}, {2,4}, {3,1}, {3,3}, {4,2}};
 
