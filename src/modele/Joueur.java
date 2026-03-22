@@ -2,7 +2,7 @@ package modele;
 
 public abstract class Joueur {
     String nom;
-    int niveauEau
+    int niveauEau;
 
 }
 
