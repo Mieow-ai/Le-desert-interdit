@@ -10,6 +10,10 @@ public class Plateau {
         initialiseGrille();
     }
 
+    public Zone getZone(int i, int j){
+        return grille[i][j];
+    }
+
     // Initialise la Grille/Plateau
     public void initialiseGrille(){
         for(int i = 0;i<5;i++) {

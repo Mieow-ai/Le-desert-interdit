@@ -13,8 +13,12 @@ public class VuePlateau extends JPanel {
             for(int j = 0;j<5;j++){
                 JPanel cp = new JPanel();
                 cp.setPreferredSize(new Dimension(100, 100));
-                cp.setBackground(Color.ORANGE);
-
+                if (plateau.getZone(i, j).est_oeilTempete()){
+                    cp.setBackground(Color.BLUE);
+                }
+                else{
+                    cp.setBackground(Color.ORANGE);
+                }
                 this.add(cp);
             }
         }

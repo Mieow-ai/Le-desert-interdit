@@ -13,6 +13,10 @@ public class Zone {
         this.oeilTempete = estOeil;
     }
 
+    public boolean est_oeilTempete(){
+        return this.oeilTempete;
+    }
+
     // Ajoute du sable selon une quantité
     public void ajouterSable(int nbQuantite) {
         if (!this.oeilTempete)
