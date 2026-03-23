@@ -101,13 +101,13 @@ public class Plateau {
                 break;
             }
 
-            Zone tuileAspirer = grille[x_cible][y_cible];
-            Zone tuileTrou = grille[x_oeil][y_oeil];
+            Zone tuileAspirer = grille[y_cible][x_cible];
+            Zone tuileTrou = grille[y_oeil][x_oeil];
 
             tuileAspirer.ajouterSable(1);
 
-            grille[x_oeil][y_oeil] = tuileAspirer;
-            grille[x_cible][y_cible] = tuileTrou;
+            grille[y_oeil][x_oeil] = tuileAspirer;
+            grille[y_cible][x_cible] = tuileTrou;
 
             x_oeil = x_cible;
             y_oeil = y_cible;

@@ -1,3 +1,4 @@
+import controleur.Controleur;
 import modele.Plateau;
 import vue.FenetreJeu;
 
@@ -9,6 +10,7 @@ public class Main {
         System.out.println(p.toString());
 
         FenetreJeu f = new FenetreJeu(p);
+        Controleur controleur = new Controleur(p, f);
         f.setVisible(true);
     }
 }
