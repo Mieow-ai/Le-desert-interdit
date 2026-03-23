@@ -1,12 +1,14 @@
 package modele;
 
+import java.lang.Math.*;
+
 public class Plateau {
     private Zone[][] grille;
-    private int niveauTempete;
+    private double niveauTempete;
 
     public Plateau() {
         this.grille = new Zone[5][5];
-        this.niveauTempete = 2;
+        this.niveauTempete = 2.0;
         initialiseGrille();
     }
 
@@ -41,5 +43,82 @@ public class Plateau {
             res += "\n";
         }
         return res;
+    }
+
+    public void action_desert(){
+        double tirage = Math.random();
+        if (tirage <= 0.33){
+            double tirage_dir = Math.random();
+            int force = (int)(Math.random() * 3) + 1;
+            String direction ="";
+            if(tirage_dir <= 0.25){
+                direction = "nord";
+                leVentSouffle(direction, force);
+            }
+            else if(tirage_dir <= 0.5){
+                direction = "sud";
+                leVentSouffle(direction, force);
+            }
+            else if(tirage_dir <= 0.75){
+                direction = "ouest";
+                leVentSouffle(direction, force);
+            }
+            else {
+                direction = "est";
+                leVentSouffle(direction, force);
+            }
+        }
+        else if (tirage <= 0.66){
+            LaTempeteSeDechaine();
+        }
+        else{
+            vagueDeChaleur();
+        }
+    }
+
+    public void leVentSouffle(String direction, int force){
+        int x_oeil = 0;
+        int y_oeil = 0;
+
+        for(int i = 0;i<5;i++){
+            for(int j = 0;j<5;j++){
+                if(this.grille[i][j].est_oeilTempete()){
+                    x_oeil = j;
+                    y_oeil = i;
+                }
+            }
+        }
+        for(int i = 0;i<force;i++){
+            int x_cible = x_oeil;
+            int y_cible = y_oeil;
+
+            if(direction == "nord") {y_cible += 1;}
+            else if (direction == "ouest") {x_cible += 1;}
+            else if (direction == "est") {x_cible -= 1;}
+            else { y_cible -= 1;}
+
+            if(x_cible < 0 || x_cible >= 5 || y_cible < 0 || y_cible >= 5){
+                break;
+            }
+
+            Zone tuileAspirer = grille[x_cible][y_cible];
+            Zone tuileTrou = grille[x_oeil][y_oeil];
+
+            tuileAspirer.ajouterSable(1);
+
+            grille[x_oeil][y_oeil] = tuileAspirer;
+            grille[x_cible][y_cible] = tuileTrou;
+
+            x_oeil = x_cible;
+            y_oeil = y_cible;
+        }
+    }
+
+    public void vagueDeChaleur(){
+        return;
+    }
+
+    public void LaTempeteSeDechaine(){
+        this.niveauTempete += 0.5;
     }
 }

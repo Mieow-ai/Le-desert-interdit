@@ -7,6 +7,7 @@ import modele.Plateau;
 public class FenetreJeu extends JFrame {
     private VuePlateau vp;
     private Plateau p;
+    private VueCommande vc;
 
     public FenetreJeu(Plateau plateau){
         this.p = plateau;
@@ -15,10 +16,21 @@ public class FenetreJeu extends JFrame {
         this.setLayout(new BorderLayout());
 
         this.vp = new VuePlateau(plateau);
+        this.vc = new VueCommande();
         this.add(vp, BorderLayout.CENTER);
+        this.add(vc, BorderLayout.SOUTH);
 
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
+
+    public VuePlateau getVp(){
+        return this.vp;
+    }
+
+    public VueCommande getVc(){
+        return this.vc;
+    }
+
 }

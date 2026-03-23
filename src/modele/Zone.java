@@ -23,6 +23,10 @@ public class Zone {
             nbSable += nbQuantite;
     }
 
+    public int getNbSable(){
+        return this.nbSable;
+    }
+
     // Format String d'une Zone
     public String toString() {
         if (this.oeilTempete){
