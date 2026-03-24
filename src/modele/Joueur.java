@@ -1,9 +1,9 @@
 package modele;
 
 public abstract class Joueur {
-    String nom;
-    int niveauEau;
-
+    private String nom;
+    private int niveauEau;
+    private Zone zone;
 }
 
 

@@ -3,7 +3,7 @@ package vue;
 import javax.swing.*;
 import java.awt.*;
 
-public class VueCommande extends JPanel {
+public class VueCommande extends JPanel{
     private JButton Bouton_fin_tour;
 
     public VueCommande(){

@@ -22,7 +22,7 @@ public class Plateau extends Observable {
     public void initialiseGrille(){
         for(int i = 0;i<5;i++) {
             for (int j = 0; j < 5; j++) {
-                grille[i][j] = new Zone();
+                grille[i][j] = new Zone(i,j);
             }
         }
         grille[2][2].set_oeilTempete(true);
