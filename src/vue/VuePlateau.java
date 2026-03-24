@@ -2,9 +2,10 @@ package vue;
 
 import javax.swing.*;
 import java.awt.*;
+import vue.Observer;
 import modele.Plateau;
 
-public class VuePlateau extends JPanel {
+public class VuePlateau extends JPanel implements Observer {
     private Plateau plateau;
 
     public VuePlateau(Plateau plateau){
@@ -12,6 +13,7 @@ public class VuePlateau extends JPanel {
         this.setLayout(new GridLayout(5, 5, 5, 5));
         this.setBackground(Color.GRAY);
         dessinerPlateau();
+        this.plateau.addObserver(this);
     }
 
     public void dessinerPlateau(){
@@ -39,5 +41,9 @@ public class VuePlateau extends JPanel {
         }
         this.revalidate();
         this.repaint();
+    }
+
+    public void update(){
+        dessinerPlateau();
     }
 }

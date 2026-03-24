@@ -1,12 +1,14 @@
 package modele;
 
 import java.lang.Math.*;
+import vue.Observable;
 
-public class Plateau {
+public class Plateau extends Observable {
     private Zone[][] grille;
     private double niveauTempete;
 
     public Plateau() {
+        super();
         this.grille = new Zone[5][5];
         this.niveauTempete = 2.0;
         initialiseGrille();
@@ -74,6 +76,7 @@ public class Plateau {
         else{
             vagueDeChaleur();
         }
+        this.notifyObservers();
     }
 
     public void leVentSouffle(String direction, int force){

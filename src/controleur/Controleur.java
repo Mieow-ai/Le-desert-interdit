@@ -21,7 +21,7 @@ public class Controleur implements ActionListener {
     public void actionPerformed(ActionEvent e){
         System.out.println("Le désert s'agite...");
         this.p.action_desert();
-        vue.getVp().dessinerPlateau();
+        //vue.getVp().dessinerPlateau();
     }
 
 }

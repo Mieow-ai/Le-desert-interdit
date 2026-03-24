@@ -23,6 +23,7 @@ public class FenetreJeu extends JFrame {
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+        
     }
 
     public VuePlateau getVp(){
