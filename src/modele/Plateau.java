@@ -5,12 +5,14 @@ import vue.Observable;
 
 public class Plateau extends Observable {
     private Zone[][] grille;
-    private double niveauTempete;
-
+    private double niveauTempete = 2.0;
+    private int oeilI = 2;
+    private int oeilJ = 2;
+    private int totalSable = 0;
+    private static final int SABLE_MAX = 48;
     public Plateau() {
         super();
         this.grille = new Zone[5][5];
-        this.niveauTempete = 2.0;
         initialiseGrille();
     }
 
@@ -22,15 +24,18 @@ public class Plateau extends Observable {
     public void initialiseGrille(){
         for(int i = 0;i<5;i++) {
             for (int j = 0; j < 5; j++) {
-                grille[i][j] = new Zone(i,j);
+                if (i == oeilI && j == oeilJ) {
+                    grille[i][j] = null;  // l'oeil
+                } else {
+                  grille[i][j] = new Zone(i,j);
+                }
             }
         }
-        grille[2][2].set_oeilTempete(true);
 
         int[][] posSable = {{0,2}, {1,1}, {1,3}, {2,0}, {2,4}, {3,1}, {3,3}, {4,2}};
 
         for( int[] pos : posSable){
-            grille[pos[0]][pos[1]].ajouterSable(1);
+            this.ajouterSable(grille[pos[0]][pos[1]],1);
         }
     }
 
@@ -40,7 +45,11 @@ public class Plateau extends Observable {
         String res = "";
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                res += grille[i][j].toString() + " ";
+                if( i == oeilI && j == oeilJ){
+                    res += "X ";
+                } else {
+                    res += grille[i][j].toString() + " ";
+                }
             }
             res += "\n";
         }
@@ -80,40 +89,30 @@ public class Plateau extends Observable {
     }
 
     public void leVentSouffle(String direction, int force){
-        int x_oeil = 0;
-        int y_oeil = 0;
 
-        for(int i = 0;i<5;i++){
-            for(int j = 0;j<5;j++){
-                if(this.grille[i][j].est_oeilTempete()){
-                    x_oeil = j;
-                    y_oeil = i;
-                }
-            }
-        }
-        for(int i = 0;i<force;i++){
-            int x_cible = x_oeil;
-            int y_cible = y_oeil;
+        for(int k = 0;k<force;k++){
+            int iCible = oeilI;
+            int jCible = oeilJ;
 
-            if(direction == "nord") {y_cible += 1;}
-            else if (direction == "ouest") {x_cible += 1;}
-            else if (direction == "est") {x_cible -= 1;}
-            else { y_cible -= 1;}
+            if(direction == "nord") {iCible += 1;}
+            else if (direction == "ouest") {jCible += 1;}
+            else if (direction == "est") {jCible -= 1;}
+            else { iCible -= 1;}
 
-            if(x_cible < 0 || x_cible >= 5 || y_cible < 0 || y_cible >= 5){
+            if(iCible < 0 || iCible >= 5 || jCible < 0 || jCible >= 5){
                 break;
             }
 
-            Zone tuileAspirer = grille[y_cible][x_cible];
-            Zone tuileTrou = grille[y_oeil][x_oeil];
+            Zone tuileAspiree = grille[iCible][jCible];
 
-            tuileAspirer.ajouterSable(1);
+            this.ajouterSable(tuileAspiree,1);
 
-            grille[y_oeil][x_oeil] = tuileAspirer;
-            grille[y_cible][x_cible] = tuileTrou;
+            grille[oeilI][oeilJ] = tuileAspiree;
+            tuileAspiree.set_position(oeilI,oeilJ);
+            grille[iCible][jCible] = null;
 
-            x_oeil = x_cible;
-            y_oeil = y_cible;
+            oeilI = iCible;
+            oeilJ = jCible;
         }
     }
 
@@ -124,4 +123,16 @@ public class Plateau extends Observable {
     public void LaTempeteSeDechaine(){
         this.niveauTempete += 0.5;
     }
+
+    public int getOeilI() { return oeilI; }
+    public int getOeilJ() { return oeilJ; }
+    public boolean ajouterSable(Zone zone, int quantite) {
+        if (totalSable + quantite > SABLE_MAX) {
+            return false; // A modifier pour fin de partie
+        }
+        zone.ajouterSable(quantite);
+        totalSable += quantite;
+        return true;
+    }
+
 }

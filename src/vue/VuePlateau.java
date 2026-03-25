@@ -2,13 +2,15 @@ package vue;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import vue.Observer;
 import modele.Plateau;
+import modele.Joueur;
 
 public class VuePlateau extends JPanel implements Observer {
     private Plateau plateau;
 
-    public VuePlateau(Plateau plateau){
+    public VuePlateau(Plateau plateau) {
         this.plateau = plateau;
         this.setLayout(new GridLayout(5, 5, 5, 5));
         this.setBackground(Color.GRAY);
@@ -16,26 +18,45 @@ public class VuePlateau extends JPanel implements Observer {
         this.plateau.addObserver(this);
     }
 
-    public void dessinerPlateau(){
+    public void dessinerPlateau() {
         this.removeAll();
-        for(int i = 0;i<5;i++){
-            for(int j = 0;j<5;j++){
+        int oeilI = this.plateau.getOeilI();
+        int oeilJ = this.plateau.getOeilJ();
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
                 JPanel cp = new JPanel();
                 cp.setPreferredSize(new Dimension(100, 100));
                 cp.setLayout(new GridBagLayout());
 
-                int quantite_sable = this.plateau.getZone(i, j).getNbSable();
-                JLabel sable_label = new JLabel(quantite_sable + "sable(s)");
-                sable_label.setFont(new Font("Arial", Font.BOLD, 14));
-                if (this.plateau.getZone(i, j).est_oeilTempete()){
+                if (i == oeilI && j == oeilJ) {
                     cp.setBackground(Color.BLUE);
-                    sable_label.setForeground(Color.WHITE);
-                }
-                else{
+                } else {
+                    int quantite_sable = this.plateau.getZone(i, j).getNbSable();
+                    JLabel sable_label = new JLabel(quantite_sable + "sable(s)");
+                    sable_label.setFont(new Font("Arial", Font.BOLD, 14));
                     cp.setBackground(new Color(177, 141, 54));
                     sable_label.setForeground(Color.BLACK);
+                    cp.add(sable_label);
+
+                    // Ajout des joueurs
+
+                    List<Joueur> joueurs = this.plateau.getZone(i, j).getJoueurs();
+                    if (!joueurs.isEmpty()) {
+                        JPanel panelJoueurs = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
+                        panelJoueurs.setOpaque(false);
+                        for (Joueur joueur : joueurs) {
+                            JPanel pion = new JPanel();
+                            pion.setPreferredSize(new Dimension(15, 15));
+                            pion.setBackground(joueur.getCouleur());
+                            panelJoueurs.add(pion);
+                        }
+                        // Ajouter sous le label sable
+                        GridBagConstraints gbc = new GridBagConstraints();
+                        gbc.gridy = 1;
+                        cp.add(panelJoueurs, gbc);
+                    }
                 }
-                cp.add(sable_label);
+
                 this.add(cp);
             }
         }
@@ -43,7 +64,7 @@ public class VuePlateau extends JPanel implements Observer {
         this.repaint();
     }
 
-    public void update(){
+    public void update() {
         dessinerPlateau();
     }
 }
