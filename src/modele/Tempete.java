@@ -1,4 +1,4 @@
-package modele;
+/**package modele;
 
 public class Tempete {
     private int nbZone = 1;
@@ -11,4 +11,4 @@ public class Tempete {
     public void augmenter_niveau(int nb_niveau){
         this.niveau_tempete += nb_niveau;
     }
-}
+}**/

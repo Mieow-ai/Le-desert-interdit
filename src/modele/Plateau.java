@@ -1,6 +1,9 @@
 package modele;
 
 import java.lang.Math.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import vue.Observable;
 
 public class Plateau extends Observable {
@@ -10,10 +13,18 @@ public class Plateau extends Observable {
     private int oeilJ = 2;
     private int totalSable = 0;
     private static final int SABLE_MAX = 48;
+    private List<Zone> zonesAccessibles = new ArrayList<>();
+    private List<Joueur> joueurs = new ArrayList<>();
+
     public Plateau() {
         super();
         this.grille = new Zone[5][5];
         initialiseGrille();
+    }
+
+    public List<Joueur> getJoueurs() { return joueurs; }
+    public void add_joueur(Joueur j){
+        joueurs.add(j);
     }
 
     public Zone getZone(int i, int j){
@@ -133,6 +144,14 @@ public class Plateau extends Observable {
         zone.ajouterSable(quantite);
         totalSable += quantite;
         return true;
+    }
+
+    public void setZonesAccessibles(List<Zone> zones) {
+        this.zonesAccessibles = zones;
+        notifyObservers();
+    }
+    public List<Zone> getZonesAccessibles() {
+        return zonesAccessibles;
     }
 
 }

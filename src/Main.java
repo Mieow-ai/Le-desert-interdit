@@ -11,8 +11,8 @@ public class Main {
         Plateau p = new Plateau();
         System.out.println("--- État initial du désert ---");
         System.out.println(p.toString());
-        Joueur j1 = new Joueur("Alice", Color.RED);
-        Joueur j2 = new Joueur("Bob", Color.GREEN);
+        Joueur j1 = new Joueur("Alice", Color.RED,p);
+        Joueur j2 = new Joueur("Bob", Color.GREEN,p);
         j1.setZone(p.getZone(0, 0));
         j2.setZone(p.getZone(1, 2));
 

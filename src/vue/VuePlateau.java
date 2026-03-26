@@ -3,44 +3,56 @@ package vue;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+
+import modele.Zone;
 import vue.Observer;
 import modele.Plateau;
 import modele.Joueur;
 
 public class VuePlateau extends JPanel implements Observer {
     private Plateau plateau;
+    private JPanel[][] casesGrille = new JPanel[5][5];
 
     public VuePlateau(Plateau plateau) {
         this.plateau = plateau;
         this.setLayout(new GridLayout(5, 5, 5, 5));
         this.setBackground(Color.GRAY);
-        dessinerPlateau();
+
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                casesGrille[i][j] = new JPanel();
+                casesGrille[i][j].setPreferredSize(new Dimension(100, 100));
+                casesGrille[i][j].setLayout(new GridBagLayout());
+                this.add(casesGrille[i][j]);
+            }
+        }
+
+        mettreAJour();
         this.plateau.addObserver(this);
     }
 
-    public void dessinerPlateau() {
-        this.removeAll();
-        int oeilI = this.plateau.getOeilI();
-        int oeilJ = this.plateau.getOeilJ();
+    private void mettreAJour() {
+        List<Zone> accessibles = plateau.getZonesAccessibles();
+
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                JPanel cp = new JPanel();
-                cp.setPreferredSize(new Dimension(100, 100));
-                cp.setLayout(new GridBagLayout());
+                JPanel cp = casesGrille[i][j];
+                cp.removeAll();
+                Zone zone = plateau.getZone(i, j);
 
-                if (i == oeilI && j == oeilJ) {
+                if (zone == null) {
                     cp.setBackground(Color.BLUE);
                 } else {
-                    int quantite_sable = this.plateau.getZone(i, j).getNbSable();
-                    JLabel sable_label = new JLabel(quantite_sable + "sable(s)");
-                    sable_label.setFont(new Font("Arial", Font.BOLD, 14));
-                    cp.setBackground(new Color(177, 141, 54));
-                    sable_label.setForeground(Color.BLACK);
-                    cp.add(sable_label);
+                    // Sable
+                    GridBagConstraints gbc = new GridBagConstraints();
+                    gbc.gridy = 0;
+                    JLabel sableLabel = new JLabel(zone.getNbSable() + " sable(s)");
+                    sableLabel.setFont(new Font("Arial", Font.BOLD, 14));
+                    sableLabel.setForeground(Color.BLACK);
+                    cp.add(sableLabel, gbc);
 
-                    // Ajout des joueurs
-
-                    List<Joueur> joueurs = this.plateau.getZone(i, j).getJoueurs();
+                    // Pions joueurs
+                    List<Joueur> joueurs = zone.getJoueurs();
                     if (!joueurs.isEmpty()) {
                         JPanel panelJoueurs = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
                         panelJoueurs.setOpaque(false);
@@ -50,21 +62,33 @@ public class VuePlateau extends JPanel implements Observer {
                             pion.setBackground(joueur.getCouleur());
                             panelJoueurs.add(pion);
                         }
-                        // Ajouter sous le label sable
-                        GridBagConstraints gbc = new GridBagConstraints();
                         gbc.gridy = 1;
                         cp.add(panelJoueurs, gbc);
                     }
+
+                    // Accessible
+                    if (accessibles.contains(zone)) {
+                        cp.setBackground(new Color(144, 238, 144));
+                        cp.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
+                        cp.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    } else {
+                        cp.setBackground(new Color(177, 141, 54));
+                        cp.setBorder(null);
+                        cp.setCursor(Cursor.getDefaultCursor());
+                    }
                 }
 
-                this.add(cp);
+                cp.revalidate();
+                cp.repaint();
             }
         }
-        this.revalidate();
-        this.repaint();
+    }
+
+    public JPanel getCase(int i, int j) {
+        return casesGrille[i][j];
     }
 
     public void update() {
-        dessinerPlateau();
+        mettreAJour();
     }
 }
