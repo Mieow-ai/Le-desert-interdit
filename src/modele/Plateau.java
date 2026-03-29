@@ -150,8 +150,13 @@ public class Plateau extends Observable {
         this.zonesAccessibles = zones;
         notifyObservers();
     }
+    public void resetZonesAccessibles(){
+        this.zonesAccessibles = new ArrayList<Zone>();
+        notifyObservers();
+    }
     public List<Zone> getZonesAccessibles() {
         return zonesAccessibles;
     }
+
 
 }

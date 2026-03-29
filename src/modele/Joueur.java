@@ -10,6 +10,8 @@ class Joueur {
     private int niveauEau;
     protected Zone zone;
     private Color couleur;
+    private final int action_par_tour = 4;
+    private int nb_action_restante = action_par_tour;
 
     public Joueur(String nom, Color couleur, Plateau p) {
         this.nom = nom;
@@ -25,6 +27,22 @@ class Joueur {
         }
         this.zone = zone;
         zone.ajouterJoueur(this);
+    }
+
+    public int getNb_action_restante() {
+        return this.nb_action_restante;
+    }
+
+    public void joue_action() {
+        this.nb_action_restante--;
+    }
+
+    public void reset_action() {
+        this.nb_action_restante = this.action_par_tour;
+    }
+
+    public Zone getZone() {
+        return this.zone;
     }
 
     public Color getCouleur() {
@@ -45,6 +63,25 @@ class Joueur {
             }
         }
         return accessibles;
+    }
+
+    public List<Zone> getZonesCreusables(Plateau plateau) {
+        List<Zone> creusables = new ArrayList<>();
+        int[][] directions = getDirections();
+        for (int[] dir : directions) {
+            int ni = zone.getX() + dir[0];
+            int nj = zone.getY() + dir[1];
+            if (ni >= 0 && ni < 5 && nj >= 0 && nj < 5) {
+                Zone voisine = plateau.getZone(ni, nj);
+                if (voisine != null && voisine.getNbSable() > 0) {
+                    creusables.add(voisine);
+                }
+            }
+        }
+        if (this.zone.getNbSable() > 0) {
+            creusables.add(this.zone);
+        }
+        return creusables;
     }
 
     // Par défaut

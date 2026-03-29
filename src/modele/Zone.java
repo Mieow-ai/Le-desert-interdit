@@ -42,6 +42,10 @@ public class Zone {
         nbSable += nbQuantite;
     }
 
+    public void creuser(){
+        nbSable--;
+    }
+
     public int getNbSable(){
         return this.nbSable;
     }
