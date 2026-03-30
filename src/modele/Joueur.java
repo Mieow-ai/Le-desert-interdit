@@ -7,7 +7,8 @@ import java.util.ArrayList;
 public /** abstract **/
 class Joueur {
     private String nom;
-    private int niveauEau;
+    protected int niveauEau = 4;
+    protected final int niveauEauMax = 4;
     protected Zone zone;
     private Color couleur;
     private final int action_par_tour = 4;
@@ -15,7 +16,6 @@ class Joueur {
 
     public Joueur(String nom, Color couleur, Plateau p) {
         this.nom = nom;
-        this.niveauEau = 3; // a voir
         this.couleur = couleur;
         // Ajout du joueur au plateau
         p.add_joueur(this);
@@ -47,6 +47,9 @@ class Joueur {
 
     public Color getCouleur() {
         return couleur;
+    }
+    public void boireEau(){
+        this.niveauEau--;
     }
 
     public List<Zone> getZonesAccessibles(Plateau plateau) {
@@ -149,5 +152,7 @@ class Navigatrice extends Joueur {
 class PorteuseEau extends Joueur {
     public PorteuseEau(String nom, Color couleur, Plateau p) {
         super(nom, couleur, p);
+        this.niveauEau = 5; // La porteuse d'eau part avec un niveau de 5
+        //this.niveauEauMax = 5;
     }
 }

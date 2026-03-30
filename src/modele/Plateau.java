@@ -128,8 +128,11 @@ public class Plateau extends Observable {
     }
 
     public void vagueDeChaleur(){
-        return;
+        for(Joueur j : joueurs){
+            j.boireEau();
+        }
     }
+
 
     public void LaTempeteSeDechaine(){
         this.niveauTempete += 0.5;
