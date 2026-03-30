@@ -13,34 +13,28 @@ public class VuePlateau extends JPanel implements Observer {
     private Plateau plateau;
     private JPanel[][] casesGrille = new JPanel[5][5];
 
-    /*
     private Image imageSable;
     private Image imageTempete;
-    */
 
     public VuePlateau(Plateau plateau) {
         this.plateau = plateau;
         this.setLayout(new GridLayout(5, 5, 5, 5));
         this.setBackground(Color.GRAY);
 
-        /*
         this.imageSable = new ImageIcon("desert.jpg").getImage();
         this.imageTempete = new ImageIcon("tempete.png").getImage();
-        */
-
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                Zone z = plateau.getZone(i, j);
-                casesGrille[i][j] = new JPanel();
-
-                /*
-                {
+                final int fi = i;
+                final int fj = j;
+                casesGrille[i][j] = new JPanel() {
                     @Override
                     protected void paintComponent(Graphics g) {
                         super.paintComponent(g);
+                        Zone z = plateau.getZone(fi, fj);
                         if (z != null) {
-                            if(imageSable != null) {
+                            if (imageSable != null) {
                                 g.drawImage(imageSable, 0, 0, getWidth(), getHeight(), this);
                             }
                         } else {
@@ -48,7 +42,6 @@ public class VuePlateau extends JPanel implements Observer {
                         }
                     }
                 };
-                */
 
                 casesGrille[i][j].setPreferredSize(new Dimension(100, 100));
                 casesGrille[i][j].setLayout(new GridBagLayout());

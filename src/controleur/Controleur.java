@@ -80,7 +80,6 @@ public class Controleur {
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
                                     joueurs.get(indiceJoueurActif).setZone(zone);
                                     joueurs.get(indiceJoueurActif).joue_action();
-                                    p.resetZonesAccessibles();
                                 }
                                 break;
                             case CREUSER:
@@ -88,13 +87,13 @@ public class Controleur {
                                     zone.creuser();
                                     joueurs.get(indiceJoueurActif).joue_action();
                                     p.notifyObservers();
-                                    p.resetZonesAccessibles();
                                 }
 
                                 break;
                             case AUCUNE:
                                 break;
                         }
+                        p.resetZonesAccessibles();
                         action_courante = action.AUCUNE;
                     }
                 });
