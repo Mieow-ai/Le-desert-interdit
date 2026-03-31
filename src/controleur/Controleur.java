@@ -99,5 +99,23 @@ public class Controleur {
                 });
             }
         }
+
+        // Action des boutons de la page de lancement
+        this.vue.getVl().getBouton_play().addActionListener(e -> {
+            if (this.joueurs.size() < 2) {
+                this.vue.getVl().set_texte_erreur("Il faut au minimum 2 joueurs pour lancer la partie");
+            } else {
+                this.vue.getVl().reset_texte_erreur();
+                this.vue.afficherEcran(false);
+            }
+
+        });
+
+        this.vue.getVl().getBouton_ajouter_joueur().addActionListener(e -> {
+            Joueur j = new Joueur("Joueur " + (this.joueurs.size() + 1), Color.green, p);
+            j.setZone(p.getZone(1, 1));
+            this.joueurs = this.p.getJoueurs();
+        });
+
     }
 }

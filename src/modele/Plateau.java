@@ -22,31 +22,35 @@ public class Plateau extends Observable {
         initialiseGrille();
     }
 
-    public List<Joueur> getJoueurs() { return joueurs; }
-    public void add_joueur(Joueur j){
-        joueurs.add(j);
+    public List<Joueur> getJoueurs() {
+        return joueurs;
     }
 
-    public Zone getZone(int i, int j){
+    public void add_joueur(Joueur j) {
+        joueurs.add(j);
+        notifyObservers();
+    }
+
+    public Zone getZone(int i, int j) {
         return grille[i][j];
     }
 
     // Initialise la Grille/Plateau
-    public void initialiseGrille(){
-        for(int i = 0;i<5;i++) {
+    public void initialiseGrille() {
+        for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 if (i == oeilI && j == oeilJ) {
-                    grille[i][j] = null;  // l'oeil
+                    grille[i][j] = null; // l'oeil
                 } else {
-                  grille[i][j] = new Zone(i,j);
+                    grille[i][j] = new Zone(i, j);
                 }
             }
         }
 
-        int[][] posSable = {{0,2}, {1,1}, {1,3}, {2,0}, {2,4}, {3,1}, {3,3}, {4,2}};
+        int[][] posSable = { { 0, 2 }, { 1, 1 }, { 1, 3 }, { 2, 0 }, { 2, 4 }, { 3, 1 }, { 3, 3 }, { 4, 2 } };
 
-        for( int[] pos : posSable){
-            this.ajouterSable(grille[pos[0]][pos[1]],1);
+        for (int[] pos : posSable) {
+            this.ajouterSable(grille[pos[0]][pos[1]], 1);
         }
     }
 
@@ -56,7 +60,7 @@ public class Plateau extends Observable {
         String res = "";
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                if( i == oeilI && j == oeilJ){
+                if (i == oeilI && j == oeilJ) {
                     res += "X ";
                 } else {
                     res += grille[i][j].toString() + " ";
@@ -67,59 +71,59 @@ public class Plateau extends Observable {
         return res;
     }
 
-    public void action_desert(){
+    public void action_desert() {
         double tirage = Math.random();
-        if (tirage <= 0.33){
+        if (tirage <= 0.33) {
             double tirage_dir = Math.random();
-            int force = (int)(Math.random() * 3) + 1;
-            String direction ="";
-            if(tirage_dir <= 0.25){
+            int force = (int) (Math.random() * 3) + 1;
+            String direction = "";
+            if (tirage_dir <= 0.25) {
                 direction = "nord";
                 leVentSouffle(direction, force);
-            }
-            else if(tirage_dir <= 0.5){
+            } else if (tirage_dir <= 0.5) {
                 direction = "sud";
                 leVentSouffle(direction, force);
-            }
-            else if(tirage_dir <= 0.75){
+            } else if (tirage_dir <= 0.75) {
                 direction = "ouest";
                 leVentSouffle(direction, force);
-            }
-            else {
+            } else {
                 direction = "est";
                 leVentSouffle(direction, force);
             }
-        }
-        else if (tirage <= 0.66){
+        } else if (tirage <= 0.66) {
             LaTempeteSeDechaine();
-        }
-        else{
+        } else {
             vagueDeChaleur();
         }
         this.notifyObservers();
     }
 
-    public void leVentSouffle(String direction, int force){
+    public void leVentSouffle(String direction, int force) {
 
-        for(int k = 0;k<force;k++){
+        for (int k = 0; k < force; k++) {
             int iCible = oeilI;
             int jCible = oeilJ;
 
-            if(direction == "nord") {iCible += 1;}
-            else if (direction == "ouest") {jCible += 1;}
-            else if (direction == "est") {jCible -= 1;}
-            else { iCible -= 1;}
+            if (direction == "nord") {
+                iCible += 1;
+            } else if (direction == "ouest") {
+                jCible += 1;
+            } else if (direction == "est") {
+                jCible -= 1;
+            } else {
+                iCible -= 1;
+            }
 
-            if(iCible < 0 || iCible >= 5 || jCible < 0 || jCible >= 5){
+            if (iCible < 0 || iCible >= 5 || jCible < 0 || jCible >= 5) {
                 break;
             }
 
             Zone tuileAspiree = grille[iCible][jCible];
 
-            this.ajouterSable(tuileAspiree,1);
+            this.ajouterSable(tuileAspiree, 1);
 
             grille[oeilI][oeilJ] = tuileAspiree;
-            tuileAspiree.set_position(oeilI,oeilJ);
+            tuileAspiree.set_position(oeilI, oeilJ);
             grille[iCible][jCible] = null;
 
             oeilI = iCible;
@@ -127,19 +131,24 @@ public class Plateau extends Observable {
         }
     }
 
-    public void vagueDeChaleur(){
-        for(Joueur j : joueurs){
+    public void vagueDeChaleur() {
+        for (Joueur j : joueurs) {
             j.boireEau();
         }
     }
 
-
-    public void LaTempeteSeDechaine(){
+    public void LaTempeteSeDechaine() {
         this.niveauTempete += 0.5;
     }
 
-    public int getOeilI() { return oeilI; }
-    public int getOeilJ() { return oeilJ; }
+    public int getOeilI() {
+        return oeilI;
+    }
+
+    public int getOeilJ() {
+        return oeilJ;
+    }
+
     public boolean ajouterSable(Zone zone, int quantite) {
         if (totalSable + quantite > SABLE_MAX) {
             return false; // A modifier pour fin de partie
@@ -153,13 +162,14 @@ public class Plateau extends Observable {
         this.zonesAccessibles = zones;
         notifyObservers();
     }
-    public void resetZonesAccessibles(){
+
+    public void resetZonesAccessibles() {
         this.zonesAccessibles = new ArrayList<Zone>();
         notifyObservers();
     }
+
     public List<Zone> getZonesAccessibles() {
         return zonesAccessibles;
     }
-
 
 }
