@@ -6,6 +6,8 @@ A faire :
 - ajouter indice joueur actif dans le controller ainsi qu'un attribut joueurs initialiser lors de la construction grace au plateau
 - affichage fleches sur les cases accesibles
 - piles de sables sur le coté (sable max restant)
+- Couleur random lors de ajout d'un joueur
+- possibilité d'entrer un nom pour ajout joueur, sinon nom de base Joueur numéro size
 
 A savoir :
 
