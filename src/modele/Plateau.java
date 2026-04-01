@@ -29,6 +29,7 @@ public class Plateau extends Observable {
     public void add_joueur(Joueur j) {
         joueurs.add(j);
         notifyObservers();
+
     }
 
     public Zone getZone(int i, int j) {

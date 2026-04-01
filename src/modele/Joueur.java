@@ -4,8 +4,26 @@ import java.awt.*;
 import java.util.List;
 import java.util.ArrayList;
 
-public /** abstract **/
-class Joueur {
+public abstract class Joueur {
+
+    public String getNom() {
+        return this.nom;
+    }
+
+    public int getNvEau() {
+        return this.niveauEau;
+    }
+
+    public enum Role {
+        ARCHEOLOGUE,
+        ALPINISTE,
+        EXPLORATEUR,
+        METEOROLOGUE,
+        NAVIGATRICE,
+        PORTEUSE_EAU
+
+    }
+
     private String nom;
     protected int niveauEau = 4;
     protected final int niveauEauMax = 4;
@@ -21,9 +39,21 @@ class Joueur {
         p.add_joueur(this);
     }
 
+    public static Joueur creerJoueur(Role role, String nom, Plateau p) {
+        switch (role) {
+            case ARCHEOLOGUE: return new Archeologue(nom, Color.red, p);
+            case ALPINISTE: return new Alpiniste(nom, Color.black, p);
+            case EXPLORATEUR: return new Explorateur(nom, Color.green, p);
+            case METEOROLOGUE: return new Meteorologue(nom, Color.WHITE, p);
+            case NAVIGATRICE: return new Navigatrice(nom, Color.yellow, p);
+            case PORTEUSE_EAU: return new PorteuseEau(nom, Color.blue, p);
+            default: throw new IllegalArgumentException("Rôle inconnu");
+        }
+    }
+
     public void setZone(Zone zone) {
         if (this.zone != null) {
-            this.zone.retirerJoueur(this); // retirer de l'ancienne
+            this.zone.retirerJoueur(this); // retirer de l'ancienne case
         }
         this.zone = zone;
         zone.ajouterJoueur(this);

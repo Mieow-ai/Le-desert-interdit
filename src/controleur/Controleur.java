@@ -11,12 +11,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Controleur {
     private final Plateau p;
-    private final FenetreJeu vue;
+    private FenetreJeu vue;
     private List<Joueur> joueurs;
     private int indiceJoueurActif = 0;
+    private List<Joueur.Role> rolesDisponibles;
 
     private enum action {
         AUCUNE, DEPLACEMENT, CREUSER
@@ -29,6 +32,9 @@ public class Controleur {
         this.vue = vue;
         this.joueurs = modele.getJoueurs();
         this.action_courante = action.AUCUNE;
+        this.rolesDisponibles = new ArrayList<>(Arrays.asList(Joueur.Role.values()));
+        Collections.shuffle(this.rolesDisponibles);
+
         // Bouton fin de tour
         this.vue.getVc().getBouton_fin_tour().addActionListener(e -> {
             vue.getVc().reset_texte_erreur();
@@ -68,7 +74,7 @@ public class Controleur {
             }
         });
 
-        // On défini l'action réalisé par le click sur une case
+        //Action réalisé par le click sur une case
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 final int fi = i, fj = j;
@@ -112,10 +118,27 @@ public class Controleur {
         });
 
         this.vue.getVl().getBouton_ajouter_joueur().addActionListener(e -> {
-            Joueur j = new Joueur("Joueur " + (this.joueurs.size() + 1), Color.green, p);
+            if (this.rolesDisponibles.isEmpty()) {
+                this.vue.getVl().set_texte_erreur("Nombre maximum de joueurs atteint (6).");
+                return;
+            }
+            
+            String nomSaisi = this.vue.getVl().getNomSaisi().trim(); // On récupère le nom via le textfield
+            if (nomSaisi.isEmpty()) {
+                nomSaisi = "Joueur " + (this.joueurs.size() + 1); // Permet d'ajouter des joueurs sans nom
+            }
+            
+            Joueur.Role roleAttribue = this.rolesDisponibles.removeLast();
+            nomSaisi += " " + roleAttribue;
+            Joueur j = Joueur.creerJoueur(roleAttribue, nomSaisi, p); // Méthode statique
+            
             j.setZone(p.getZone(1, 1));
-            this.joueurs = this.p.getJoueurs();
+            this.joueurs = this.p.getJoueurs() ;
+            
+            this.vue.getVl().set_texte_erreur(nomSaisi + " est prêt ! (" + this.joueurs.size() + " total)");
+            this.vue.getVl().resetNomSaisi();
         });
+
 
     }
 }
