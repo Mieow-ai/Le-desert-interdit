@@ -21,7 +21,7 @@ public class VuePlateau extends JPanel implements Observer {
         this.setLayout(new GridLayout(5, 5, 5, 5));
         this.setBackground(Color.GRAY);
 
-        this.imageSable = new ImageIcon("desert.jpg").getImage();
+        this.imageSable = new ImageIcon("desert.png").getImage();
         this.imageTempete = new ImageIcon("tempete.png").getImage();
 
         for (int i = 0; i < 5; i++) {
