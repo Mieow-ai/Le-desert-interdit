@@ -2,6 +2,8 @@ package modele;
 
 import java.lang.Math.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import vue.Observable;
@@ -15,6 +17,11 @@ public class Plateau extends Observable {
     private static final int SABLE_MAX = 48;
     private List<Zone> zonesAccessibles = new ArrayList<>();
     private List<Joueur> joueurs = new ArrayList<>();
+    private Zone zoneCrash;
+
+    public Zone getZoneCrash() {
+        return this.zoneCrash;
+    }
 
     public Plateau() {
         super();
@@ -38,12 +45,26 @@ public class Plateau extends Observable {
 
     // Initialise la Grille/Plateau
     public void initialiseGrille() {
+        ArrayList<Zone.TypeZone> typesZone = new ArrayList<>(Arrays.asList(Zone.TypeZone.values()));
+        ArrayList<Zone.TypeZone> zonesDispo = new ArrayList<>();
+        // On ajoute le bon nombre de chaque zone
+        for(Zone.TypeZone type : typesZone ){
+            for (int i = 0; i <type.nb ; i++) {
+                zonesDispo.add(type);
+            }
+        }
+        // On mélange les zones
+        Collections.shuffle(zonesDispo);
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 if (i == oeilI && j == oeilJ) {
                     grille[i][j] = null; // l'oeil
                 } else {
-                    grille[i][j] = new Zone(i, j);
+                    Zone.TypeZone type = zonesDispo.removeLast(); //
+                    grille[i][j] = Zone.creerZone(i,j,type);
+                    if (type == Zone.TypeZone.CRASH){
+                        zoneCrash = grille[i][j];
+                    }
                 }
             }
         }
@@ -134,7 +155,7 @@ public class Plateau extends Observable {
 
     public void vagueDeChaleur() {
         for (Joueur j : joueurs) {
-            j.boireEau();
+            j.vagueDeChaleur();
         }
     }
 

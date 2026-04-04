@@ -68,10 +68,19 @@ public class VuePlateau extends JPanel implements Observer {
                     // Sable
                     GridBagConstraints gbc = new GridBagConstraints();
                     gbc.gridy = 0;
-                    JLabel sableLabel = new JLabel(zone.getNbSable() + " sable(s)");
-                    sableLabel.setFont(new Font("Arial", Font.BOLD, 14));
-                    sableLabel.setForeground(Color.BLACK);
-                    cp.add(sableLabel, gbc);
+                    if(!zone.estRevelee()) {
+                        JLabel sableLabel = new JLabel(zone.getNbSable() + " sable(s)");
+                        sableLabel.setFont(new Font("Arial", Font.BOLD, 14));
+                        sableLabel.setForeground(Color.BLACK);
+                        cp.add(sableLabel, gbc);
+                    }
+                    else {
+                        JLabel reveleeLabel = new JLabel(""+zone.getType());
+                        reveleeLabel.setFont(new Font("Arial", Font.BOLD, 14));
+                        reveleeLabel.setForeground(Color.BLACK);
+                        cp.add(reveleeLabel, gbc);
+                    }
+
 
                     // Pions joueurs
                     List<Joueur> joueurs = zone.getJoueurs();

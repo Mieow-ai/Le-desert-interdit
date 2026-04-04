@@ -94,7 +94,6 @@ public class Controleur {
                                     joueurs.get(indiceJoueurActif).joue_action();
                                     p.notifyObservers();
                                 }
-
                                 break;
                             case AUCUNE:
                                 break;
@@ -132,11 +131,12 @@ public class Controleur {
             nomSaisi += " " + roleAttribue;
             Joueur j = Joueur.creerJoueur(roleAttribue, nomSaisi, p); // Méthode statique
             
-            j.setZone(p.getZone(1, 1));
+            j.setZone(p.getZoneCrash());
             this.joueurs = this.p.getJoueurs() ;
             
             this.vue.getVl().set_texte_erreur(nomSaisi + " est prêt ! (" + this.joueurs.size() + " total)");
             this.vue.getVl().resetNomSaisi();
+            p.notifyObservers();
         });
 
 

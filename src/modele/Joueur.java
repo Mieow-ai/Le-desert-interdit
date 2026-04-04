@@ -1,8 +1,10 @@
 package modele;
 
 import java.awt.*;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 public abstract class Joueur {
 
@@ -12,6 +14,12 @@ public abstract class Joueur {
 
     public int getNvEau() {
         return this.niveauEau;
+    }
+
+    public void vagueDeChaleur() {
+        if (!this.zone.protegeChaleur()) {
+            this.niveauEau--;
+        }
     }
 
     public enum Role {
@@ -40,15 +48,15 @@ public abstract class Joueur {
     }
 
     public static Joueur creerJoueur(Role role, String nom, Plateau p) {
-        switch (role) {
-            case ARCHEOLOGUE: return new Archeologue(nom, Color.red, p);
-            case ALPINISTE: return new Alpiniste(nom, Color.black, p);
-            case EXPLORATEUR: return new Explorateur(nom, Color.green, p);
-            case METEOROLOGUE: return new Meteorologue(nom, Color.WHITE, p);
-            case NAVIGATRICE: return new Navigatrice(nom, Color.yellow, p);
-            case PORTEUSE_EAU: return new PorteuseEau(nom, Color.blue, p);
-            default: throw new IllegalArgumentException("Rôle inconnu");
-        }
+        return switch (role) {
+            case ARCHEOLOGUE -> new Archeologue(nom, Color.red, p);
+            case ALPINISTE -> new Alpiniste(nom, Color.black, p);
+            case EXPLORATEUR -> new Explorateur(nom, Color.green, p);
+            case METEOROLOGUE -> new Meteorologue(nom, Color.WHITE, p);
+            case NAVIGATRICE -> new Navigatrice(nom, Color.yellow, p);
+            case PORTEUSE_EAU -> new PorteuseEau(nom, Color.blue, p);
+            default -> throw new IllegalArgumentException("Rôle inconnu");
+        };
     }
 
     public void setZone(Zone zone) {
@@ -78,24 +86,25 @@ public abstract class Joueur {
     public Color getCouleur() {
         return couleur;
     }
-    public void boireEau(){
-        this.niveauEau--;
-    }
+
 
     public List<Zone> getZonesAccessibles(Plateau plateau) {
-        List<Zone> accessibles = new ArrayList<>();
+        Set<Zone> accessibles = new HashSet<>();
         int[][] directions = getDirections();
-        for (int[] dir : directions) {
-            int ni = zone.getX() + dir[0];
-            int nj = zone.getY() + dir[1];
-            if (ni >= 0 && ni < 5 && nj >= 0 && nj < 5) {
-                Zone voisine = plateau.getZone(ni, nj);
-                if (voisine != null && voisine.estAccessible()) {
-                    accessibles.add(voisine);
+        if(zone.estAccessible()) { // à tester
+            for (int[] dir : directions) {
+                int ni = zone.getX() + dir[0];
+                int nj = zone.getY() + dir[1];
+                if (ni >= 0 && ni < 5 && nj >= 0 && nj < 5) {
+                    Zone voisine = plateau.getZone(ni, nj);
+                    if (voisine != null && voisine.estAccessible()) {
+                        accessibles.add(voisine);
+                    }
                 }
             }
+            accessibles.addAll(zone.getZonesTunnel());
         }
-        return accessibles;
+        return new ArrayList<>(accessibles);
     }
 
     public List<Zone> getZonesCreusables(Plateau plateau) {
@@ -106,7 +115,7 @@ public abstract class Joueur {
             int nj = zone.getY() + dir[1];
             if (ni >= 0 && ni < 5 && nj >= 0 && nj < 5) {
                 Zone voisine = plateau.getZone(ni, nj);
-                if (voisine != null && voisine.getNbSable() > 0) {
+                if (voisine != null && (voisine.getNbSable() > 0  || (voisine.getNbSable() == 0 && !voisine.estRevelee()))){
                     creusables.add(voisine);
                 }
             }

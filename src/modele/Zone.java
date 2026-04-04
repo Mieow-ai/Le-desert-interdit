@@ -1,60 +1,236 @@
 package modele;
+
+import org.junit.Test;
+
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.ArrayList;
-/**class position {
-    private int x;
-    private int y;
-    public position(int i, int j){
-        this.x = i;
-        this.y = j;
-    }
-}
+
+import static modele.Joueur.Role.ARCHEOLOGUE;
+
+/**
+ * class position {
+ * private int x;
+ * private int y;
+ * public position(int i, int j){
+ * this.x = i;
+ * this.y = j;
+ * }
+ * }
  **/
 
-public class Zone {
+public abstract class Zone {
     private int nbSable = 0;
     private int x;
     private int y;
     private List<Joueur> joueurs = new ArrayList<>();
+    protected boolean revelee = false;
+
+    public boolean protegeChaleur() {
+        return false;
+    }
+
+    public Collection<Zone> getZonesTunnel() {
+        return Collections.emptyList();
+    }
+
+    public boolean estRevelee() {
+        return this.revelee;
+    }
+
+    public abstract TypeZone getType();
+
+    public enum TypeZone {
+        ENGRENAGE(12),
+        DECOLLAGE(1),
+        CRASH(1),
+        EAU(2),
+        MIRAGE(1),
+        INDICE_BOITE(2),
+        INDICE_HELICE(2),
+        INDICE_CRISTAL(2),
+        INDICE_NAVIGATION(2),
+        TUNNEL(3);
+
+        public final int nb;
+
+        TypeZone(int nb) {
+            this.nb = nb;
+        }
+    }
 
     // Constructeur Zone
-    public Zone(int i, int j) {
+    protected Zone(int i, int j) {
         this.x = i;
         this.y = j;
+    }
+
+    public static Zone creerZone(int i, int j, TypeZone type) {
+        switch (type) {
+            case CRASH:
+                return new ZoneCrash(i, j);
+            case DECOLLAGE:
+                return new ZoneDecollage(i, j);
+            case EAU:
+            case MIRAGE:
+                return new ZoneEau(i, j);
+            case TUNNEL:
+                return new ZoneTunnel(i, j);
+            case INDICE_BOITE:
+            case INDICE_CRISTAL:
+            case INDICE_HELICE:
+            case INDICE_NAVIGATION:
+                return new ZoneIndice(i, j, type);
+            case ENGRENAGE:
+            default:
+                return new ZoneEngrenage(i, j);
+        }
     }
 
     public void set_position(int x, int y) {
         this.x = x;
         this.y = y;
     }
-    public int getX(){return this.x;}
-    public int getY(){return this.y;}
 
-    public void ajouterJoueur(Joueur j) { joueurs.add(j); }
-    public void retirerJoueur(Joueur j) { joueurs.remove(j); }
+    public int getX() {
+        return this.x;
+    }
 
-    public List<Joueur> getJoueurs() { return joueurs; }
+    public int getY() {
+        return this.y;
+    }
 
+    public void ajouterJoueur(Joueur j) {
+        joueurs.add(j);
+    }
 
+    public void retirerJoueur(Joueur j) {
+        joueurs.remove(j);
+    }
+
+    public List<Joueur> getJoueurs() {
+        return joueurs;
+    }
 
     // Ajoute du sable selon une quantité
     public void ajouterSable(int nbQuantite) {
         nbSable += nbQuantite;
     }
 
-    public void creuser(){
-        nbSable--;
+    public void creuser() {
+        if (nbSable > 0) {
+            nbSable--;
+        } else if (nbSable == 0 && !this.revelee) {
+            this.revelee = true;
+            this.actionReveler();
+        } else {
+            throw new IllegalStateException("Case sans sable et déjà révélée");
+        }
     }
 
-    public int getNbSable(){
+    protected void actionReveler() {
+    }
+
+    public int getNbSable() {
         return this.nbSable;
     }
+
     public boolean estAccessible() {
-        return this.nbSable <=1;
+        return this.nbSable <= 1;
     }
+
+
     // Format String d'une Zone
     public String toString() {
         return String.valueOf(nbSable);
     }
 }
 
+class ZoneCrash extends Zone {
+    @Override
+    public TypeZone getType() {
+        return TypeZone.CRASH;
+    }
+
+    public ZoneCrash(int i, int j) {
+        super(i, j);
+        this.revelee = true;
+    }
+}
+
+class ZoneEngrenage extends Zone {
+    public ZoneEngrenage(int i, int j) {
+        super(i, j);
+    }
+    @Override
+    public TypeZone getType() {
+        return TypeZone.ENGRENAGE;
+    }
+}
+
+class ZoneIndice extends Zone {
+    private TypeZone typeIndice;
+
+    public ZoneIndice(int i, int j, TypeZone type) {
+        super(i, j);
+        this.typeIndice = type;
+    }
+
+    @Override
+    public TypeZone getType() {
+        return TypeZone.INDICE_HELICE; // à gérer renvoie toujours le même
+    }
+}
+
+class ZoneTunnel extends Zone {
+    static Collection<Zone> tunnelsReveles = new HashSet<>();
+
+    public static void resetTunnels() {
+        tunnelsReveles.clear();
+    }
+
+    public ZoneTunnel(int i, int j) {
+        super(i, j);
+    }
+
+    @Override
+    public boolean protegeChaleur() {
+        return this.revelee;
+    }
+
+    @Override
+    public Collection<Zone> getZonesTunnel() {
+        return tunnelsReveles.stream()
+                .filter(Zone::estAccessible)
+                .toList();
+    }
+
+    @Override
+    protected void actionReveler() {
+        this.tunnelsReveles.add(this);
+    }
+    @Override
+    public TypeZone getType() {
+        return TypeZone.TUNNEL;
+    }
+}
+
+class ZoneDecollage extends Zone {
+    public ZoneDecollage(int i, int j) {
+        super(i, j);
+    }
+    @Override
+    public TypeZone getType() {
+        return TypeZone.DECOLLAGE;
+    }
+}
+
+class ZoneEau extends Zone {
+    public ZoneEau(int i, int j) {
+        super(i, j);
+    }
+    @Override
+    public TypeZone getType() {
+        return TypeZone.EAU;
+    }
+}

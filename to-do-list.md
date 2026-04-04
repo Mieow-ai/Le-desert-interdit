@@ -8,6 +8,7 @@ A faire :
 - piles de sables sur le coté (sable max restant)
 - Couleur random lors de ajout d'un joueur
 - possibilité d'entrer un nom pour ajout joueur, sinon nom de base Joueur numéro size
+- zone abstract
 
 A savoir :
 
@@ -26,3 +27,15 @@ Il y a 3 façons possibles de perdre :
    sur une tuile et qu’il n’y en a plus. // à gérer par le max sable
 3. Mourir emporté dans les airs : l’échelle Tempête de sable
    atteint le symbole
+
+
+Types de tuiles 
+2 points d'eau 
+1 mirage même graphique que point d'eau
+
+tuiles avec face non visible
+12 Engrenage 12
+2 par pièces = 8 Indices 
+3 tunnels
+1 Piste de décollage
+1 crash 
