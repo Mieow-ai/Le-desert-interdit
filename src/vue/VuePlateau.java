@@ -64,36 +64,54 @@ public class VuePlateau extends JPanel implements Observer {
 
                 if (zone == null) {
                     cp.setBackground(Color.BLUE);
+                    JLabel oeilLabel = new JLabel(" L'OEIL");
+                    oeilLabel.setFont(new Font("Arial", Font.BOLD, 15));
+                    oeilLabel.setForeground(Color.WHITE);
+                    cp.add(oeilLabel);
                 } else {
-                    // Sable
+                    // --------- AFFICHAGE DU SABLE OU DU NOM DE LA TUILE ---------
                     GridBagConstraints gbc = new GridBagConstraints();
+                    gbc.gridx = 0;
                     gbc.gridy = 0;
-                    if(!zone.estRevelee()) {
+                    gbc.insets = new Insets(1, 0, 1, 0); // Léger espacement vertical
+
+                    if (!zone.estRevelee()) {
                         JLabel sableLabel = new JLabel(zone.getNbSable() + " sable(s)");
                         sableLabel.setFont(new Font("Arial", Font.BOLD, 14));
                         sableLabel.setForeground(Color.BLACK);
                         cp.add(sableLabel, gbc);
-                    }
-                    else {
-                        JLabel reveleeLabel = new JLabel(""+zone.getType());
+                    } else {
+                        String nomTuile = zone.getType().name().replace("INDICE_", "");
+                        JLabel reveleeLabel = new JLabel(nomTuile);
                         reveleeLabel.setFont(new Font("Arial", Font.BOLD, 14));
                         reveleeLabel.setForeground(Color.BLACK);
                         cp.add(reveleeLabel, gbc);
                     }
 
+                    // --------- AFFICHAGE DE LA PIECE A RAMASSER ---------
+                    if (zone.get_objet_pose() != null) {
+                        String nomAbrege = zone.get_objet_pose().name().replace("INDICE_", "");
+                        JLabel objet_label = new JLabel("🏆 " + nomAbrege);
+                        objet_label.setFont(new Font("Arial", Font.BOLD, 11));
+                        objet_label.setForeground(Color.ORANGE);
+                        gbc.gridy = 1;
+                        cp.add(objet_label, gbc);
+                    }
 
-                    // Pions joueurs
+                    // --------- AFFICHAGE DES JOUEURS ---------
                     List<Joueur> joueurs = zone.getJoueurs();
                     if (!joueurs.isEmpty()) {
-                        JPanel panelJoueurs = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
+                        JPanel panelJoueurs = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
                         panelJoueurs.setOpaque(false);
                         for (Joueur joueur : joueurs) {
                             JPanel pion = new JPanel();
                             pion.setPreferredSize(new Dimension(15, 15));
                             pion.setBackground(joueur.getCouleur());
+                            // Bordure noire pour rendre le joueur visible
+                            pion.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
                             panelJoueurs.add(pion);
                         }
-                        gbc.gridy = 1;
+                        gbc.gridy = 2;
                         cp.add(panelJoueurs, gbc);
                     }
 
@@ -113,6 +131,8 @@ public class VuePlateau extends JPanel implements Observer {
                 cp.repaint();
             }
         }
+        this.revalidate();
+        this.repaint();
     }
 
     public JPanel getCase(int i, int j) {
@@ -121,5 +141,11 @@ public class VuePlateau extends JPanel implements Observer {
 
     public void update() {
         mettreAJour();
+        if (plateau.getEtat() != Plateau.EtatPartie.EN_COURS) {
+            JOptionPane.showMessageDialog(this,
+                    plateau.getRaison_fin(),
+                    plateau.getEtat() == Plateau.EtatPartie.VICTOIRE ? "Victoire !" : "Game Over",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 }

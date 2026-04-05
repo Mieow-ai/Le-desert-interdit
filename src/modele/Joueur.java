@@ -19,6 +19,9 @@ public abstract class Joueur {
     public void vagueDeChaleur() {
         if (!this.zone.protegeChaleur()) {
             this.niveauEau--;
+            if(this.niveauEau <= 0){
+                p.declencher_defaite(this.nom + " est mort de soif !");
+            }
         }
     }
 
@@ -39,24 +42,26 @@ public abstract class Joueur {
     private Color couleur;
     private final int action_par_tour = 4;
     private int nb_action_restante = action_par_tour;
+    private Plateau p;
 
     public Joueur(String nom, Color couleur, Plateau p) {
         this.nom = nom;
         this.couleur = couleur;
+        this.p = p;
         // Ajout du joueur au plateau
         p.add_joueur(this);
     }
 
     public static Joueur creerJoueur(Role role, String nom, Plateau p) {
-        return switch (role) {
-            case ARCHEOLOGUE -> new Archeologue(nom, Color.red, p);
-            case ALPINISTE -> new Alpiniste(nom, Color.black, p);
-            case EXPLORATEUR -> new Explorateur(nom, Color.green, p);
-            case METEOROLOGUE -> new Meteorologue(nom, Color.WHITE, p);
-            case NAVIGATRICE -> new Navigatrice(nom, Color.yellow, p);
-            case PORTEUSE_EAU -> new PorteuseEau(nom, Color.blue, p);
-            default -> throw new IllegalArgumentException("Rôle inconnu");
-        };
+        switch (role) {
+            case ARCHEOLOGUE : return new Archeologue(nom, Color.RED, p);
+            case ALPINISTE : return new Alpiniste(nom, Color.BLACK, p);
+            case EXPLORATEUR : return new Explorateur(nom, Color.GREEN, p);
+            case METEOROLOGUE : return new Meteorologue(nom, Color.WHITE, p);
+            case NAVIGATRICE : return new Navigatrice(nom, Color.YELLOW, p);
+            case PORTEUSE_EAU : return new PorteuseEau(nom, Color.BLUE, p);
+            default : throw new IllegalArgumentException("Rôle inconnu : " + role);
+        }
     }
 
     public void setZone(Zone zone) {
@@ -120,7 +125,7 @@ public abstract class Joueur {
                 }
             }
         }
-        if (this.zone.getNbSable() > 0) {
+        if (this.zone.getNbSable() > 0 || !this.zone.estRevelee()) {
             creusables.add(this.zone);
         }
         return creusables;

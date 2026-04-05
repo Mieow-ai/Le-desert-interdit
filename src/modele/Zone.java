@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static modele.Joueur.Role.ARCHEOLOGUE;
 
@@ -25,6 +26,21 @@ public abstract class Zone {
     private int y;
     private List<Joueur> joueurs = new ArrayList<>();
     protected boolean revelee = false;
+    private TypeZone objetpose = null;
+
+    public void poser_objet(TypeZone objet){
+        this.objetpose = objet;
+    }
+
+    public TypeZone ramasser_objet(){
+        TypeZone obj = this.objetpose;
+        this.objetpose = null;
+        return obj;
+    }
+
+    public TypeZone get_objet_pose() {
+        return this.objetpose;
+    }
 
     public boolean protegeChaleur() {
         return false;
@@ -41,7 +57,7 @@ public abstract class Zone {
     public abstract TypeZone getType();
 
     public enum TypeZone {
-        ENGRENAGE(12),
+        ENGRENAGE(8),
         DECOLLAGE(1),
         CRASH(1),
         EAU(2),
@@ -178,8 +194,9 @@ class ZoneIndice extends Zone {
 
     @Override
     public TypeZone getType() {
-        return TypeZone.INDICE_HELICE; // à gérer renvoie toujours le même
+        return this.typeIndice; // à gérer renvoie toujours le même
     }
+
 }
 
 class ZoneTunnel extends Zone {
@@ -202,7 +219,7 @@ class ZoneTunnel extends Zone {
     public Collection<Zone> getZonesTunnel() {
         return tunnelsReveles.stream()
                 .filter(Zone::estAccessible)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override

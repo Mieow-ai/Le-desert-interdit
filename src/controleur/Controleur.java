@@ -4,6 +4,8 @@ import modele.Joueur;
 import modele.Plateau;
 import modele.Zone;
 import vue.FenetreJeu;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,9 +41,15 @@ public class Controleur {
         this.vue.getVc().getBouton_fin_tour().addActionListener(e -> {
             vue.getVc().reset_texte_erreur();
             System.out.println("Le désert s'agite...");
+
+            // Réinitialise les actions et surbrillances du joueur précédent
+            action_courante = action.AUCUNE;
+            p.resetZonesAccessibles();
+
             this.indiceJoueurActif = (this.indiceJoueurActif + 1) % joueurs.size();
             this.joueurs.get(indiceJoueurActif).reset_action(); // nouveau joueur
             this.p.action_desert();
+            gerer_fin_de_partie();
         });
 
         // Bouton se déplacer
@@ -56,6 +64,7 @@ public class Controleur {
             }
         });
 
+        // Bouton creuser
         this.vue.getVc().getBouton_creuser().addActionListener(e -> {
             Joueur actif = this.joueurs.get(this.indiceJoueurActif);
             if (actif.getNb_action_restante() > 0) {
@@ -74,7 +83,26 @@ public class Controleur {
             }
         });
 
-        //Action réalisé par le click sur une case
+        this.vue.getVc().getBouton_ramasser().addActionListener(e -> {
+            Joueur actif = this.joueurs.get(this.indiceJoueurActif);
+            if (actif.getNb_action_restante() > 0) {
+                Zone actif_zone = actif.getZone();
+                if (actif_zone.get_objet_pose() != null) {
+                    Zone.TypeZone objet = actif_zone.get_objet_pose();
+                    actif_zone.poser_objet(null);
+                    System.out.println("L'équipe vient de ramasser : " + objet);
+                    actif.joue_action();
+                    vue.getVc().reset_texte_erreur();
+                    p.notifyObservers();
+                } else {
+                    vue.getVc().set_texte_erreur("Vous n'êtes sur aucun objet !");
+                }
+            } else {
+                vue.getVc().set_texte_erreur("Action impossible : plus d'actions...");
+            }
+        });
+
+        // Action réalisé par le click sur une case
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 final int fi = i, fj = j;
@@ -86,12 +114,17 @@ public class Controleur {
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
                                     joueurs.get(indiceJoueurActif).setZone(zone);
                                     joueurs.get(indiceJoueurActif).joue_action();
+                                    p.verifier_victoire();
+                                    gerer_fin_de_partie();
                                 }
                                 break;
                             case CREUSER:
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
                                     zone.creuser();
                                     joueurs.get(indiceJoueurActif).joue_action();
+                                    if (zone.getType().name().startsWith("INDICE")) {
+                                        p.verifie_apparition_obj(zone);
+                                    }
                                     p.notifyObservers();
                                 }
                                 break;
@@ -121,24 +154,42 @@ public class Controleur {
                 this.vue.getVl().set_texte_erreur("Nombre maximum de joueurs atteint (6).");
                 return;
             }
-            
+
             String nomSaisi = this.vue.getVl().getNomSaisi().trim(); // On récupère le nom via le textfield
             if (nomSaisi.isEmpty()) {
                 nomSaisi = "Joueur " + (this.joueurs.size() + 1); // Permet d'ajouter des joueurs sans nom
             }
-            
-            Joueur.Role roleAttribue = this.rolesDisponibles.removeLast();
+
+            Joueur.Role roleAttribue = this.rolesDisponibles.remove(this.rolesDisponibles.size() - 1);
             nomSaisi += " " + roleAttribue;
             Joueur j = Joueur.creerJoueur(roleAttribue, nomSaisi, p); // Méthode statique
-            
+
             j.setZone(p.getZoneCrash());
-            this.joueurs = this.p.getJoueurs() ;
-            
+            this.joueurs = this.p.getJoueurs();
+
             this.vue.getVl().set_texte_erreur(nomSaisi + " est prêt ! (" + this.joueurs.size() + " total)");
             this.vue.getVl().resetNomSaisi();
             p.notifyObservers();
         });
+    }
 
+    private void gerer_fin_de_partie() {
+        if (p.getEtat() != Plateau.EtatPartie.EN_COURS) {
+            String titre = (p.getEtat() == Plateau.EtatPartie.VICTOIRE) ? "Victoire !" : "Game Over";
+            String message = p.getRaison_fin() + "\n\n Voulez-vous recommencer une partie ?";
+            int choix = JOptionPane.showConfirmDialog(vue, message, titre, JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            if (choix == JOptionPane.YES_OPTION) {
+                vue.dispose();
 
+                // On relance le main
+                Plateau nouveauPlateau = new Plateau();
+                FenetreJeu nouvelleFenetre = new FenetreJeu(nouveauPlateau);
+                Controleur nouveauControleur = new Controleur(nouveauPlateau, nouvelleFenetre);
+                nouvelleFenetre.afficherEcran(true);
+            } else {
+                System.exit(0);
+            }
+        }
     }
 }

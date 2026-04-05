@@ -19,8 +19,20 @@ public class Plateau extends Observable {
     private List<Joueur> joueurs = new ArrayList<>();
     private Zone zoneCrash;
 
+    public enum EtatPartie {
+        EN_COURS, VICTOIRE, DEFAITE
+    };
+
+    private EtatPartie etat = EtatPartie.EN_COURS;
+    private String raison_fin = "";
+    List<Zone.TypeZone> pieces_ramassees = new ArrayList<>();
+
     public Zone getZoneCrash() {
         return this.zoneCrash;
+    }
+
+    public void add_piece(Zone.TypeZone obj){
+        this.pieces_ramassees.add(obj);
     }
 
     public Plateau() {
@@ -43,13 +55,27 @@ public class Plateau extends Observable {
         return grille[i][j];
     }
 
+    public void verifier_victoire() {
+        boolean tous_au_decollage = true;
+        for (Joueur j : this.joueurs) {
+            if (j.getZone().getType() != Zone.TypeZone.DECOLLAGE) {
+                tous_au_decollage = false;
+            }
+        }
+        if (tous_au_decollage && this.pieces_ramassees.size() == 4) {
+            this.etat = EtatPartie.VICTOIRE;
+            this.raison_fin = "Vous avez gagné!";
+            notifyObservers();
+        }
+    }
+
     // Initialise la Grille/Plateau
     public void initialiseGrille() {
         ArrayList<Zone.TypeZone> typesZone = new ArrayList<>(Arrays.asList(Zone.TypeZone.values()));
         ArrayList<Zone.TypeZone> zonesDispo = new ArrayList<>();
         // On ajoute le bon nombre de chaque zone
-        for(Zone.TypeZone type : typesZone ){
-            for (int i = 0; i <type.nb ; i++) {
+        for (Zone.TypeZone type : typesZone) {
+            for (int i = 0; i < type.nb; i++) {
                 zonesDispo.add(type);
             }
         }
@@ -60,9 +86,9 @@ public class Plateau extends Observable {
                 if (i == oeilI && j == oeilJ) {
                     grille[i][j] = null; // l'oeil
                 } else {
-                    Zone.TypeZone type = zonesDispo.removeLast(); //
-                    grille[i][j] = Zone.creerZone(i,j,type);
-                    if (type == Zone.TypeZone.CRASH){
+                    Zone.TypeZone type = zonesDispo.remove(zonesDispo.size() - 1); //
+                    grille[i][j] = Zone.creerZone(i, j, type);
+                    if (type == Zone.TypeZone.CRASH) {
                         zoneCrash = grille[i][j];
                     }
                 }
@@ -126,11 +152,11 @@ public class Plateau extends Observable {
             int iCible = oeilI;
             int jCible = oeilJ;
 
-            if (direction == "nord") {
+            if (direction.equals("nord")) {
                 iCible += 1;
-            } else if (direction == "ouest") {
+            } else if (direction.equals("ouest")) {
                 jCible += 1;
-            } else if (direction == "est") {
+            } else if (direction.equals("est")) {
                 jCible -= 1;
             } else {
                 iCible -= 1;
@@ -161,6 +187,10 @@ public class Plateau extends Observable {
 
     public void LaTempeteSeDechaine() {
         this.niveauTempete += 0.5;
+        if (this.niveauTempete >= 5.0) {
+            this.declencher_defaite("La tempête a atteint son niveau maximal, vous vous êtes envolés..");
+            notifyObservers();
+        }
     }
 
     public int getOeilI() {
@@ -173,7 +203,9 @@ public class Plateau extends Observable {
 
     public boolean ajouterSable(Zone zone, int quantite) {
         if (totalSable + quantite > SABLE_MAX) {
-            return false; // A modifier pour fin de partie
+            this.declencher_defaite("Mort ensablés : trop de sable");
+            notifyObservers();
+            return false;
         }
         zone.ajouterSable(quantite);
         totalSable += quantite;
@@ -194,4 +226,46 @@ public class Plateau extends Observable {
         return zonesAccessibles;
     }
 
+    public EtatPartie getEtat() {
+        return this.etat;
+    }
+
+    public String getRaison_fin() {
+        return this.raison_fin;
+    }
+
+    public void declencher_defaite(String raison) {
+        this.etat = EtatPartie.DEFAITE;
+        this.raison_fin = raison;
+    }
+
+    public void verifie_apparition_obj(Zone type_indice_creuse) {
+        Zone.TypeZone type = type_indice_creuse.getType();
+        Zone i_1 = null;
+        Zone i_2 = null;
+
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                Zone z = grille[i][j];
+
+                if (z != null && z.getType() == type && z.estRevelee()) {
+                    if (i_1 == null) {
+                        i_1 = z;
+                    } else {
+                        i_2 = z;
+                    }
+                }
+            }
+        }
+        if (i_1 != null && i_2 != null) {
+            int boite_x = i_1.getX();
+            int boite_y = i_2.getY();
+            Zone intersection = getZone(boite_x, boite_y);
+            if (intersection == null) {
+                intersection = getZone(i_2.getX(), i_1.getY());
+            }
+            intersection.poser_objet(type);
+            System.out.println("Une pièce de la navette (" + type + ") vient d'apparaitre !");
+        }
+    }
 }
