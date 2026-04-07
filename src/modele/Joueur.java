@@ -20,7 +20,7 @@ public abstract class Joueur {
         if (!this.zone.protegeChaleur()) {
             this.niveauEau--;
             if(this.niveauEau <= 0){
-                p.declencher_defaite(this.nom + " est mort de soif !");
+                p.declencher_defaite(this.nom + " est mort de soif !"); // A modifier pour gerer dans le controlleur
             }
         }
     }

@@ -5,7 +5,6 @@ import java.awt.*;
 import java.util.List;
 
 import modele.Zone;
-import vue.Observer;
 import modele.Plateau;
 import modele.Joueur;
 
@@ -64,10 +63,10 @@ public class VuePlateau extends JPanel implements Observer {
 
                 if (zone == null) {
                     cp.setBackground(Color.BLUE);
-                    JLabel oeilLabel = new JLabel(" L'OEIL");
+                    /**JLabel oeilLabel = new JLabel(" L'OEIL");
                     oeilLabel.setFont(new Font("Arial", Font.BOLD, 15));
                     oeilLabel.setForeground(Color.WHITE);
-                    cp.add(oeilLabel);
+                    cp.add(oeilLabel);**/
                 } else {
                     // --------- AFFICHAGE DU SABLE OU DU NOM DE LA TUILE ---------
                     GridBagConstraints gbc = new GridBagConstraints();
