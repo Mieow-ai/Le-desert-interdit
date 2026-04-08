@@ -120,6 +120,16 @@ public class Plateau extends Observable {
     }
 
     public void action_desert() {
+        // Vérifier si le météorologue a amorti la tempête
+        for (Joueur j : joueurs) {
+            if (j.is_tempete_amortie()) {
+                j.set_tempete_amortie(false);
+                System.out.println("La tempête est amortie grâce au météorologue !");
+                this.notifyObservers();
+                return; // On skip l'action du désert
+            }
+        }
+
         double tirage = Math.random();
         if (tirage <= 0.33) {
             double tirage_dir = Math.random();

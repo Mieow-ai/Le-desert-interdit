@@ -16,28 +16,19 @@ public class VueJoueur extends JPanel implements Observer {
         this.j = joueur;
         this.setBackground(Theme.FOND_PANNEAU);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-        // Bordure avec coin arrondi + couleur du joueur
         this.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(joueur.getCouleur(), 3),
                 BorderFactory.createEmptyBorder(12, 18, 12, 18)
         ));
-
-        // Nom du joueur en gras + couleur
         this.labelNom = new JLabel(j.getNom());
         labelNom.setFont(Theme.SOUS_TITRE);
         labelNom.setForeground(joueur.getCouleur());
-
-        // Actions avec icône
         this.labelActions = new JLabel("⚡ Actions : " + j.getNb_action_restante());
         labelActions.setFont(Theme.TEXTE);
         labelActions.setForeground(Theme.TEXTE_CLAIR);
-
-        // Eau avec barre de progression visuelle
         this.labelEau = new JLabel("💧 Eau : " + j.getNvEau() + "/4");
         labelEau.setFont(Theme.TEXTE);
         labelEau.setForeground(new Color(100, 180, 255));
-
         this.add(labelNom);
         this.add(Box.createVerticalStrut(5));
         this.add(labelActions);
