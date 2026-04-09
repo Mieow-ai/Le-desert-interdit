@@ -23,6 +23,7 @@ public class Plateau extends Observable {
     private List<Joueur> joueurs = new ArrayList<>();
     private Zone zoneCrash;
     private int indiceJoueurActif = 0;
+    private List<Equipement> pioche_equipement = new ArrayList<>();
 
     public double getNiveauTempete() {
         return niveauTempete;
@@ -124,6 +125,19 @@ public class Plateau extends Observable {
         for (int[] pos : posSable) {
             this.ajouterSable(grille[pos[0]][pos[1]], 1);
         }
+
+        for(Equipement e : Equipement.values()){
+            this.pioche_equipement.add(e);
+            this.pioche_equipement.add(e);
+        }
+        Collections.shuffle(this.pioche_equipement);
+    }
+
+    public Equipement piocher_equipement(){
+        if(!this.pioche_equipement.isEmpty()){
+            return pioche_equipement.remove(pioche_equipement.size() - 1);
+        }
+        return null;
     }
 
     // Convertisseur en String
@@ -156,13 +170,17 @@ public class Plateau extends Observable {
             int i = 0;
             @Override
             public void actionPerformed(ActionEvent e) {  // action effectuée à chaque déclenchement du timer
+                if (etat != EtatPartie.EN_COURS) {
+                    ((javax.swing.Timer) e.getSource()).stop();
+                    return;
+                }
                 if (i >= nbcartestimer) {
                     ((javax.swing.Timer) e.getSource()).stop(); // Le bon nombre de cartes à été tiré
                     return;
                 }
 
                 double tirage = Math.random();
-                if (tirage <= 0.33) {
+                if (tirage <= 0.77) {
                     double tirage_dir = Math.random();
                     int force = (int) (Math.random() * 3) + 1;
                     String direction = "";
@@ -179,7 +197,7 @@ public class Plateau extends Observable {
                         direction = "est";
                         leVentSouffle(direction, force);
                     }
-                } else if (tirage <= 0.66) {
+                } else if (tirage <= 0.87) {
                     LaTempeteSeDechaine();
                 } else {
                     vagueDeChaleur();
@@ -309,8 +327,18 @@ public class Plateau extends Observable {
             if (intersection == null) {
                 intersection = getZone(i_2.getX(), i_1.getY());
             }
-            intersection.poser_objet(type);
-            System.out.println("Une pièce de la navette (" + type + ") vient d'apparaitre !");
+            if(intersection != null) {
+                intersection.poser_objet(type);
+                System.out.println("Une pièce de la navette (" + type + ") vient d'apparaitre !");
+            }
+            else{
+                System.out.println("L'objet (" + type + ") est dans la tempête pour le moment !");
+            }
         }
+    }
+
+    public void enlever_sable(int quantite){
+        this.totalSable = Math.max(0, this.totalSable - quantite);
+        notifyObservers();
     }
 }

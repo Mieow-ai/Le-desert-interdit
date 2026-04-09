@@ -54,11 +54,5 @@ public class VuePlateau extends JPanel implements Observer {
 
     public void update() {
         mettreAJour();
-        if (plateau.getEtat() != Plateau.EtatPartie.EN_COURS) {
-            JOptionPane.showMessageDialog(this,
-                    plateau.getRaison_fin(),
-                    plateau.getEtat() == Plateau.EtatPartie.VICTOIRE ? "Victoire !" : "Game Over",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
     }
 }

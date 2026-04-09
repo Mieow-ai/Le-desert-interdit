@@ -55,6 +55,7 @@ public class VueZone extends JPanel {
             }
 
             // Affichage des joueurs
+
             List<Joueur> joueurs = z.getJoueurs();
             if (!joueurs.isEmpty()) {
                 JPanel panelJoueurs = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
@@ -97,7 +98,8 @@ public class VueZone extends JPanel {
             }
         } else {
             switch (zone_actuelle.getType()) {
-                case EAU, MIRAGE:
+                case EAU:
+                case MIRAGE:
                     if (imageOasis != null) {
                         g.drawImage(imageOasis, 0, 0, getWidth(), getHeight(), this);
                     }

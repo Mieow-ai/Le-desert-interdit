@@ -12,6 +12,7 @@ public class VueCommande extends JPanel {
     private JButton Bouton_amortir_tempete;
     private JButton Bouton_deplacer_allie;
     private JLabel labelMessage;
+    private JButton Bouton_utiliser_equipement;
 
     public VueCommande() {
         this.setLayout(new BorderLayout());
@@ -25,6 +26,7 @@ public class VueCommande extends JPanel {
         this.Bouton_se_deplacer = new JButton("Se déplacer");
         this.Bouton_creuser = new JButton("Creuser");
         this.Bouton_ramasser = new JButton("Ramasser");
+        this.Bouton_utiliser_equipement = new JButton("Équipement");
 
         // Boutons de pouvoirs spéciaux
         this.Bouton_donner_eau = new JButton("Donner eau");
@@ -38,6 +40,7 @@ public class VueCommande extends JPanel {
         Boutons.add(this.Bouton_donner_eau);
         Boutons.add(this.Bouton_amortir_tempete);
         Boutons.add(this.Bouton_deplacer_allie);
+        Boutons.add(this.Bouton_utiliser_equipement);
 
         this.add(Boutons, BorderLayout.NORTH);
 
@@ -65,6 +68,8 @@ public class VueCommande extends JPanel {
     public JButton getBoutonAmortirTempete() { return this.Bouton_amortir_tempete; }
 
     public JButton getBoutonDeplacerAllie() { return this.Bouton_deplacer_allie; }
+
+    public JButton getBouton_utiliser_equipement() { return this.Bouton_utiliser_equipement; }
 
     public void set_texte_erreur(String message) {
         this.labelMessage.setText(message);

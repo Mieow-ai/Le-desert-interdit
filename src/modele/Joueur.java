@@ -13,6 +13,14 @@ public abstract class Joueur {
             zone.creuser();
         } else if (!zone.estRevelee() && zone.getNbSable() == 0){
             zone.reveler();
+
+            if(zone.getType() == Zone.TypeZone.ENGRENAGE){
+                Equipement obj = p.piocher_equipement();
+                if(obj != null){
+                    this.equipements.add(obj);
+                    System.out.println(this.nom + "a trouvé :" + obj);
+                }
+            }
         } else {
             throw new IllegalStateException("Case sans sable et déjà révélée");
         }
@@ -37,6 +45,7 @@ public abstract class Joueur {
     protected int niveauEau = 4;
     protected int niveauEauMax = 4;
     protected int reductionTempete = 0;
+    private List<Equipement> equipements = new ArrayList<>();
 
     public Joueur(String nom, Color couleur, Plateau p) {
         this.nom = nom;
@@ -87,6 +96,10 @@ public abstract class Joueur {
     }
     public int get_niveau_eau_max() {
         return this.niveauEauMax;
+    }
+
+    public List<Equipement> get_equipement(){
+        return this.equipements;
     }
 
     // Getters abstraits

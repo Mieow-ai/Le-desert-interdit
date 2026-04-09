@@ -13,6 +13,7 @@ public class VueJoueur extends JPanel implements Observer {
     private JLabel labelActions;
     private JLabel labelEau;
     private JLabel labelAmortissment;
+    private JLabel labelEquipements;
 
     public VueJoueur(Joueur joueur, Plateau p) {
         this.j = joueur;
@@ -33,6 +34,11 @@ public class VueJoueur extends JPanel implements Observer {
         this.labelEau.setFont(Theme.TEXTE);
         this.labelEau.setForeground(new Color(100, 180, 255));
 
+        this.labelEquipements = new JLabel("🎒 Objets : Aucun");
+        this.labelEquipements.setFont(Theme.TEXTE);
+        this.labelEquipements.setForeground(Theme.ACCENT_OR);
+        this.add(this.labelEquipements);
+
         this.add(labelNom);
         this.add(Box.createVerticalStrut(5));
         this.add(labelActions);
@@ -50,8 +56,16 @@ public class VueJoueur extends JPanel implements Observer {
     public void update() {
         this.labelActions.setText("⚡ Actions restantes : " + j.getNb_action_restante());
         this.labelEau.setText("💧 Eau : " + j.getNvEau() + "/" + j.get_niveau_eau_max());
-        if(j.peut_amortir_tempete()){
-            this.labelAmortissment.setText("🌪️ Amortissement : "+j.getReductionTempete());
+        if(j.peut_amortir_tempete()) {
+            this.labelAmortissment.setText("🌪️ Amortissement : " + j.getReductionTempete());
+        }
+
+        if(j.get_equipement().isEmpty()){
+            this.labelEquipements.setText("🎒 Objets : Aucun");
+        }
+        else {
+            String liste = j.get_equipement().toString();
+            this.labelEquipements.setText("🎒 " + liste.substring(1, liste.length() - 1));
         }
         this.revalidate();
         this.repaint();

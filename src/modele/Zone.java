@@ -103,6 +103,12 @@ public abstract class Zone {
         }
     }
 
+    public int viderSable(){
+        int sable_retirer = this.nbSable;
+        this.nbSable = 0;
+        return sable_retirer;
+    }
+
     public void set_position(int x, int y) {
         this.x = x;
         this.y = y;

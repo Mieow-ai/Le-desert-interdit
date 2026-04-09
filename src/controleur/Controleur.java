@@ -1,9 +1,11 @@
 package controleur;
 
+import modele.Equipement;
 import modele.Joueur;
 import modele.Plateau;
 import modele.Zone;
 import vue.FenetreJeu;
+import vue.Observer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,15 +18,23 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class Controleur {
+public class Controleur implements Observer {
     private final Plateau p;
     private FenetreJeu vue;
     private List<Joueur> joueurs;
     private List<Joueur.Role> rolesDisponibles;
+    private boolean partieTerminee = false;
+    private Joueur allieADeplacer = null;
+    private Equipement objet_en_cours = null;
 
     private enum action {
-        AUCUNE, DEPLACEMENT, CREUSER
+        AUCUNE, DEPLACEMENT, CREUSER, DEPLACEMENT_ALLIE, UTILISER_BLASTER
     };
+
+    @Override
+    public void update() {
+        gerer_fin_de_partie();
+    }
 
     private action action_courante;
 
@@ -35,6 +45,7 @@ public class Controleur {
         this.action_courante = action.AUCUNE;
         this.rolesDisponibles = new ArrayList<>(Arrays.asList(Joueur.Role.values()));
         Collections.shuffle(this.rolesDisponibles);
+        p.addObserver(this);
 
         // Bouton fin de tour
         this.vue.getVc().getBouton_fin_tour().addActionListener(e -> {
@@ -102,8 +113,9 @@ public class Controleur {
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             if(actif.getNb_action_restante() >0){
                 if (actif.peut_amortir_tempete()) {
-                    if(actif.getReductionTempete() < p.getNiveauTempete()) {
+                    if(actif.getReductionTempete() < (int) p.getNiveauTempete()) {
                         actif.amortirTempete();
+                        vue.getVc().reset_texte_erreur();
                         p.notifyObservers();
                     } else {
                         vue.getVc().set_texte_erreur("Vous ne pouvez pas amortir plus la tempête");
@@ -118,6 +130,132 @@ public class Controleur {
 
         });
 
+        // bouton donner de l'eau
+        this.vue.getVc().getBoutonDonnerEau().addActionListener(e -> {
+            Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
+            List<Joueur> cibles_possibles = new ArrayList<>();
+
+            if (actif.getNvEau() <= 0) {
+                vue.getVc().set_texte_erreur("Vous n'avez pas d'eau à partager !");
+                return;
+            }
+
+            for(Joueur j : joueurs){
+                if (j != actif && actif.peut_donner_eau(j) && j.getNvEau() < j.get_niveau_eau_max()){
+                    cibles_possibles.add(j);
+                }
+            }
+            if(cibles_possibles.isEmpty()){
+                vue.getVc().set_texte_erreur("Peut donner de l'eau à personne");
+                return;
+            }
+            Joueur cible = (Joueur) JOptionPane.showInputDialog(
+                    vue, "À qui voulez-vous donner de l'eau ?", "Donner l'eau",
+                    JOptionPane.QUESTION_MESSAGE, null, cibles_possibles.toArray(), cibles_possibles.get(0));
+            if(cible != null){
+                if(actif.donner_eau(cible)){
+                    vue.getVc().reset_texte_erreur();
+                    System.out.println(actif.getNom() + "donne de l'eau à" + cible.getNom());
+                    p.notifyObservers();
+                }
+            }
+        });
+
+
+        // bouton deplacer un allié
+        vue.getVc().getBoutonDeplacerAllie().addActionListener(e -> {
+            Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
+
+            if(actif.getNb_action_restante() > 0) {
+                if (actif.getRole() == Joueur.Role.NAVIGATRICE){
+                    List<Joueur> cibles = actif.get_joueurs_deplacables();
+
+                    Joueur cible = (Joueur) JOptionPane.showInputDialog(
+                            vue, "Quel allié voulez-vous déplacer ?", "Déplaceer allié",
+                            JOptionPane.QUESTION_MESSAGE, null,
+                            cibles.toArray(), cibles.get(0));
+
+                    if (cible != null) {
+                        allieADeplacer = cible;
+                        action_courante = action.DEPLACEMENT_ALLIE;
+                        p.setZonesAccessibles(cible.getZonesAccessibles(p));
+                        vue.getVc().set_texte_erreur("Cliquer sur la case où vous  voulez déplacer" + cible.getNom());
+                    }
+                }
+                else {
+                    vue.getVc().set_texte_erreur("Seule la Navigatrice peut faire cette action");
+                }
+            } else {
+                vue.getVc().set_texte_erreur("Plus d'actions restantes");
+            }
+        });
+
+        vue.getVc().getBouton_utiliser_equipement().addActionListener(e -> {
+            Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
+
+            if(actif.get_equipement().isEmpty()){
+                vue.getVc().set_texte_erreur("Vous n'avez aucun équipement sur vous");
+                return;
+            }
+            Equipement choix = (Equipement) JOptionPane.showInputDialog(
+                    vue, "Quel objet voulez-vous utiliser ?", "Sac à dos",
+                    JOptionPane.QUESTION_MESSAGE, null,
+                    actif.get_equipement().toArray(),
+                    actif.get_equipement().get(0));
+            if(choix != null){
+                actif.get_equipement().remove(choix);
+                vue.getVc().reset_texte_erreur();
+                System.out.println(actif.getNom() + "utilise : " + choix);
+
+                switch (choix) {
+                    case RESERVE_D_EAU:
+                        for(Joueur j : actif.getZone().getJoueurs()){
+                            j.boire_eau(2);
+                        }
+                        System.out.println("Tout le monde sur la case boit 2 d'eau");
+                        break;
+                    case BOUCLIER_SOLAIRE:
+                        break;
+                    case BLASTER_DES_DUNES:
+                        List<Zone> cibles = new ArrayList<>();
+                        if(actif.getZone().getNbSable() > 0){
+                            cibles.add(actif.getZone());
+                        }
+                        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+                        for(int[] dir : directions){
+                            int ni = actif.getZone().getX() + dir[0];
+                            int nj = actif.getZone().getY() + dir[1];
+                            if(ni >= 0 && ni < 5 && nj >= 0 && nj < 5){
+                                Zone voisine = p.getZone(ni, nj);
+                                if(voisine != null && voisine.getNbSable() > 0){
+                                    cibles.add(voisine);
+                                }
+                            }
+                        }
+
+                        if(cibles.isEmpty()){
+                            vue.getVc().set_texte_erreur("Aucune case ne peut être blasterisée");
+                            actif.get_equipement().add(choix);
+                        }
+                        else {
+                            action_courante = action.UTILISER_BLASTER;
+                            objet_en_cours = choix;
+                            p.setZonesAccessibles(cibles);
+                            vue.getVc().set_texte_erreur("Cliquez sur la case à blasterisée");
+                        }
+                        break;
+                    case JETPACK:
+                        break;
+                    case TERRASCOPE:
+                        break;
+                    case ACCELERATEUR_DE_TEMPS:
+                        break;
+                }
+                p.notifyObservers();
+            }
+        });
+
+
         // Action réalisé par le click sur une case
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
@@ -127,6 +265,15 @@ public class Controleur {
                         Zone zone = p.getZone(fi, fj);
                         Joueur j = joueurs.get(p.getIndiceJoueurActif());
                         switch (action_courante) {
+                            case DEPLACEMENT_ALLIE:
+                                if(zone != null && p.getZonesAccessibles().contains(zone) && allieADeplacer != null){
+                                    allieADeplacer.setZone(zone);
+                                    joueurs.get(p.getIndiceJoueurActif()).joue_action();
+                                    System.out.println(allieADeplacer.getNom() + "a été déplacé par la navigatrice");
+                                    p.verifier_victoire();
+                                    gerer_fin_de_partie();
+                                }
+                                break;
                             case DEPLACEMENT:
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
                                     j.setZone(zone);
@@ -145,11 +292,28 @@ public class Controleur {
                                     p.notifyObservers();
                                 }
                                 break;
+                            case UTILISER_BLASTER:
+                                if(zone != null && p.getZonesAccessibles().contains(zone)){
+                                    int sable_retire = zone.viderSable();
+                                    p.enlever_sable(sable_retire);
+                                    System.out.println("Boom ! Le Blaster a détruit " + sable_retire + "bloc(s) de sable");
+                                    p.notifyObservers();
+                                }
+                                else {
+                                    System.out.println("Tir annulé");
+                                    if(objet_en_cours != null){
+                                        j.get_equipement().add(objet_en_cours);
+                                        p.notifyObservers();
+                                    }
+                                }
+                                objet_en_cours = null;
+                                break;
                             case AUCUNE:
                                 break;
                         }
                         p.resetZonesAccessibles();
                         action_courante = action.AUCUNE;
+                        vue.getVc().reset_texte_erreur();
                     }
                 });
             }
@@ -194,15 +358,15 @@ public class Controleur {
     }
 
     private void gerer_fin_de_partie() {
-        if (p.getEtat() != Plateau.EtatPartie.EN_COURS) {
+        if (p.getEtat() != Plateau.EtatPartie.EN_COURS && !partieTerminee) {
+            partieTerminee = true;
             String titre = (p.getEtat() == Plateau.EtatPartie.VICTOIRE) ? "Victoire !" : "Game Over";
             String message = p.getRaison_fin() + "\n\n Voulez-vous recommencer une partie ?";
             int choix = JOptionPane.showConfirmDialog(vue, message, titre, JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
+
             if (choix == JOptionPane.YES_OPTION) {
                 vue.dispose();
-
-                // On relance le main
                 Plateau nouveauPlateau = new Plateau();
                 FenetreJeu nouvelleFenetre = new FenetreJeu(nouveauPlateau);
                 Controleur nouveauControleur = new Controleur(nouveauPlateau, nouvelleFenetre);
