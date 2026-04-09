@@ -7,23 +7,18 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public abstract class Joueur {
-
-    public String getNom() {
-        return this.nom;
-    }
-
-    public int getNvEau() {
-        return this.niveauEau;
-    }
-
-    public void vagueDeChaleur() {
-        if (!this.zone.protegeChaleur()) {
-            this.niveauEau--;
-            if (this.niveauEau <= 0) {
-                p.declencher_defaite(this.nom + " est mort de soif !"); // A modifier pour gerer dans le controlleur
-            }
+    public void creuserZone(Zone zone) {
+        this.joue_action();
+        if(zone.getNbSable() > 0) {
+            zone.creuser();
+        } else if (!zone.estRevelee() && zone.getNbSable() == 0){
+            zone.reveler();
+        } else {
+            throw new IllegalStateException("Case sans sable et déjà révélée");
         }
     }
+
+    public boolean peut_amortir_tempete() { return false; }
 
     public enum Role {
         ARCHEOLOGUE,
@@ -33,18 +28,15 @@ public abstract class Joueur {
         NAVIGATRICE,
         PORTEUSE_EAU
     }
-
-    public abstract Role getRole();
-
-    private String nom;
-    protected int niveauEau = 4;
-    protected int niveauEauMax = 4;
+    private final String nom;
     protected Zone zone;
-    private Color couleur;
+    private Plateau p;
+    private final Color couleur;
     private final int action_par_tour = 4;
     private int nb_action_restante = action_par_tour;
-    private Plateau p;
-    private boolean tempeteAmortie = false; // météorologue
+    protected int niveauEau = 4;
+    protected int niveauEauMax = 4;
+    protected int reductionTempete = 0;
 
     public Joueur(String nom, Color couleur, Plateau p) {
         this.nom = nom;
@@ -54,6 +46,7 @@ public abstract class Joueur {
         p.add_joueur(this);
     }
 
+    // Constructeur Static (Factory)
     public static Joueur creerJoueur(Role role, String nom, Plateau p) {
         switch (role) {
             case ARCHEOLOGUE:
@@ -73,34 +66,33 @@ public abstract class Joueur {
         }
     }
 
-    public void setZone(Zone zone) {
-        if (this.zone != null) {
-            this.zone.retirerJoueur(this); // retirer de l'ancienne case
-        }
-        this.zone = zone;
-        zone.ajouterJoueur(this);
+    // Getters
+    public String getNom() {
+        return this.nom;
     }
-
+    public int getNvEau() {
+        return this.niveauEau;
+    }
     public int getNb_action_restante() {
         return this.nb_action_restante;
     }
-
-    public void joue_action() {
-        this.nb_action_restante--;
-    }
-
-    public void reset_action() {
-        this.nb_action_restante = this.action_par_tour;
-    }
-
     public Zone getZone() {
         return this.zone;
     }
-
     public Color getCouleur() {
         return couleur;
     }
+    public Plateau get_plateau() {
+        return this.p;
+    }
+    public int get_niveau_eau_max() {
+        return this.niveauEauMax;
+    }
 
+    // Getters abstraits
+    public abstract Role getRole();
+
+    // Getters méthodes
     public List<Zone> getZonesAccessibles(Plateau plateau) {
         Set<Zone> accessibles = new HashSet<>();
         int[][] directions = getDirections();
@@ -140,17 +132,40 @@ public abstract class Joueur {
         return creusables;
     }
 
-    // Par défaut
+    // Directions par défaut
     protected int[][] getDirections() {
         return new int[][] { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
     }
 
-    // ----- Gestion de l'eau -----
 
-    public int get_niveau_eau_max() {
-        return this.niveauEauMax;
+    // Setters
+
+    public void setZone(Zone zone) {
+        if (this.zone != null) {
+            this.zone.retirerJoueur(this); // retirer de l'ancienne case
+        }
+        this.zone = zone;
+        zone.ajouterJoueur(this);
     }
 
+    // Méthodes
+    public void joue_action() {
+        this.nb_action_restante--;
+    }
+    public void reset_action() {
+        this.nb_action_restante = this.action_par_tour;
+    }
+
+    public void vagueDeChaleur() {
+        if (!this.zone.protegeChaleur()) {
+            this.niveauEau--;
+            if (this.niveauEau <= 0) {
+                p.declencher_defaite(this.nom + " est mort de soif !"); // A modifier pour gerer dans le controlleur
+            }
+        }
+    }
+
+    // Gestion de l'eau
     public int boire_eau(int quantite) {
         int avant = this.niveauEau;
         this.niveauEau = Math.min(this.niveauEau + quantite, this.niveauEauMax);
@@ -172,9 +187,10 @@ public abstract class Joueur {
     public boolean peut_donner_eau(Joueur cible) {
         return this.zone == cible.zone;
     }
-
-    public int get_sable_retire_par_action() {
-        return 1;
+    public void remplirGourde(){
+        if (niveauEau < niveauEauMax){
+            niveauEau++;
+        }
     }
 
     public int get_eau_recuperee() {
@@ -182,20 +198,23 @@ public abstract class Joueur {
     }
 
     // ----- Météorologue : amortir la tempête -----
-
-    public boolean is_tempete_amortie() {
-        return tempeteAmortie;
+    public int getReductionTempete(){
+        return this.reductionTempete;
     }
 
-    public void set_tempete_amortie(boolean b) {
-        this.tempeteAmortie = b;
+    public int getAndResetReductionTempete() {
+        int val = this.reductionTempete;
+        this.reductionTempete = 0;
+        return val;
     }
 
-    public boolean peut_amortir_tempete() {
-        return false;
+    public void amortirTempete() {
+        throw new IllegalStateException("Amortissement pour un joueur autre que météorologue");
     }
 
-    // ----- Navigatrice : déplacer un autre joueur -----
+
+
+        // ----- Navigatrice : déplacer un autre joueur -----
 
     public List<Joueur> get_joueurs_deplacables() {
         return new ArrayList<>();
@@ -215,9 +234,6 @@ public abstract class Joueur {
         return new ArrayList<>();
     }
 
-    public Plateau get_plateau() {
-        return this.p;
-    }
 
 }
 
@@ -231,10 +247,16 @@ class Archeologue extends Joueur {
         return Role.ARCHEOLOGUE;
     }
 
-    // L'archéologue retire 2 sable par action de creusage
     @Override
-    public int get_sable_retire_par_action() {
-        return 2;
+    public void creuserZone(Zone zone) {
+        if(zone.getNbSable() > 1) {// Si il y a au moins 2 blocs de sable
+            this.joue_action();
+            zone.creuser();
+            zone.creuser(); // L'archéologue creuse 2 fois
+        } else {
+            super.creuserZone(zone); // Sinon il fait comme tout le monde
+        }
+
     }
 }
 
@@ -307,16 +329,20 @@ class Meteorologue extends Joueur {
     public Meteorologue(String nom, Color couleur, Plateau p) {
         super(nom, couleur, p);
     }
-
     @Override
     public Role getRole() {
         return Role.METEOROLOGUE;
     }
 
     @Override
-    public boolean peut_amortir_tempete() {
-        return true;
+    public boolean peut_amortir_tempete() { return true; }
+
+    @Override
+    public void amortirTempete(){
+        this.reductionTempete++;
+        this.joue_action();
     }
+
 }
 
 class Navigatrice extends Joueur {
@@ -375,6 +401,15 @@ class PorteuseEau extends Joueur {
         int dx = Math.abs(this.getZone().getX() - cible.getZone().getX());
         int dy = Math.abs(this.getZone().getY() - cible.getZone().getY());
         return (dx + dy) == 1;
+    }
+    @Override
+    public void remplirGourde(){
+        for (int i = 0; i < 2; i++) {
+            if (niveauEau < niveauEauMax){
+                niveauEau++;
+            }
+        }
+
     }
 
     public boolean donner_eau_gratuit() {

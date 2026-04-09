@@ -1,5 +1,7 @@
 package modele;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.Math.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +9,8 @@ import java.util.Collections;
 import java.util.List;
 
 import vue.Observable;
+
+import javax.swing.*;
 
 public class Plateau extends Observable {
     private Zone[][] grille;
@@ -18,6 +22,15 @@ public class Plateau extends Observable {
     private List<Zone> zonesAccessibles = new ArrayList<>();
     private List<Joueur> joueurs = new ArrayList<>();
     private Zone zoneCrash;
+    private int indiceJoueurActif = 0;
+
+    public double getNiveauTempete() {
+        return niveauTempete;
+    }
+
+    public int getTotalSable() {
+        return totalSable;
+    }
 
     public enum EtatPartie {
         EN_COURS, VICTOIRE, DEFAITE
@@ -31,8 +44,12 @@ public class Plateau extends Observable {
         return this.zoneCrash;
     }
 
-    public void add_piece(Zone.TypeZone obj){
+    public void add_piece(Zone.TypeZone obj) {
         this.pieces_ramassees.add(obj);
+    }
+
+    public int getIndiceJoueurActif() {
+        return this.indiceJoueurActif;
     }
 
     public Plateau() {
@@ -67,6 +84,13 @@ public class Plateau extends Observable {
             this.raison_fin = "Vous avez gagné!";
             notifyObservers();
         }
+    }
+
+    public void finDeTour() {
+        this.indiceJoueurActif = (this.indiceJoueurActif + 1) % joueurs.size();
+        this.joueurs.get(indiceJoueurActif).reset_action();
+        this.action_desert();
+
     }
 
     // Initialise la Grille/Plateau
@@ -120,40 +144,51 @@ public class Plateau extends Observable {
     }
 
     public void action_desert() {
+        int nbCartes = (int) this.niveauTempete;
         // Vérifier si le météorologue a amorti la tempête
         for (Joueur j : joueurs) {
-            if (j.is_tempete_amortie()) {
-                j.set_tempete_amortie(false);
-                System.out.println("La tempête est amortie grâce au météorologue !");
-                this.notifyObservers();
-                return; // On skip l'action du désert
-            }
+            nbCartes -= j.getAndResetReductionTempete();
         }
+        final int nbcartestimer = nbCartes;
 
-        double tirage = Math.random();
-        if (tirage <= 0.33) {
-            double tirage_dir = Math.random();
-            int force = (int) (Math.random() * 3) + 1;
-            String direction = "";
-            if (tirage_dir <= 0.25) {
-                direction = "nord";
-                leVentSouffle(direction, force);
-            } else if (tirage_dir <= 0.5) {
-                direction = "sud";
-                leVentSouffle(direction, force);
-            } else if (tirage_dir <= 0.75) {
-                direction = "ouest";
-                leVentSouffle(direction, force);
-            } else {
-                direction = "est";
-                leVentSouffle(direction, force);
+        Timer timer = new javax.swing.Timer(700, null); // On crée un timer qui sera déclenché toutes les 700ms après le départ du timer
+        timer.addActionListener(new ActionListener() {  // classe anonyme sur l'interface ActionListener
+            int i = 0;
+            @Override
+            public void actionPerformed(ActionEvent e) {  // action effectuée à chaque déclenchement du timer
+                if (i >= nbcartestimer) {
+                    ((javax.swing.Timer) e.getSource()).stop(); // Le bon nombre de cartes à été tiré
+                    return;
+                }
+
+                double tirage = Math.random();
+                if (tirage <= 0.33) {
+                    double tirage_dir = Math.random();
+                    int force = (int) (Math.random() * 3) + 1;
+                    String direction = "";
+                    if (tirage_dir <= 0.25) {
+                        direction = "nord";
+                        leVentSouffle(direction, force);
+                    } else if (tirage_dir <= 0.5) {
+                        direction = "sud";
+                        leVentSouffle(direction, force);
+                    } else if (tirage_dir <= 0.75) {
+                        direction = "ouest";
+                        leVentSouffle(direction, force);
+                    } else {
+                        direction = "est";
+                        leVentSouffle(direction, force);
+                    }
+                } else if (tirage <= 0.66) {
+                    LaTempeteSeDechaine();
+                } else {
+                    vagueDeChaleur();
+                }
+                notifyObservers();
+                i++;
             }
-        } else if (tirage <= 0.66) {
-            LaTempeteSeDechaine();
-        } else {
-            vagueDeChaleur();
-        }
-        this.notifyObservers();
+        });
+        timer.start();
     }
 
     public void leVentSouffle(String direction, int force) {

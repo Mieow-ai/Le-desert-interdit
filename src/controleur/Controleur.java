@@ -20,7 +20,6 @@ public class Controleur {
     private final Plateau p;
     private FenetreJeu vue;
     private List<Joueur> joueurs;
-    private int indiceJoueurActif = 0;
     private List<Joueur.Role> rolesDisponibles;
 
     private enum action {
@@ -45,16 +44,13 @@ public class Controleur {
             // Réinitialise les actions et surbrillances du joueur précédent
             action_courante = action.AUCUNE;
             p.resetZonesAccessibles();
-
-            this.indiceJoueurActif = (this.indiceJoueurActif + 1) % joueurs.size();
-            this.joueurs.get(indiceJoueurActif).reset_action(); // nouveau joueur
-            this.p.action_desert();
+            p.finDeTour();
             gerer_fin_de_partie();
         });
 
         // Bouton se déplacer
         this.vue.getVc().getBouton_se_deplacer().addActionListener(e -> {
-            Joueur actif = this.joueurs.get(this.indiceJoueurActif);
+            Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             if (actif.getNb_action_restante() > 0) {
                 vue.getVc().reset_texte_erreur();
                 action_courante = action.DEPLACEMENT;
@@ -66,7 +62,7 @@ public class Controleur {
 
         // Bouton creuser
         this.vue.getVc().getBouton_creuser().addActionListener(e -> {
-            Joueur actif = this.joueurs.get(this.indiceJoueurActif);
+            Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             if (actif.getNb_action_restante() > 0) {
                 action_courante = action.CREUSER;
                 List<Zone> zones = actif.getZonesCreusables(p);
@@ -84,7 +80,7 @@ public class Controleur {
         });
 
         this.vue.getVc().getBouton_ramasser().addActionListener(e -> {
-            Joueur actif = this.joueurs.get(this.indiceJoueurActif);
+            Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             if (actif.getNb_action_restante() > 0) {
                 Zone actif_zone = actif.getZone();
                 if (actif_zone.get_objet_pose() != null) {
@@ -102,6 +98,26 @@ public class Controleur {
             }
         });
 
+        this.vue.getVc().getBoutonAmortirTempete().addActionListener(e -> {
+            Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
+            if(actif.getNb_action_restante() >0){
+                if (actif.peut_amortir_tempete()) {
+                    if(actif.getReductionTempete() < p.getNiveauTempete()) {
+                        actif.amortirTempete();
+                        p.notifyObservers();
+                    } else {
+                        vue.getVc().set_texte_erreur("Vous ne pouvez pas amortir plus la tempête");
+                    }
+
+                } else {
+                        vue.getVc().set_texte_erreur("Vous ne pouvez pas amortir la tempête");
+                }
+            } else {
+                vue.getVc().set_texte_erreur("Action impossible : plus d'actions...");
+            }
+
+        });
+
         // Action réalisé par le click sur une case
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
@@ -109,19 +125,20 @@ public class Controleur {
                 vue.getVp().getCase(i, j).addMouseListener(new MouseAdapter() {
                     public void mouseClicked(MouseEvent e) {
                         Zone zone = p.getZone(fi, fj);
+                        Joueur j = joueurs.get(p.getIndiceJoueurActif());
                         switch (action_courante) {
                             case DEPLACEMENT:
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
-                                    joueurs.get(indiceJoueurActif).setZone(zone);
-                                    joueurs.get(indiceJoueurActif).joue_action();
+                                    j.setZone(zone);
+                                    j.joue_action();
                                     p.verifier_victoire();
                                     gerer_fin_de_partie();
                                 }
                                 break;
                             case CREUSER:
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
-                                    zone.creuser();
-                                    joueurs.get(indiceJoueurActif).joue_action();
+                                    j.creuserZone(zone);
+                                    joueurs.get(p.getIndiceJoueurActif()).joue_action();
                                     if (zone.getType().name().startsWith("INDICE")) {
                                         p.verifie_apparition_obj(zone);
                                     }
@@ -143,6 +160,7 @@ public class Controleur {
             if (this.joueurs.size() < 2) {
                 this.vue.getVl().set_texte_erreur("Il faut au minimum 2 joueurs pour lancer la partie");
             } else {
+                this.p.notifyObservers();
                 this.vue.getVl().reset_texte_erreur();
                 this.vue.afficherEcran(false);
             }
@@ -171,6 +189,8 @@ public class Controleur {
             this.vue.getVl().resetNomSaisi();
             p.notifyObservers();
         });
+
+
     }
 
     private void gerer_fin_de_partie() {

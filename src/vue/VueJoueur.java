@@ -3,6 +3,7 @@ package vue;
 import javax.swing.*;
 import java.awt.*;
 import modele.Joueur;
+import modele.Plateau;
 
 public class VueJoueur extends JPanel implements Observer {
     // La VueJoueur observe le plateau plutôt que son joueur car les actions des
@@ -11,34 +12,47 @@ public class VueJoueur extends JPanel implements Observer {
     private JLabel labelNom;
     private JLabel labelActions;
     private JLabel labelEau;
+    private JLabel labelAmortissment;
 
-    public VueJoueur(Joueur joueur) {
+    public VueJoueur(Joueur joueur, Plateau p) {
         this.j = joueur;
+        p.addObserver(this); // Comme ça les blocs sont redessinés à chaque modification du plateau
         this.setBackground(Theme.FOND_PANNEAU);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(joueur.getCouleur(), 3),
                 BorderFactory.createEmptyBorder(12, 18, 12, 18)
         ));
-        this.labelNom = new JLabel(j.getNom());
+        labelNom = new JLabel(j.getNom());
         labelNom.setFont(Theme.SOUS_TITRE);
-        labelNom.setForeground(joueur.getCouleur());
-        this.labelActions = new JLabel("⚡ Actions : " + j.getNb_action_restante());
-        labelActions.setFont(Theme.TEXTE);
-        labelActions.setForeground(Theme.TEXTE_CLAIR);
-        this.labelEau = new JLabel("💧 Eau : " + j.getNvEau() + "/4");
-        labelEau.setFont(Theme.TEXTE);
-        labelEau.setForeground(new Color(100, 180, 255));
+        this.labelNom.setForeground(joueur.getCouleur());
+        this.labelActions = new JLabel("⚡ Actions restantes : " + j.getNb_action_restante());
+        this.labelActions.setFont(Theme.TEXTE);
+        this.labelActions.setForeground(Theme.TEXTE_CLAIR);
+        this.labelEau = new JLabel("💧 Eau : " + j.getNvEau() + "/" + j.get_niveau_eau_max());
+        this.labelEau.setFont(Theme.TEXTE);
+        this.labelEau.setForeground(new Color(100, 180, 255));
+
         this.add(labelNom);
         this.add(Box.createVerticalStrut(5));
         this.add(labelActions);
         this.add(labelEau);
+        if(j.peut_amortir_tempete()){
+            this.labelAmortissment = new JLabel("🌪️ Amortissement : 0");
+            this.labelAmortissment.setFont(Theme.TEXTE);
+            this.labelAmortissment.setForeground(Theme.TEXTE_CLAIR);
+            this.add(labelAmortissment);
+        }
+
     }
 
     @Override
     public void update() {
-        this.labelActions.setText("Actions restantes : " + j.getNb_action_restante());
-        this.labelEau.setText("Niveau d'eau : " + j.getNvEau());
+        this.labelActions.setText("⚡ Actions restantes : " + j.getNb_action_restante());
+        this.labelEau.setText("💧 Eau : " + j.getNvEau() + "/" + j.get_niveau_eau_max());
+        if(j.peut_amortir_tempete()){
+            this.labelAmortissment.setText("🌪️ Amortissement : "+j.getReductionTempete());
+        }
         this.revalidate();
         this.repaint();
     }

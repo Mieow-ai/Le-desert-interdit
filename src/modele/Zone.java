@@ -133,15 +133,24 @@ public abstract class Zone {
         nbSable += nbQuantite;
     }
 
+
     public void creuser() {
         if (nbSable > 0) {
             nbSable--;
-        } else if (nbSable == 0 && !this.revelee) {
+        }
+        else {
+            throw new IllegalStateException("Case sans sable, impossible de creuser");
+        }
+    }
+
+    public void reveler () {
+        if (nbSable == 0 && !this.revelee) {
             this.revelee = true;
             this.actionReveler();
         } else {
-            throw new IllegalStateException("Case sans sable et déjà révélée");
+            throw new IllegalStateException("Case avec sable ou déjà révélée");
         }
+
     }
 
     protected void actionReveler() {
@@ -249,5 +258,9 @@ class ZoneEau extends Zone {
     @Override
     public TypeZone getType() {
         return TypeZone.EAU;
+    }
+    @Override
+    protected void actionReveler() {
+
     }
 }

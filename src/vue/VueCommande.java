@@ -71,7 +71,8 @@ public class VueCommande extends JPanel {
     }
 
     public void reset_texte_erreur() {
-        this.labelMessage.setText("");
+        this.labelMessage.setText(" ");
     }
+
 
 }
