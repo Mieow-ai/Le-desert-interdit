@@ -20,6 +20,12 @@ import static modele.Joueur.Role.ARCHEOLOGUE;
  * }
  **/
 
+/**
+ * Classe abstraite représentant une tuile (case) du plateau de jeu.
+ * Elle gère l'état physique de la case (niveau de sable, statut révélé, coordonnées),
+ * les joueurs présents, et les pièces de la navette qui peuvent y apparaître.
+ * Elle sert de super-classe pour tous les types spécifiques de zones.
+ */
 public abstract class Zone {
     private int nbSable = 0;
     private int x;
@@ -28,34 +34,10 @@ public abstract class Zone {
     protected boolean revelee = false;
     private TypeZone objetpose = null;
 
-    public void poser_objet(TypeZone objet){
-        this.objetpose = objet;
-    }
-
-    public TypeZone ramasser_objet(){
-        TypeZone obj = this.objetpose;
-        this.objetpose = null;
-        return obj;
-    }
-
-    public TypeZone get_objet_pose() {
-        return this.objetpose;
-    }
-
-    public boolean protegeChaleur() {
-        return false;
-    }
-
-    public Collection<Zone> getZonesTunnel() {
-        return Collections.emptyList();
-    }
-
-    public boolean estRevelee() {
-        return this.revelee;
-    }
-
-    public abstract TypeZone getType();
-
+    /**
+     * Énumération de tous les types de tuiles possibles dans le jeu.
+     * Contient également le nombre d'exemplaires de chaque tuile pour la constitution du paquet.
+     */
     public enum TypeZone {
         ENGRENAGE(8),
         DECOLLAGE(1),
@@ -75,12 +57,23 @@ public abstract class Zone {
         }
     }
 
-    // Constructeur Zone
+    /**
+     * Constructeur Zone. Ne peut être appelé que par les classes filles.
+     * @param i Coordonnée X initiale
+     * @param j Coordonnée Y initiale
+     */
     protected Zone(int i, int j) {
         this.x = i;
         this.y = j;
     }
 
+    /**
+     * Factory Method : Instancie et retourne la bonne classe fille en fonction du type demandé.
+     * @param i Coordonnée X
+     * @param j Coordonnée Y
+     * @param type Le type de la zone à créer
+     * @return L'instance spécifique de la Zone (ex: ZoneEau, ZoneTunnel, etc.)
+     */
     public static Zone creerZone(int i, int j, TypeZone type) {
         switch (type) {
             case CRASH:
@@ -104,43 +97,57 @@ public abstract class Zone {
         }
     }
 
-    public int viderSable(){
-        int sable_retirer = this.nbSable;
-        this.nbSable = 0;
-        return sable_retirer;
-    }
+    // Getters et Setters
 
+    public TypeZone get_objet_pose() {
+        return this.objetpose;
+    }
+    public abstract TypeZone getType();
+    public void poser_objet(TypeZone objet){
+        this.objetpose = objet;
+    }
+    public TypeZone ramasser_objet(){
+        TypeZone obj = this.objetpose;
+        this.objetpose = null;
+        return obj;
+    }
+    public boolean estRevelee() {
+        return this.revelee;
+    }
     public void set_position(int x, int y) {
         this.x = x;
         this.y = y;
     }
-
     public int getX() {
         return this.x;
     }
-
     public int getY() {
         return this.y;
     }
-
     public void ajouterJoueur(Joueur j) {
         joueurs.add(j);
     }
-
     public void retirerJoueur(Joueur j) {
         joueurs.remove(j);
     }
-
     public List<Joueur> getJoueurs() {
         return joueurs;
     }
+    public int getNbSable() {
+        return this.nbSable;
+    }
+    public boolean estAccessible() {
+        return this.nbSable <= 1;
+    }
+
+    // Mécanique de terrain
 
     // Ajoute du sable selon une quantité
     public void ajouterSable(int nbQuantite) {
         nbSable += nbQuantite;
     }
 
-
+    /** Retire un marqueur de sable. Lève une exception si la case est déjà vide. **/
     public void creuser() {
         if (nbSable > 0) {
             nbSable--;
@@ -150,6 +157,20 @@ public abstract class Zone {
         }
     }
 
+    /**
+     * Détruit tout le sable d'un seul coup (utilisé par le Blaster des Dunes).
+     * @return Le nombre exact de marqueurs de sable retirés.
+     */
+    public int viderSable(){
+        int sable_retirer = this.nbSable;
+        this.nbSable = 0;
+        return sable_retirer;
+    }
+
+    /**
+     * Retourne la tuile face visible. Ne fonctionne que s'il n'y a plus de sable.
+     * Déclenche l'effet spécifique de la tuile via `actionReveler()`.
+     */
     public void reveler () {
         if (nbSable == 0 && !this.revelee) {
             this.revelee = true;
@@ -160,24 +181,33 @@ public abstract class Zone {
 
     }
 
+    // méthodes polymorphes
+
+
+    /** @return true si cette case protège de la carte "Vague de Chaleur". (Faux par défaut) */
+    public boolean protegeChaleur() {
+        return false;
+    }
+
+    /** * Action déclenchée automatiquement au moment où la case est révélée.
+     * Par défaut ne fait rien, mais est surchargée par Oasis, Tunnel, etc.
+     */
     protected void actionReveler() {
     }
 
-    public int getNbSable() {
-        return this.nbSable;
+    /** @return La liste des autres tunnels connectés à cette case. (Vide par défaut) */
+    public Collection<Zone> getZonesTunnel() {
+        return Collections.emptyList();
     }
-
-    public boolean estAccessible() {
-        return this.nbSable <= 1;
-    }
-
 
     // Format String d'une Zone
     public String toString() {
         return String.valueOf(nbSable);
     }
+
 }
 
+/** Point de départ de l'équipe. Est révélée dès le début de la partie. **/
 class ZoneCrash extends Zone {
     @Override
     public TypeZone getType() {
@@ -190,6 +220,7 @@ class ZoneCrash extends Zone {
     }
 }
 
+/** Tuile classique contenant un symbole d'engrenage. Gérée dans la méthode creuser() du Joueur. **/
 class ZoneEngrenage extends Zone {
     public ZoneEngrenage(int i, int j) {
         super(i, j);
@@ -200,6 +231,7 @@ class ZoneEngrenage extends Zone {
     }
 }
 
+/** Tuile indiquant les coordonnées X ou Y d'une pièce de la machine volante. **/
 class ZoneIndice extends Zone {
     private TypeZone typeIndice;
 
@@ -215,6 +247,10 @@ class ZoneIndice extends Zone {
 
 }
 
+/**
+ * Les tunnels protègent du soleil s'ils sont dispo
+ * et permettent de se téléporter vers n'importe quel autre tunnel révélé.
+ */
 class ZoneTunnel extends Zone {
     static Collection<Zone> tunnelsReveles = new HashSet<>();
 
@@ -242,12 +278,14 @@ class ZoneTunnel extends Zone {
     protected void actionReveler() {
         this.tunnelsReveles.add(this);
     }
+
     @Override
     public TypeZone getType() {
         return TypeZone.TUNNEL;
     }
 }
 
+/** Lieu d'assemblage final. Tous les joueurs doivent s'y trouver pour gagner. **/
 class ZoneDecollage extends Zone {
     public ZoneDecollage(int i, int j) {
         super(i, j);
@@ -258,6 +296,7 @@ class ZoneDecollage extends Zone {
     }
 }
 
+/** Restaure 2 unités d'eau à tous les joueurs présents lors de sa découverte. ù*/
 class ZoneEau extends Zone {
     public ZoneEau(int i, int j) {
         super(i, j);
@@ -275,6 +314,7 @@ class ZoneEau extends Zone {
     }
 }
 
+/** Fausse piste. Ne donne aucune eau lors de sa révélation. **/
 class ZoneMirage extends Zone {
     public ZoneMirage(int i, int j){
         super(i, j);

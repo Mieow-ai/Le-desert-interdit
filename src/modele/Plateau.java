@@ -12,6 +12,11 @@ import vue.Observable;
 
 import javax.swing.*;
 
+/**
+ * La classe Plateau est le Modèle central du jeu
+ * Elle gère la grille de 5x5, la position de l'œil de la tempête, le niveau de sable,
+ * les mécaniques de la tempête, et les conditions de victoire ou de défaite.
+ */
 public class Plateau extends Observable {
     private Zone[][] grille;
     private double niveauTempete = 2.0;
@@ -41,60 +46,22 @@ public class Plateau extends Observable {
     private String raison_fin = "";
     List<Zone.TypeZone> pieces_ramassees = new ArrayList<>();
 
-    public Zone getZoneCrash() {
-        return this.zoneCrash;
-    }
-
-    public void add_piece(Zone.TypeZone obj) {
-        this.pieces_ramassees.add(obj);
-    }
-
-    public int getIndiceJoueurActif() {
-        return this.indiceJoueurActif;
-    }
-
+    /**
+     * Constructeur du Plateau. Prépare la grille vide puis lance l'initialisation.
+     */
     public Plateau() {
         super();
         this.grille = new Zone[5][5];
         initialiseGrille();
     }
 
-    public List<Joueur> getJoueurs() {
-        return joueurs;
-    }
-
-    public void add_joueur(Joueur j) {
-        joueurs.add(j);
-        notifyObservers();
-
-    }
-
-    public Zone getZone(int i, int j) {
-        return grille[i][j];
-    }
-
-    public void verifier_victoire() {
-        boolean tous_au_decollage = true;
-        for (Joueur j : this.joueurs) {
-            if (j.getZone().getType() != Zone.TypeZone.DECOLLAGE) {
-                tous_au_decollage = false;
-            }
-        }
-        if (tous_au_decollage && this.pieces_ramassees.size() == 4) {
-            this.etat = EtatPartie.VICTOIRE;
-            this.raison_fin = "Vous avez gagné!";
-            notifyObservers();
-        }
-    }
-
-    public void finDeTour() {
-        this.indiceJoueurActif = (this.indiceJoueurActif + 1) % joueurs.size();
-        this.joueurs.get(indiceJoueurActif).reset_action();
-        this.action_desert();
-
-    }
-
-    // Initialise la Grille/Plateau
+    /**
+     * Initialise le plateau de jeu :
+     * - Crée et mélange les tuiles (Zones)
+     * - Place l'œil du cyclone au centre
+     * - Dispose les premiers marqueurs de sable en croix
+     * - Crée et mélange la pioche d'équipements
+     */
     public void initialiseGrille() {
         ArrayList<Zone.TypeZone> typesZone = new ArrayList<>(Arrays.asList(Zone.TypeZone.values()));
         ArrayList<Zone.TypeZone> zonesDispo = new ArrayList<>();
@@ -133,6 +100,59 @@ public class Plateau extends Observable {
         Collections.shuffle(this.pioche_equipement);
     }
 
+    // Getters et Setters
+    public Zone getZoneCrash() {
+        return this.zoneCrash;
+    }
+    public void add_piece(Zone.TypeZone obj) {
+        this.pieces_ramassees.add(obj);
+    }
+    public int getIndiceJoueurActif() {
+        return this.indiceJoueurActif;
+    }
+    public List<Joueur> getJoueurs() {
+        return joueurs;
+    }
+    public void add_joueur(Joueur j) {
+        joueurs.add(j);
+        notifyObservers();
+
+    }
+    public Zone getZone(int i, int j) {
+        return grille[i][j];
+    }
+    public int getOeilI() {
+        return oeilI;
+    }
+
+    public int getOeilJ() {
+        return oeilJ;
+    }
+    public void setZonesAccessibles(List<Zone> zones) {
+        this.zonesAccessibles = zones;
+        notifyObservers();
+    }
+
+    public void resetZonesAccessibles() {
+        this.zonesAccessibles = new ArrayList<Zone>();
+        notifyObservers();
+    }
+
+    public List<Zone> getZonesAccessibles() {
+        return zonesAccessibles;
+    }
+    public EtatPartie getEtat() {
+        return this.etat;
+    }
+
+    public String getRaison_fin() {
+        return this.raison_fin;
+    }
+
+    /**
+     * Pioche la première carte équipement du paquet.
+     * @return L'équipement pioché, ou null si la pioche est vide.
+     */
     public Equipement piocher_equipement(){
         if(!this.pioche_equipement.isEmpty()){
             return pioche_equipement.remove(pioche_equipement.size() - 1);
@@ -157,6 +177,53 @@ public class Plateau extends Observable {
         return res;
     }
 
+    // Déroulement du jeu
+
+    /**
+     * Clôture le tour du joueur actif, réinitialise ses actions et déclenche la tempête.
+     */
+    public void finDeTour() {
+        this.indiceJoueurActif = (this.indiceJoueurActif + 1) % joueurs.size();
+        this.joueurs.get(indiceJoueurActif).reset_action();
+        this.action_desert();
+
+    }
+
+    /**
+     * Vérifie si les conditions de victoire sont réunies :
+     * 1. Tous les joueurs sont sur la case Décollage.
+     * 2. Les 4 pièces de la machine ont été ramassées.
+     */
+    public void verifier_victoire() {
+        boolean tous_au_decollage = true;
+        for (Joueur j : this.joueurs) {
+            if (j.getZone().getType() != Zone.TypeZone.DECOLLAGE) {
+                tous_au_decollage = false;
+            }
+        }
+        if (tous_au_decollage && this.pieces_ramassees.size() == 4) {
+            this.etat = EtatPartie.VICTOIRE;
+            this.raison_fin = "Vous avez gagné!";
+            notifyObservers();
+        }
+    }
+
+    /**
+     * Termine la partie sur une défaite.
+     * @param raison Le texte expliquant la cause de la mort (soif, ensablé, tempête).
+     */
+    public void declencher_defaite(String raison) {
+        this.etat = EtatPartie.DEFAITE;
+        this.raison_fin = raison;
+    }
+
+    // Mécaniques de la tempête
+
+    /**
+     * Gère la phase "Pioche" à la fin d'un tour.
+     * Utilise un Timer Swing pour simuler le tirage successif des cartes avec un délai visuel,
+     * permettant à l'interface de s'animer progressivement.
+     */
     public void action_desert() {
         int nbCartes = (int) this.niveauTempete;
         // Vérifier si le météorologue a amorti la tempête
@@ -209,6 +276,12 @@ public class Plateau extends Observable {
         timer.start();
     }
 
+    /**
+     * Déplace les tuiles du plateau dans la direction du vent
+     * et ajoute du sable sur les tuiles déplacées.
+     * @param direction "nord", "sud", "est", ou "ouest"
+     * @param force Le nombre de tuiles déplacées (1 à 3)
+     */
     public void leVentSouffle(String direction, int force) {
 
         for (int k = 0; k < force; k++) {
@@ -256,14 +329,14 @@ public class Plateau extends Observable {
         }
     }
 
-    public int getOeilI() {
-        return oeilI;
-    }
+    // Gestion du terrain
 
-    public int getOeilJ() {
-        return oeilJ;
-    }
-
+    /**
+     * Ajoute du sable sur une case et vérifie la condition de défaite par ensevelissement.
+     * @param zone La zone à ensabler
+     * @param quantite Nombre de marqueurs à ajouter
+     * @return true si l'ajout s'est bien passé, false si le seuil max a déclenché une défaite
+     */
     public boolean ajouterSable(Zone zone, int quantite) {
         if (totalSable + quantite > SABLE_MAX) {
             this.declencher_defaite("Mort ensablés : trop de sable");
@@ -275,33 +348,11 @@ public class Plateau extends Observable {
         return true;
     }
 
-    public void setZonesAccessibles(List<Zone> zones) {
-        this.zonesAccessibles = zones;
-        notifyObservers();
-    }
-
-    public void resetZonesAccessibles() {
-        this.zonesAccessibles = new ArrayList<Zone>();
-        notifyObservers();
-    }
-
-    public List<Zone> getZonesAccessibles() {
-        return zonesAccessibles;
-    }
-
-    public EtatPartie getEtat() {
-        return this.etat;
-    }
-
-    public String getRaison_fin() {
-        return this.raison_fin;
-    }
-
-    public void declencher_defaite(String raison) {
-        this.etat = EtatPartie.DEFAITE;
-        this.raison_fin = raison;
-    }
-
+    /**
+     * Vérifie si les deux indices (ligne et colonne) d'une même pièce
+     * ont été révélés. Si oui, fait apparaître l'objet à leur intersection.
+     * @param type_indice_creuse Le type de la case indice venant d'être révélée
+     */
     public void verifie_apparition_obj(Zone type_indice_creuse) {
         Zone.TypeZone type = type_indice_creuse.getType();
         Zone i_1 = null;
@@ -337,6 +388,7 @@ public class Plateau extends Observable {
         }
     }
 
+    /** Retire du sable du compteur global **/
     public void enlever_sable(int quantite){
         this.totalSable = Math.max(0, this.totalSable - quantite);
         notifyObservers();

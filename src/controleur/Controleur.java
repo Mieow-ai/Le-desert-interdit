@@ -19,6 +19,13 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
 
+
+/**
+ * La classe controleur fait le lien entre le modèle et la vue.
+ * Elle gère toutes les interactions de l'utilisateur et applique
+ * les règles du jeu en fonction des actions qu'on fait etc,...
+ * Elle implémente aussi Observer pour "listen" les fin de partie déclenchée par le modèle
+ */
 public class Controleur implements Observer {
     private final Plateau p;
     private FenetreJeu vue;
@@ -28,10 +35,17 @@ public class Controleur implements Observer {
     private Joueur allieADeplacer = null;
     private Equipement objet_en_cours = null;
 
+    /**
+     * Les différentes actions qu'un joueur peut efféctué
+     */
     private enum action {
         AUCUNE, DEPLACEMENT, CREUSER, DEPLACEMENT_ALLIE, UTILISER_BLASTER
     };
 
+    /**
+     * Méthode de l'interface Observer
+     * Appelée automatiquement à chaque fois que le plateau notifie un changement
+     */
     @Override
     public void update() {
         gerer_fin_de_partie();
@@ -39,6 +53,12 @@ public class Controleur implements Observer {
 
     private action action_courante;
 
+    /**
+     * Constructeur du contrôleur. Initialise le jeu et attache tous les "listener"
+     * sur les boutons et les cases du plateau.
+     * @param modele Le Plateau de jeu
+     * @param vue La fenêtre principale
+     */
     public Controleur(Plateau modele, FenetreJeu vue) {
         this.p = modele;
         this.vue = vue;
@@ -46,6 +66,8 @@ public class Controleur implements Observer {
         this.action_courante = action.AUCUNE;
         this.rolesDisponibles = new ArrayList<>(Arrays.asList(Joueur.Role.values()));
         Collections.shuffle(this.rolesDisponibles);
+
+        // Détection du GameOver
         p.addObserver(this);
 
         // Bouton fin de tour
@@ -91,6 +113,7 @@ public class Controleur implements Observer {
             }
         });
 
+        // Bouton ramasser
         this.vue.getVc().getBouton_ramasser().addActionListener(e -> {
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             if (actif.getNb_action_restante() > 0) {
@@ -110,6 +133,7 @@ public class Controleur implements Observer {
             }
         });
 
+        // Bouton Amortir la Tempête (Météorologue)
         this.vue.getVc().getBoutonAmortirTempete().addActionListener(e -> {
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             if(actif.getNb_action_restante() >0){
@@ -131,7 +155,7 @@ public class Controleur implements Observer {
 
         });
 
-        // bouton donner de l'eau
+        // bouton donner de l'eau (Porteuse d'eau)
         this.vue.getVc().getBoutonDonnerEau().addActionListener(e -> {
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             List<Joueur> cibles_possibles = new ArrayList<>();
@@ -163,7 +187,7 @@ public class Controleur implements Observer {
         });
 
 
-        // bouton deplacer un allié
+        // bouton deplacer un allié (Navigatrice)
         vue.getVc().getBoutonDeplacerAllie().addActionListener(e -> {
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
 
@@ -191,6 +215,7 @@ public class Controleur implements Observer {
             }
         });
 
+        // Bouton Equipement
         vue.getVc().getBouton_utiliser_equipement().addActionListener(e -> {
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
 
@@ -247,17 +272,20 @@ public class Controleur implements Observer {
                         break;
                     case JETPACK:
                         break;
+                        // pas encore implémenté
                     case TERRASCOPE:
                         break;
+                        // pas encore implémenté
                     case ACCELERATEUR_DE_TEMPS:
                         break;
+                        // pas encore implémenté
                 }
                 p.notifyObservers();
             }
         });
 
 
-        // Action réalisé par le click sur une case
+        // Action réalisée par le click sur une case
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 final int fi = i, fj = j;
@@ -265,6 +293,7 @@ public class Controleur implements Observer {
                     public void mouseClicked(MouseEvent e) {
                         Zone zone = p.getZone(fi, fj);
                         Joueur j = joueurs.get(p.getIndiceJoueurActif());
+                        // Exécute l'action correspondante à l'état du contrôleur
                         switch (action_courante) {
                             case DEPLACEMENT_ALLIE:
                                 if(zone != null && p.getZonesAccessibles().contains(zone) && allieADeplacer != null){
@@ -312,6 +341,7 @@ public class Controleur implements Observer {
                             case AUCUNE:
                                 break;
                         }
+                        // Nettoyage de l'interface après le clic
                         p.resetZonesAccessibles();
                         action_courante = action.AUCUNE;
                         vue.getVc().reset_texte_erreur();
@@ -358,6 +388,11 @@ public class Controleur implements Observer {
 
     }
 
+    /**
+     * Vérifie l'état actuel de la partie.
+     * Si la partie est perdue ou gagnée, verrouille l'état de défaite
+     * et propose de recommencer la partie ou de quitter le jeu
+     */
     private void gerer_fin_de_partie() {
         if (p.getEtat() != Plateau.EtatPartie.EN_COURS && !partieTerminee) {
             partieTerminee = true;
@@ -367,13 +402,14 @@ public class Controleur implements Observer {
                     JOptionPane.QUESTION_MESSAGE);
 
             if (choix == JOptionPane.YES_OPTION) {
-                vue.dispose();
+                vue.dispose(); // détruit l'ancienne fenêtre
+                // on réécrit le main ici
                 Plateau nouveauPlateau = new Plateau();
                 FenetreJeu nouvelleFenetre = new FenetreJeu(nouveauPlateau);
                 Controleur nouveauControleur = new Controleur(nouveauPlateau, nouvelleFenetre);
                 nouvelleFenetre.afficherEcran(true);
             } else {
-                System.exit(0);
+                System.exit(0); // Quitte le jeu
             }
         }
     }

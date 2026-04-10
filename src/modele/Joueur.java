@@ -6,35 +6,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 
+
+/**
+ * Classe abstraite représentant un joueur dans le jeu
+ * Contient toutes les mécaniques communes à tous les rôles/joueurs
+ * ainsi que les méthodes dites "par défaut" qui seront override dans chaque classes rôle
+ */
 public abstract class Joueur {
-    public void creuserZone(Zone zone) {
-        if(zone.getNbSable() > 0) {
-            zone.creuser();
-        } else if (!zone.estRevelee() && zone.getNbSable() == 0){
-            zone.reveler();
 
-            if(zone.getType() == Zone.TypeZone.ENGRENAGE){
-                Equipement obj = p.piocher_equipement();
-                if(obj != null){
-                    this.equipements.add(obj);
-                    System.out.println(this.nom + "a trouvé :" + obj);
-                }
-            }
-        } else {
-            throw new IllegalStateException("Case sans sable et déjà révélée");
-        }
-    }
-
-    public boolean peut_amortir_tempete() { return false; }
-
-    public enum Role {
-        ARCHEOLOGUE,
-        ALPINISTE,
-        EXPLORATEUR,
-        METEOROLOGUE,
-        NAVIGATRICE,
-        PORTEUSE_EAU
-    }
     private final String nom;
     protected Zone zone;
     private Plateau p;
@@ -45,7 +24,25 @@ public abstract class Joueur {
     protected int niveauEauMax = 4;
     protected int reductionTempete = 0;
     private List<Equipement> equipements = new ArrayList<>();
+    protected int[][] getDirections() {
+        return new int[][] { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
+    }
 
+    public enum Role {
+        ARCHEOLOGUE,
+        ALPINISTE,
+        EXPLORATEUR,
+        METEOROLOGUE,
+        NAVIGATRICE,
+        PORTEUSE_EAU
+    }
+
+    /**
+     * Constructeur de base d'un Joueur.
+     * @param nom Nom du joueur
+     * @param couleur Couleur associée au pion du joueur
+     * @param p Le plateau de jeu
+     */
     public Joueur(String nom, Color couleur, Plateau p) {
         this.nom = nom;
         this.couleur = couleur;
@@ -54,7 +51,13 @@ public abstract class Joueur {
         p.add_joueur(this);
     }
 
-    // Constructeur Static (Factory)
+    /**
+     * Design Pattern Factory : Crée et retourne l'instance spécifique correspondant au rôle choisi.
+     * @param role Le rôle souhaité
+     * @param nom Le nom du joueur
+     * @param p Le plateau de jeu
+     * @return Une instance d'une classe fille de Joueur comme Navigatrice
+     */
     public static Joueur creerJoueur(Role role, String nom, Plateau p) {
         switch (role) {
             case ARCHEOLOGUE:
@@ -96,7 +99,6 @@ public abstract class Joueur {
     public int get_niveau_eau_max() {
         return this.niveauEauMax;
     }
-
     public List<Equipement> get_equipement(){
         return this.equipements;
     }
@@ -105,6 +107,13 @@ public abstract class Joueur {
     public abstract Role getRole();
 
     // Getters méthodes
+
+    /**
+     * Calcule et retourne la liste des zones où le joueur peut se déplacer.
+     * Prend en compte l'ensevelissement des cases et le réseau de tunnels.
+     * @param plateau Le plateau de jeu
+     * @return Liste des zones accessibles
+     */
     public List<Zone> getZonesAccessibles(Plateau plateau) {
         Set<Zone> accessibles = new HashSet<>();
         int[][] directions = getDirections();
@@ -124,6 +133,11 @@ public abstract class Joueur {
         return new ArrayList<>(accessibles);
     }
 
+    /**
+     * Calcule et retourne la liste des zones que le joueur peut désensabler ou révéler.
+     * @param plateau Le plateau de jeu
+     * @return Liste des zones creusables
+     */
     public List<Zone> getZonesCreusables(Plateau plateau) {
         List<Zone> creusables = new ArrayList<>();
         int[][] directions = getDirections();
@@ -144,14 +158,13 @@ public abstract class Joueur {
         return creusables;
     }
 
-    // Directions par défaut
-    protected int[][] getDirections() {
-        return new int[][] { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
-    }
-
 
     // Setters
 
+    /**
+     * Déplace le joueur sur une nouvelle zone et met à jour les présences sur le plateau.
+     * @param zone La nouvelle zone de destination
+     */
     public void setZone(Zone zone) {
         if (this.zone != null) {
             this.zone.retirerJoueur(this); // retirer de l'ancienne case
@@ -161,13 +174,21 @@ public abstract class Joueur {
     }
 
     // Méthodes
+
+    /** Consomme un point d'action **/
     public void joue_action() {
         this.nb_action_restante--;
     }
+
+    /** Réinitialise les actions du joueur **/
     public void reset_action() {
         this.nb_action_restante = this.action_par_tour;
     }
 
+    /**
+     * Applique les effets d'une carte "Vague de Chaleur".
+     * Baisse le niveau d'eau si le joueur n'est pas protégé par un tunnel.
+     */
     public void vagueDeChaleur() {
         if (!this.zone.protegeChaleur()) {
             this.niveauEau--;
@@ -180,13 +201,47 @@ public abstract class Joueur {
         }
     }
 
+    /**
+     * Retire du sable de la zone ciblée. Si la zone n'a plus de sable, elle est révélée.
+     * Gère également la récupération automatique des engrenages.
+     * @param zone La zone à creuser ou révéler
+     */
+    public void creuserZone(Zone zone) {
+        if(zone.getNbSable() > 0) {
+            zone.creuser();
+        } else if (!zone.estRevelee() && zone.getNbSable() == 0){
+            zone.reveler();
+
+            if(zone.getType() == Zone.TypeZone.ENGRENAGE){
+                Equipement obj = p.piocher_equipement();
+                if(obj != null){
+                    this.equipements.add(obj);
+                    System.out.println(this.nom + "a trouvé :" + obj);
+                }
+            }
+        } else {
+            throw new IllegalStateException("Case sans sable et déjà révélée");
+        }
+    }
+
     // Gestion de l'eau
+
+    /**
+     * Fait boire de l'eau au joueur
+     * @param quantite Quantité d'eau à boire
+     * @return La quantité d'eau réellement bue
+     */
     public int boire_eau(int quantite) {
         int avant = this.niveauEau;
         this.niveauEau = Math.min(this.niveauEau + quantite, this.niveauEauMax);
         return this.niveauEau - avant;
     }
 
+    /**
+     * Transfère de l'eau à un autre joueur.
+     * @param cible Le joueur qui reçoit l'eau
+     * @return true si le transfert a réussi, false sinon
+     */
     public boolean donner_eau(Joueur cible) {
         if (this.niveauEau <= 0)
             return false;
@@ -199,6 +254,7 @@ public abstract class Joueur {
         return true;
     }
 
+    /** Vérifie si le joueur est en condition pour donner de l'eau à la cible **/
     public boolean peut_donner_eau(Joueur cible) {
         return this.zone == cible.zone;
     }
@@ -213,45 +269,40 @@ public abstract class Joueur {
     }
 
     // ----- Météorologue : amortir la tempête -----
+    public boolean peut_amortir_tempete() { return false; }
     public int getReductionTempete(){
         return this.reductionTempete;
     }
-
     public int getAndResetReductionTempete() {
         int val = this.reductionTempete;
         this.reductionTempete = 0;
         return val;
     }
-
     public void amortirTempete() {
         throw new IllegalStateException("Amortissement pour un joueur autre que météorologue");
     }
 
-
-
-        // ----- Navigatrice : déplacer un autre joueur -----
-
+    // ----- Navigatrice : déplacer un autre joueur -----
     public List<Joueur> get_joueurs_deplacables() {
         return new ArrayList<>();
     }
-
     public int get_max_pas_allié() {
         return 0;
     }
 
     // ----- Alpiniste : emmener un compagnon -----
-
     public boolean peut_emmener_compagnon() {
         return false;
     }
-
     public List<Joueur> get_compagnons_possibles() {
         return new ArrayList<>();
     }
-
-
 }
 
+
+/**
+ * L'Archéologue peut retirer 2 unités de sable pour une seule action.
+ */
 class Archeologue extends Joueur {
     public Archeologue(String nom, Color couleur, Plateau p) {
         super(nom, couleur, p);
@@ -275,6 +326,10 @@ class Archeologue extends Joueur {
     }
 }
 
+/**
+ * L'Alpiniste ignore les restrictions de déplacement liées au sable
+ * et peut emmener un autre joueur avec lui.
+ */
 class Alpiniste extends Joueur {
     public Alpiniste(String nom, Color couleur, Plateau p) {
         super(nom, couleur, p);
@@ -324,6 +379,9 @@ class Alpiniste extends Joueur {
     }
 }
 
+/**
+ * L'Explorateur peut se déplacer et creuser en diagonale.
+ */
 class Explorateur extends Joueur {
     public Explorateur(String nom, Color couleur, Plateau p) {
         super(nom, couleur, p);
@@ -341,6 +399,9 @@ class Explorateur extends Joueur {
     }
 }
 
+/**
+ * Le Météorologue peut dépenser des actions pour réduire le nombre de cartes Tempête piochées à la fin du tour.
+ */
 class Meteorologue extends Joueur {
     public Meteorologue(String nom, Color couleur, Plateau p) {
         super(nom, couleur, p);
@@ -361,6 +422,9 @@ class Meteorologue extends Joueur {
 
 }
 
+/**
+ * La Navigatrice peut déplacer d'autres joueurs jusqu'à 3 cases pour une seule action.
+ */
 class Navigatrice extends Joueur {
     public Navigatrice(String nom, Color couleur, Plateau p) {
         super(nom, couleur, p);
@@ -389,6 +453,9 @@ class Navigatrice extends Joueur {
     }
 }
 
+/**
+ * La Porteuse d'Eau a une plus grande réserve (5) et peut donner de l'eau aux cases adjacentes.
+ */
 class PorteuseEau extends Joueur {
     public PorteuseEau(String nom, Color couleur, Plateau p) {
         super(nom, couleur, p);
