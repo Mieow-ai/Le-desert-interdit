@@ -15,4 +15,8 @@ public class Theme {
     public static final Font TITRE    = new Font("SansSerif", Font.BOLD, 18);
     public static final Font SOUS_TITRE = new Font("SansSerif", Font.BOLD, 14);
     public static final Font TEXTE    = new Font("SansSerif", Font.PLAIN, 12);
+    public static final Color EAU_BLEU = new Color(30, 144, 255);
+    public static final Color ACTION_ORANGE = new Color(255, 140, 0);
+    public static final Color SELECTION = new Color(46, 204, 113, 150);
+    public static final Color BORDURE_ACTIVE = new Color(255, 215, 0);
 }

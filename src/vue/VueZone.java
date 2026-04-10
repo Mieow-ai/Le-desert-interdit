@@ -33,9 +33,9 @@ public class VueZone extends JPanel {
             gbc.gridy = 0;
             gbc.insets = new Insets(1, 0, 1, 0);
             if (!z.estRevelee()) {
-                JLabel sableLabel = new JLabel(z.getNbSable() + " sable(s)");
-                sableLabel.setFont(new Font("Arial", Font.BOLD, 14));
-                sableLabel.setForeground(Color.BLACK);
+                JLabel sableLabel = new JLabel(z.getNbSable() + "sable(s)");
+                sableLabel.setFont(Theme.SOUS_TITRE);
+                sableLabel.setForeground(z.getNbSable() >= 2 ? Theme.ACCENT_DANGER : Theme.TEXTE_FONCE);
                 this.add(sableLabel, gbc);
             } else {
                 String nomTuile = z.getType().name().replace("INDICE_", "");
@@ -73,13 +73,11 @@ public class VueZone extends JPanel {
 
             // Mise en valeur des zones accessibles
             if (estAccessible) {
-                this.setBackground(new Color(144, 238, 144));
-                this.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
-                this.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                this.setBackground(Theme.SELECTION);
+                this.setBorder(BorderFactory.createLineBorder(Theme.BORDURE_ACTIVE, 2));
             } else {
-                this.setBackground(new Color(177, 141, 54));
-                this.setBorder(null);
-                this.setCursor(Cursor.getDefaultCursor());
+                this.setBackground(Theme.SABLE_FONCE);
+                this.setBorder(BorderFactory.createLineBorder(new Color(0,0,0,30)));
             }
         }
 

@@ -16,33 +16,30 @@ public class VueCommande extends JPanel {
 
     public VueCommande() {
         this.setLayout(new BorderLayout());
-        this.setBackground(Color.LIGHT_GRAY);
+        this.setBackground(Theme.FOND_PANNEAU);
 
-        JPanel Boutons = new JPanel();
-        Boutons.setBackground(Color.LIGHT_GRAY);
+        JPanel conteneurBoutons = new JPanel(new FlowLayout());
+        conteneurBoutons.setOpaque(false);
 
-        // Boutons d'actions de base
-        this.Bouton_fin_tour = new JButton("Fin de tour");
-        this.Bouton_se_deplacer = new JButton("Se déplacer");
-        this.Bouton_creuser = new JButton("Creuser");
-        this.Bouton_ramasser = new JButton("Ramasser");
-        this.Bouton_utiliser_equipement = new JButton("Équipement");
+        styliser_bouton(Bouton_fin_tour = new JButton("Fin de Tour"));
+        styliser_bouton(Bouton_se_deplacer = new JButton("Marcher"));
+        styliser_bouton(Bouton_creuser = new JButton("Désensabler"));
+        styliser_bouton(Bouton_ramasser = new JButton("Ramasser"));
+        styliser_bouton(Bouton_utiliser_equipement = new JButton("Équipement"));
+        styliser_bouton(Bouton_donner_eau = new JButton("Donner eau"));
+        styliser_bouton(Bouton_amortir_tempete = new JButton("Amortir tempête"));
+        styliser_bouton(Bouton_deplacer_allie = new JButton("Déplacer allié"));
 
-        // Boutons de pouvoirs spéciaux
-        this.Bouton_donner_eau = new JButton("Donner eau");
-        this.Bouton_amortir_tempete = new JButton("Amortir tempête");
-        this.Bouton_deplacer_allie = new JButton("Déplacer allié");
+        conteneurBoutons.add(this.Bouton_fin_tour);
+        conteneurBoutons.add(this.Bouton_creuser);
+        conteneurBoutons.add(this.Bouton_se_deplacer);
+        conteneurBoutons.add(this.Bouton_ramasser);
+        conteneurBoutons.add(this.Bouton_donner_eau);
+        conteneurBoutons.add(this.Bouton_amortir_tempete);
+        conteneurBoutons.add(this.Bouton_deplacer_allie);
+        conteneurBoutons.add(this.Bouton_utiliser_equipement);
 
-        Boutons.add(this.Bouton_fin_tour);
-        Boutons.add(this.Bouton_creuser);
-        Boutons.add(this.Bouton_se_deplacer);
-        Boutons.add(this.Bouton_ramasser);
-        Boutons.add(this.Bouton_donner_eau);
-        Boutons.add(this.Bouton_amortir_tempete);
-        Boutons.add(this.Bouton_deplacer_allie);
-        Boutons.add(this.Bouton_utiliser_equipement);
-
-        this.add(Boutons, BorderLayout.NORTH);
+        this.add(conteneurBoutons, BorderLayout.NORTH);
 
         this.labelMessage = new JLabel(" ", SwingConstants.CENTER);
         this.labelMessage.setForeground(Color.RED);
@@ -79,5 +76,10 @@ public class VueCommande extends JPanel {
         this.labelMessage.setText(" ");
     }
 
-
+    private void styliser_bouton(JButton b) {
+        b.setBackground(Theme.SABLE_FONCE);
+        b.setForeground(Theme.TEXTE_CLAIR);
+        b.setFocusPainted(false);
+        b.setBorder(BorderFactory.createRaisedBevelBorder());
+    }
 }

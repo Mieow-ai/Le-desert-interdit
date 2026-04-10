@@ -14,6 +14,8 @@ public class VueJoueur extends JPanel implements Observer {
     private JLabel labelEau;
     private JLabel labelAmortissment;
     private JLabel labelEquipements;
+    private JProgressBar barreEau;
+    private JProgressBar barreActions;
 
     public VueJoueur(Joueur joueur, Plateau p) {
         this.j = joueur;
@@ -24,15 +26,20 @@ public class VueJoueur extends JPanel implements Observer {
                 BorderFactory.createLineBorder(joueur.getCouleur(), 3),
                 BorderFactory.createEmptyBorder(12, 18, 12, 18)
         ));
-        labelNom = new JLabel(j.getNom());
-        labelNom.setFont(Theme.SOUS_TITRE);
+        this.labelNom = new JLabel(j.getNom());
+        this.labelNom.setFont(Theme.SOUS_TITRE);
         this.labelNom.setForeground(joueur.getCouleur());
-        this.labelActions = new JLabel("⚡ Actions restantes : " + j.getNb_action_restante());
-        this.labelActions.setFont(Theme.TEXTE);
-        this.labelActions.setForeground(Theme.TEXTE_CLAIR);
-        this.labelEau = new JLabel("💧 Eau : " + j.getNvEau() + "/" + j.get_niveau_eau_max());
-        this.labelEau.setFont(Theme.TEXTE);
-        this.labelEau.setForeground(new Color(100, 180, 255));
+        this.labelNom.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        this.barreEau = new JProgressBar(0, j.get_niveau_eau_max());
+        this.barreEau.setStringPainted(true);
+        this.barreEau.setForeground(Theme.EAU_BLEU);
+        this.barreEau.setBackground(Color.BLACK);
+
+        this.barreActions = new JProgressBar(0, 4);
+        this.barreActions.setStringPainted(true);
+        this.barreActions.setForeground(Theme.ACTION_ORANGE);
+        this.barreActions.setBackground(Color.BLACK);
 
         this.labelEquipements = new JLabel("🎒 Objets : Aucun");
         this.labelEquipements.setFont(Theme.TEXTE);
@@ -40,9 +47,12 @@ public class VueJoueur extends JPanel implements Observer {
         this.add(this.labelEquipements);
 
         this.add(labelNom);
+        this.add(Box.createVerticalStrut(10));
+        this.add(new JLabel("💧 Eau"));
+        this.add(barreEau);
         this.add(Box.createVerticalStrut(5));
-        this.add(labelActions);
-        this.add(labelEau);
+        this.add(new JLabel("⚡ Actions"));
+        this.add(barreActions);
         if(j.peut_amortir_tempete()){
             this.labelAmortissment = new JLabel("🌪️ Amortissement : 0");
             this.labelAmortissment.setFont(Theme.TEXTE);
@@ -54,8 +64,21 @@ public class VueJoueur extends JPanel implements Observer {
 
     @Override
     public void update() {
-        this.labelActions.setText("⚡ Actions restantes : " + j.getNb_action_restante());
-        this.labelEau.setText("💧 Eau : " + j.getNvEau() + "/" + j.get_niveau_eau_max());
+        this.barreEau.setValue(j.getNvEau());
+        this.barreEau.setString(j.getNvEau() + " / " + j.get_niveau_eau_max());
+        this.barreActions.setValue(j.getNb_action_restante());
+        this.barreActions.setString(j.getNb_action_restante() + " / 4");
+        if (j.get_plateau().getJoueurs().get(j.get_plateau().getIndiceJoueurActif()) == j) {
+            this.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Theme.BORDURE_ACTIVE, 4),
+                    BorderFactory.createEmptyBorder(10, 15, 10, 15)
+            ));
+        } else {
+            this.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(j.getCouleur(), 1),
+                    BorderFactory.createEmptyBorder(10, 15, 10, 15)
+            ));
+        }
         if(j.peut_amortir_tempete()) {
             this.labelAmortissment.setText("🌪️ Amortissement : " + j.getReductionTempete());
         }

@@ -6,6 +6,7 @@ import modele.Plateau;
 import modele.Zone;
 import vue.FenetreJeu;
 import vue.Observer;
+import vue.VueCommande;
 
 import javax.swing.*;
 import java.awt.*;

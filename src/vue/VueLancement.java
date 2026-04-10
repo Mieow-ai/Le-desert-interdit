@@ -1,6 +1,7 @@
 package vue;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class VueLancement extends JPanel {
@@ -10,26 +11,67 @@ public class VueLancement extends JPanel {
     private JTextField champNom;
 
     public VueLancement() {
-        this.setLayout(new BorderLayout());
-        this.setBackground(Color.LIGHT_GRAY);
-        JPanel Boutons = new JPanel();
-        Boutons.setBackground(Color.LIGHT_GRAY);
+        // 1. Fond et Layout global
+        this.setBackground(Theme.FOND_PANNEAU);
+        this.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        JLabel labelNom = new JLabel("Nom : ");
-        this.champNom = new JTextField(10);
-        this.Bouton_ajouter_joueur = new JButton("Ajouter un joueur");
-        this.Bouton_play = new JButton("Jouer");
+        // --- PANNEAU CENTRAL (Contient tous les éléments) ---
+        JPanel panel_central = new JPanel();
+        panel_central.setOpaque(false);
+        panel_central.setLayout(new BoxLayout(panel_central, BoxLayout.Y_AXIS));
+        panel_central.setBorder(new EmptyBorder(50, 50, 50, 50));
 
-        Boutons.add(labelNom);
-        Boutons.add(this.champNom);
-        Boutons.add(this.Bouton_ajouter_joueur);
-        Boutons.add(this.Bouton_play);
-        this.add(Boutons, BorderLayout.NORTH);
+        // 2. TITRE DU JEU
+        JLabel titre = new JLabel("LE DÉSERT INTERDIT");
+        titre.setFont(new Font("Serif", Font.BOLD, 48));
+        titre.setForeground(Theme.ACCENT_OR);
+        titre.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel_central.add(titre);
+
+        panel_central.add(Box.createVerticalStrut(40));
+
+        // 3. ZONE DE SAISIE DU NOM
+        JLabel labelNom = new JLabel("NOM DE L'AVENTURIER :");
+        labelNom.setFont(Theme.SOUS_TITRE);
+        labelNom.setForeground(Theme.TEXTE_CLAIR);
+        labelNom.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel_central.add(labelNom);
+
+        panel_central.add(Box.createVerticalStrut(10));
+
+        this.champNom = new JTextField(15);
+        this.champNom.setMaximumSize(new Dimension(300, 40));
+        this.champNom.setFont(Theme.TITRE);
+        this.champNom.setBackground(Theme.SABLE_CLAIR);
+        this.champNom.setForeground(Theme.TEXTE_FONCE);
+        this.champNom.setCaretColor(Theme.TEXTE_FONCE);
+        this.champNom.setHorizontalAlignment(JTextField.CENTER);
+        panel_central.add(this.champNom);
+
+        panel_central.add(Box.createVerticalStrut(30));
+
+        JPanel panel_boutons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        panel_boutons.setOpaque(false);
+
+        this.Bouton_ajouter_joueur = new JButton("REJOINDRE L'EXPÉDITION");
+        styliser_bouton(this.Bouton_ajouter_joueur, Theme.SABLE_FONCE);
+
+        this.Bouton_play = new JButton("LANCER LA PARTIE");
+        styliser_bouton(this.Bouton_play, new Color(39, 174, 96));
+
+        panel_boutons.add(this.Bouton_ajouter_joueur);
+        panel_boutons.add(this.Bouton_play);
+        panel_central.add(panel_boutons);
+
+        panel_central.add(Box.createVerticalStrut(20));
 
         this.labelMessage = new JLabel(" ", SwingConstants.CENTER);
-        this.labelMessage.setForeground(Color.RED);
-        this.add(this.labelMessage, BorderLayout.SOUTH);
-
+        this.labelMessage.setFont(Theme.TEXTE);
+        this.labelMessage.setForeground(Theme.ACCENT_OR);
+        this.labelMessage.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel_central.add(this.labelMessage);
+        this.add(panel_central, gbc);
     }
 
     public JButton getBouton_ajouter_joueur() {
@@ -56,4 +98,25 @@ public class VueLancement extends JPanel {
         this.labelMessage.setText("");
     }
 
+    private void styliser_bouton(JButton b, Color bg) {
+        b.setFont(Theme.SOUS_TITRE);
+        b.setBackground(bg);
+        b.setForeground(Theme.TEXTE_CLAIR);
+        b.setFocusPainted(false);
+        b.setPreferredSize(new Dimension(220, 50));
+        b.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Theme.TEXTE_CLAIR, 1),
+                BorderFactory.createEmptyBorder(10, 15, 10, 15)
+        ));
+
+        // Effet au survol
+        b.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                b.setBackground(bg.brighter());
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                b.setBackground(bg);
+            }
+        });
+    }
 }
