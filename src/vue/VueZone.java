@@ -96,6 +96,7 @@ public class VueZone extends JPanel {
             if (imageTempete != null) {
                 g.drawImage(imageTempete, 0, 0, getWidth(), getHeight(), this);
             }
+            return;
         } else {
             switch (zone_actuelle.getType()) {
                 case EAU:

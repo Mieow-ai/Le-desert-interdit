@@ -88,8 +88,9 @@ public abstract class Zone {
             case DECOLLAGE:
                 return new ZoneDecollage(i, j);
             case EAU:
-            case MIRAGE:
                 return new ZoneEau(i, j);
+            case MIRAGE:
+                return new ZoneMirage(i, j);
             case TUNNEL:
                 return new ZoneTunnel(i, j);
             case INDICE_BOITE:
@@ -267,6 +268,23 @@ class ZoneEau extends Zone {
     }
     @Override
     protected void actionReveler() {
+        System.out.println("Source d'eau découverte");
+        for (Joueur j : this.getJoueurs()) {
+            j.boire_eau(2);
+        }
+    }
+}
 
+class ZoneMirage extends Zone {
+    public ZoneMirage(int i, int j){
+        super(i, j);
+    }
+    @Override
+    public TypeZone getType() {
+        return TypeZone.MIRAGE;
+    }
+    @Override
+    protected void actionReveler() {
+        System.out.println("C'est un mirage");
     }
 }

@@ -8,7 +8,6 @@ import java.util.Set;
 
 public abstract class Joueur {
     public void creuserZone(Zone zone) {
-        this.joue_action();
         if(zone.getNbSable() > 0) {
             zone.creuser();
         } else if (!zone.estRevelee() && zone.getNbSable() == 0){
@@ -176,6 +175,9 @@ public abstract class Joueur {
                 p.declencher_defaite(this.nom + " est mort de soif !"); // A modifier pour gerer dans le controlleur
             }
         }
+        else {
+            System.out.println(this.nom + "est à l'abri dans le tunnel");
+        }
     }
 
     // Gestion de l'eau
@@ -297,6 +299,7 @@ class Alpiniste extends Joueur {
                     accessibles.add(voisine);
                 }
             }
+
         }
         return accessibles;
     }
