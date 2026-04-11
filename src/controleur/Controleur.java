@@ -6,12 +6,8 @@ import modele.Plateau;
 import modele.Zone;
 import vue.FenetreJeu;
 import vue.Observer;
-import vue.VueCommande;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -134,45 +130,25 @@ public class Controleur implements Observer {
             }
         });
 
-        // Bouton Amortir la Tempête (Météorologue)
-        this.vue.getVc().getBoutonAmortirTempete().addActionListener(e -> {
-            Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
-            if(actif.getNb_action_restante() >0){
-                if (actif.peut_amortir_tempete()) {
-                    if(actif.getReductionTempete() < (int) p.getNiveauTempete()) {
-                        actif.amortirTempete();
-                        vue.getVc().reset_texte_erreur();
-                        p.notifyObservers();
-                    } else {
-                        vue.getVc().set_texte_erreur("Vous ne pouvez pas amortir plus la tempête");
-                    }
 
-                } else {
-                        vue.getVc().set_texte_erreur("Vous ne pouvez pas amortir la tempête");
-                }
-            } else {
-                vue.getVc().set_texte_erreur("Action impossible : plus d'actions...");
-            }
 
-        });
-
-        // bouton donner de l'eau (Porteuse d'eau)
+        // bouton donner de l'eau (général)
         this.vue.getVc().getBoutonDonnerEau().addActionListener(e -> {
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             List<Joueur> cibles_possibles = new ArrayList<>();
 
-            if (actif.getNvEau() <= 0) {
+            if (actif.getNvEau() <= 1) {
                 vue.getVc().set_texte_erreur("Vous n'avez pas d'eau à partager !");
                 return;
             }
 
             for(Joueur j : joueurs){
-                if (j != actif && actif.peut_donner_eau(j) && j.getNvEau() < j.get_niveau_eau_max()){
+                if (j != actif && actif.peut_donner_eau(j) ){
                     cibles_possibles.add(j);
                 }
             }
             if(cibles_possibles.isEmpty()){
-                vue.getVc().set_texte_erreur("Peut donner de l'eau à personne");
+                vue.getVc().set_texte_erreur("Vous ne pouvez donner de l'eau à personne");
                 return;
             }
             Joueur cible = (Joueur) JOptionPane.showInputDialog(
@@ -188,33 +164,7 @@ public class Controleur implements Observer {
         });
 
 
-        // bouton deplacer un allié (Navigatrice)
-        vue.getVc().getBoutonDeplacerAllie().addActionListener(e -> {
-            Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
 
-            if(actif.getNb_action_restante() > 0) {
-                if (actif.getRole() == Joueur.Role.NAVIGATRICE){
-                    List<Joueur> cibles = actif.get_joueurs_deplacables();
-
-                    Joueur cible = (Joueur) JOptionPane.showInputDialog(
-                            vue, "Quel allié voulez-vous déplacer ?", "Déplaceer allié",
-                            JOptionPane.QUESTION_MESSAGE, null,
-                            cibles.toArray(), cibles.get(0));
-
-                    if (cible != null) {
-                        allieADeplacer = cible;
-                        action_courante = action.DEPLACEMENT_ALLIE;
-                        p.setZonesAccessibles(cible.getZonesAccessibles(p));
-                        vue.getVc().set_texte_erreur("Cliquer sur la case où vous  voulez déplacer" + cible.getNom());
-                    }
-                }
-                else {
-                    vue.getVc().set_texte_erreur("Seule la Navigatrice peut faire cette action");
-                }
-            } else {
-                vue.getVc().set_texte_erreur("Plus d'actions restantes");
-            }
-        });
 
         // Bouton Equipement
         vue.getVc().getBouton_utiliser_equipement().addActionListener(e -> {
@@ -358,6 +308,12 @@ public class Controleur implements Observer {
             } else {
                 this.vue.getVl().reset_texte_erreur();
                 this.vue.afficherEcran(false);
+                // La vue crée les composants pour les joueurs (voir boucle dans le else)
+                // Les boutons spéciaux sont créés à ce moment là
+                // On peut donc les liers à l'action qu'ils executent
+                for(Joueur j : this.joueurs) {
+                    setActionSpeciale(j.getRole());
+                }
                 this.p.notifyObservers();
             }
 
@@ -387,6 +343,97 @@ public class Controleur implements Observer {
         });
 
 
+    }
+
+    private void setActionSpeciale(Joueur.Role roleAttribue) {
+        switch (roleAttribue){
+            case NAVIGATRICE:
+                // Bouton deplacer un allié
+                this.vue.getBoutonsSpeciaux().get(Joueur.Role.NAVIGATRICE).addActionListener(e -> {
+                    Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
+
+                    if(actif.getNb_action_restante() > 0) {
+                        if (actif.getRole() == Joueur.Role.NAVIGATRICE){
+                            List<Joueur> cibles = actif.get_joueurs_deplacables();
+
+                            Joueur cible = (Joueur) JOptionPane.showInputDialog(
+                                    vue, "Quel allié voulez-vous déplacer ?", "Déplacer allié",
+                                    JOptionPane.QUESTION_MESSAGE, null,
+                                    cibles.toArray(), cibles.get(0));
+
+                            if (cible != null) {
+                                allieADeplacer = cible;
+                                action_courante = action.DEPLACEMENT_ALLIE;
+                                p.setZonesAccessibles(cible.getZonesAccessibles(p));
+                                vue.getVc().set_texte_erreur("Cliquer sur la case où vous  voulez déplacer" + cible.getNom());
+                            }
+                        }
+                        else {
+                            vue.getVc().set_texte_erreur("Seule la Navigatrice peut faire cette action");
+                        }
+                    } else {
+                        vue.getVc().set_texte_erreur("Plus d'actions restantes");
+                    }
+                });
+                break;
+
+            case METEOROLOGUE:
+                // Bouton Amortir la Tempête (Météorologue)
+                this.vue.getBoutonsSpeciaux().get(Joueur.Role.METEOROLOGUE).addActionListener(e -> {
+                    Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
+                    if(actif.getNb_action_restante() >0){
+                        if (actif.peut_amortir_tempete()) {
+                            if(actif.getReductionTempete() < (int) p.getNiveauTempete()) {
+                                actif.amortirTempete();
+                                vue.getVc().reset_texte_erreur();
+                                p.notifyObservers();
+                            } else {
+                                vue.getVc().set_texte_erreur("Vous ne pouvez pas amortir plus la tempête");
+                            }
+
+                        } else {
+                            vue.getVc().set_texte_erreur("Vous ne pouvez pas amortir la tempête");
+                        }
+                    } else {
+                        vue.getVc().set_texte_erreur("Action impossible : plus d'actions...");
+                    }
+
+                });
+                break;
+            case PORTEUSE_EAU:
+                this.vue.getBoutonsSpeciaux().get(Joueur.Role.PORTEUSE_EAU).addActionListener(e -> {
+                    Joueur porteuse = this.joueurs.get(p.getIndiceJoueurActif());
+                    List<Joueur> cibles_possibles = new ArrayList<>();
+
+                    if (porteuse.getNvEau() <= 1) {
+                        vue.getVc().set_texte_erreur("La porteuse d'eau n'a pas d'eau à partager !");
+                        return;
+                    }
+
+                    for(Joueur j : joueurs){
+                        if (j != porteuse && porteuse.peut_donner_eau(j)){
+                            cibles_possibles.add(j);
+                        }
+                    }
+                    if(cibles_possibles.isEmpty()){
+                        vue.getVc().set_texte_erreur("La porteuse ne peut donner de l'eau à personne");
+                        return;
+                    }
+                    Joueur cible = (Joueur) JOptionPane.showInputDialog(
+                            vue, "À qui voulez-vous donner de l'eau ?", "Donner l'eau",
+                            JOptionPane.QUESTION_MESSAGE, null, cibles_possibles.toArray(), cibles_possibles.get(0));
+                    if(cible != null){
+                        if(porteuse.donner_eau(cible)){
+                            vue.getVc().reset_texte_erreur();
+                            System.out.println(porteuse.getNom() + "donne de l'eau à" + cible.getNom());
+                            p.notifyObservers();
+                        }
+                    }
+                });
+                break;
+            default: {};
+            break;
+        }
     }
 
     /**

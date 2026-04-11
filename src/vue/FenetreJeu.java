@@ -2,6 +2,12 @@ package vue;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import modele.Joueur;
 import modele.Plateau;
 
 public class FenetreJeu extends JFrame {
@@ -11,6 +17,17 @@ public class FenetreJeu extends JFrame {
     private VueLancement vueLancement;
     private VueInfoGlobales vIG;
     private boolean estSurMenu;
+    private List<VueJoueur> VuesJoueurs = new ArrayList<>();
+
+    public Map<Joueur.Role, JButton> getBoutonsSpeciaux() {
+        return boutonsSpeciaux;
+    }
+
+    private Map<Joueur.Role, JButton> boutonsSpeciaux = new HashMap<>();
+    public List<VueJoueur> getVuesJoueurs() {
+        return VuesJoueurs;
+    }
+
 
     public FenetreJeu(Plateau plateau) {
         this.p = plateau;
@@ -45,6 +62,8 @@ public class FenetreJeu extends JFrame {
             // On boucle sur tous les joueurs créés dans le menu pour créer leur bloc
             for (int i = 0; i < Joueurs.size(); i++) {
                 VueJoueur blocJoueur = new VueJoueur(Joueurs.get(i), p);
+                VuesJoueurs.add(blocJoueur);
+                boutonsSpeciaux.put(Joueurs.get(i).getRole(), blocJoueur.getBoutonPouvoir());
                 if (i %2 == 0) { // Un joueur sur 2 de chaque coté
                     panneauGauche.add(blocJoueur);
                 } else {

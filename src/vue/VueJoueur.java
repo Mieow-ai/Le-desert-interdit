@@ -22,6 +22,9 @@ public class VueJoueur extends JPanel implements Observer {
     private JLabel labelAmortissement;
     private JButton btnAmortir;
 
+    // Bouton spécifique au rôle
+    private JButton boutonPouvoir;
+
 
     public VueJoueur(Joueur joueur, Plateau p) {
         this.joueur = joueur;
@@ -50,18 +53,18 @@ public class VueJoueur extends JPanel implements Observer {
         ligneEau.setOpaque(false);
 
         this.barreEau = new JProgressBar(0, this.joueur.get_niveau_eau_max());
-        this.barreEau.setPreferredSize(new Dimension(80, 30));
+        this.barreEau.setPreferredSize(new Dimension(120, 20));
         this.barreEau.setStringPainted(true);
         this.barreEau.setForeground(Theme.EAU_BLEU);
         this.barreEau.setBackground(Color.GRAY);
-        btnDonnerEau = new JButton("Donner");
+        /**btnDonnerEau = new JButton("Donner");
         btnDonnerEau.setFont(Theme.TEXTE);
-        btnDonnerEau.setMargin(new Insets(1, 4, 1, 4));
+        btnDonnerEau.setMargin(new Insets(1, 4, 1, 4));**/
 
 
         ligneEau.add(new JLabel("💧"));
         ligneEau.add(barreEau);
-        ligneEau.add(btnDonnerEau);
+        //ligneEau.add(btnDonnerEau);
 
         this.add(ligneEau);
         this.add(Box.createVerticalStrut(5));
@@ -83,6 +86,7 @@ public class VueJoueur extends JPanel implements Observer {
 
 
 
+
         // Amortissement météorologue
         if(this.joueur.peut_amortir_tempete()){
             this.labelAmortissement = new JLabel("🌪️ Amortissement : 0");
@@ -90,14 +94,41 @@ public class VueJoueur extends JPanel implements Observer {
             this.labelAmortissement.setForeground(Theme.TEXTE_CLAIR);
             this.add(labelAmortissement);
         }
+        switch (joueur.getRole()){
+            case METEOROLOGUE:
+                boutonPouvoir = new JButton("Amortir Tempête");
+                break;
+            case NAVIGATRICE:
+                boutonPouvoir = new JButton("Déplacer Allié");
+                break;
+            case PORTEUSE_EAU:
+                boutonPouvoir = new JButton("Donner eau");
+                break;
+            default: boutonPouvoir = null;
+        }
+        if (boutonPouvoir != null) {
+            JPanel lignePouvoir = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+            lignePouvoir.setOpaque(false);
+            lignePouvoir.add(boutonPouvoir);
+            this.add(lignePouvoir);
+            this.add(Box.createVerticalStrut(5));
+
+        }
 
         this.labelEquipements = new JLabel("🎒 Objets : Aucun");
         this.labelEquipements.setFont(Theme.TEXTE);
         this.labelEquipements.setForeground(Theme.ACCENT_OR);
-        this.add(this.labelEquipements);
+        JPanel ligneEquip = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        ligneEquip.setOpaque(false);
+        ligneEquip.add(this.labelEquipements);
+
+        this.add(ligneEquip);
 
         this.update();
 
+    }
+    public JButton getBoutonPouvoir() {
+        return boutonPouvoir;
     }
 
     @Override
@@ -118,19 +149,18 @@ public class VueJoueur extends JPanel implements Observer {
             String liste = joueur.get_equipement().toString();
             this.labelEquipements.setText("🎒 " + liste.substring(1, liste.length() - 1));
         }
-
+        this.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(joueur.getCouleur(), 3),
+                // Bordure intérieur (padding)
+                BorderFactory.createEmptyBorder(12, 18, 12, 18)
+        ));
         if (plateau.getJoueurActif() == this.joueur) {
             this.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(Theme.BORDURE_ACTIVE, 4),
-                    BorderFactory.createEmptyBorder(12, 18, 12, 18)
-            ));
-        } else {
-            this.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(joueur.getCouleur(), 3),
-                    // Bordure intérieur (padding)
+                    BorderFactory.createLineBorder(Theme.BORDURE_ACTIVE, 10),
                     BorderFactory.createEmptyBorder(12, 18, 12, 18)
             ));
         }
+
 
 
 

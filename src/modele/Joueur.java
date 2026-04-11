@@ -242,10 +242,6 @@ public abstract class Joueur {
      * @return true si le transfert a réussi, false sinon
      */
     public boolean donner_eau(Joueur cible) {
-        if (this.niveauEau <= 0)
-            return false;
-        if (cible.niveauEau >= cible.niveauEauMax)
-            return false;
         if (!peut_donner_eau(cible))
             return false;
         this.niveauEau--;
@@ -255,7 +251,7 @@ public abstract class Joueur {
 
     /** Vérifie si le joueur est en condition pour donner de l'eau à la cible **/
     public boolean peut_donner_eau(Joueur cible) {
-        return this.zone == cible.zone;
+        return this.zone == cible.zone && cible.niveauEau < cible.niveauEauMax && this.niveauEau >= 1;
     }
     public void remplirGourde(){
         if (niveauEau < niveauEauMax){
@@ -473,16 +469,13 @@ class PorteuseEau extends Joueur {
 
     // La porteuse d'eau peut donner de l'eau aux joueurs adjacents (N/S/E/O) ou sur
     // la même case
+
     @Override
     public boolean peut_donner_eau(Joueur cible) {
-        if (this.getZone() == null || cible.getZone() == null)
-            return false;
-        if (this.getZone() == cible.getZone())
-            return true;
-        int dx = Math.abs(this.getZone().getX() - cible.getZone().getX());
-        int dy = Math.abs(this.getZone().getY() - cible.getZone().getY());
-        return (dx + dy) == 1;
+        List<Zone> accessibles = getZonesAccessibles(this.get_plateau());
+        return accessibles.contains(cible.getZone()) && cible.niveauEau < cible.niveauEauMax && this.niveauEau >= 1;
     }
+
     @Override
     public void remplirGourde(){
         for (int i = 0; i < 2; i++) {
@@ -493,7 +486,4 @@ class PorteuseEau extends Joueur {
 
     }
 
-    public boolean donner_eau_gratuit() {
-        return true;
-    }
 }
