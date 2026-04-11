@@ -237,8 +237,6 @@ public class Plateau extends Observable {
     public void finDeTour() {
         this.indiceJoueurActif = (this.indiceJoueurActif + 1) % joueurs.size();
         this.joueurs.get(indiceJoueurActif).reset_action();
-        this.action_desert();
-
     }
 
     /**
@@ -276,51 +274,21 @@ public class Plateau extends Observable {
     // Mécaniques de la tempête
 
     /**
-     * Gère la phase "Pioche" à la fin d'un tour.
-     * Utilise un Timer Swing pour simuler le tirage successif des cartes avec un
-     * délai visuel,
-     * permettant à l'interface de s'animer progressivement.
+     * Effectue une action du désert et renvoie la carte dont l'action a été effectuée
      */
     public void action_desert() {
-        int nbCartes = (int) this.niveauTempete;
-        // Vérifier si le météorologue a amorti la tempête
-        for (Joueur j : joueurs) {
-            nbCartes -= j.getAndResetReductionTempete();
+        CarteTempete carte = paquetTempete.piocher();
+        switch (carte.getType()){
+            case VENT:
+                leVentSouffle(carte.getDirection(),carte.getForce());
+                break;
+            case DECHAINE:
+                LaTempeteSeDechaine();
+                break;
+            case CHALEUR:
+                vagueDeChaleur();
         }
-        final int nbcartestimer = nbCartes;
-
-        Timer timer = new javax.swing.Timer(700, null); // On crée un timer qui sera déclenché toutes les 700ms après le
-                                                        // départ du timer
-        timer.addActionListener(new ActionListener() { // classe anonyme sur l'interface ActionListener
-            int i = 0;
-
-            @Override
-            public void actionPerformed(ActionEvent e) { // action effectuée à chaque déclenchement du timer
-                if (etat != EtatPartie.EN_COURS) {
-                    ((javax.swing.Timer) e.getSource()).stop();
-                    return;
-                }
-                if (i >= nbcartestimer) {
-                    ((javax.swing.Timer) e.getSource()).stop(); // Le bon nombre de cartes à été tiré
-                    return;
-                }
-
-                CarteTempete carte = paquetTempete.piocher();
-                switch (carte.getType()){
-                    case VENT:
-                        leVentSouffle(carte.getDirection(),carte.getForce());
-                        break;
-                    case DECHAINE:
-                        LaTempeteSeDechaine();
-                        break;
-                    case CHALEUR:
-                        vagueDeChaleur();
-                }
-                notifyObservers();
-                i++;
-            }
-        });
-        timer.start();
+        notifyObservers();
     }
 
     /**

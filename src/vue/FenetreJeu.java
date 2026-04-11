@@ -18,6 +18,7 @@ public class FenetreJeu extends JFrame {
     private VueInfoGlobales vIG;
     private boolean estSurMenu;
     private List<VueJoueur> VuesJoueurs = new ArrayList<>();
+    private VuePaquetTempete vuePaquetTempete;
 
     public Map<Joueur.Role, JButton> getBoutonsSpeciaux() {
         return boutonsSpeciaux;
@@ -71,12 +72,14 @@ public class FenetreJeu extends JFrame {
                 }
             }
 
-            VuePaquet vuePaquetTempete = new VuePaquetTempete(p,p.getPaquetTempete());
+            this.vuePaquetTempete = new VuePaquetTempete(p,p.getPaquetTempete());
             JPanel panneauTotalGauche = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
             panneauTotalGauche.setOpaque(false);
 
             panneauTotalGauche.add(vuePaquetTempete);
             panneauTotalGauche.add(panneauJoueursGauche);
+            panneauTotalGauche.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+
             this.add(panneauTotalGauche, BorderLayout.WEST);
             this.add(panneauJoueursDroite, BorderLayout.EAST);
             this.add(panneauJoueursDroite, BorderLayout.EAST);
@@ -100,6 +103,8 @@ public class FenetreJeu extends JFrame {
     public VueLancement getVl() {
         return this.vueLancement;
     }
+
+    public VuePaquetTempete getVuePaquetTempete(){return this.vuePaquetTempete;}
 
 
 }

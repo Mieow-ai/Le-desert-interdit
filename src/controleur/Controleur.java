@@ -1,13 +1,12 @@
 package controleur;
 
-import modele.Equipement;
-import modele.Joueur;
-import modele.Plateau;
-import modele.Zone;
+import modele.*;
 import vue.FenetreJeu;
 import vue.Observer;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -74,6 +73,7 @@ public class Controleur implements Observer {
             // Réinitialise les actions et surbrillances du joueur précédent
             action_courante = action.AUCUNE;
             p.resetZonesAccessibles();
+            this.action_desert();
             p.finDeTour();
             gerer_fin_de_partie();
         });
@@ -487,5 +487,37 @@ public class Controleur implements Observer {
                 System.exit(0); // Quitte le jeu
             }
         }
+    }
+    /**
+     * Gère la phase "Pioche" à la fin d'un tour.
+     * Utilise un Timer Swing pour simuler le tirage successif des cartes avec un délai visuel,
+     * permettant à l'interface de s'animer progressivement.
+     */
+    public void action_desert() {
+        int nbCartes = (int) p.getNiveauTempete();
+        // Vérifier si le météorologue a amorti la tempête
+        for (Joueur j : joueurs) {
+            nbCartes -= j.getAndResetReductionTempete();
+        }
+        final int nbcartestimer = nbCartes;
+        Timer timer = new javax.swing.Timer(700, null); // On crée un timer qui sera déclenché toutes les 1000ms après le départ du timer
+        timer.addActionListener(new ActionListener() { // classe anonyme sur l'interface ActionListener
+            int i = 0;
+
+            @Override
+            public void actionPerformed(ActionEvent e) { // action effectuée à chaque déclenchement du timer
+                if (p.getEtat() != Plateau.EtatPartie.EN_COURS) {
+                    ((javax.swing.Timer) e.getSource()).stop();
+                    return;
+                }
+                if (i >= nbcartestimer) {
+                    ((javax.swing.Timer) e.getSource()).stop(); // Le bon nombre de cartes à été tiré
+                    return;
+                }
+                p.action_desert();
+                i++;
+            }
+        });
+        timer.start();
     }
 }

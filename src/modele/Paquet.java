@@ -22,11 +22,16 @@ public abstract class Paquet<T> {
             defausse.clear();
             Collections.shuffle(pioche);
         }
-        return pioche.remove(0); // Retire et renvoie la première carte
-    }
-
-
-    public void defausser(T carte) {
+        T carte = pioche.remove(0);
         defausse.add(carte);
+
+        return carte;
+    }
+    public T regarderDefausse(){
+        if(defausse.isEmpty()){
+            return null;
+        } else {
+            return defausse.getLast();
+        }
     }
 }

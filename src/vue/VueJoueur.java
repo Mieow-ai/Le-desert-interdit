@@ -161,9 +161,6 @@ public class VueJoueur extends JPanel implements Observer {
             ));
         }
 
-
-
-
         this.revalidate();
         this.repaint();
     }

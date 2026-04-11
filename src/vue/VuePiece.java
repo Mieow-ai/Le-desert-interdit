@@ -8,7 +8,7 @@ public class VuePiece extends JPanel {
 
     public VuePiece(String path, int width, int height) {
         this.image = new ImageIcon(path).getImage();
-        this.setOpaque(false); // Transparent !
+        this.setOpaque(false); // Transparent
         this.setPreferredSize(new Dimension(width, height));
     }
 
