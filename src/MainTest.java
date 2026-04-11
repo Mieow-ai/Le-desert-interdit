@@ -1,5 +1,6 @@
 import static org.junit.Assert.*;
 
+import modele.CarteTempete;
 import modele.Zone;
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class MainTest {
 
         assertTrue("L'objet est en attente", p.testGetObjetsEnAttente().contains(type));
 
-        p.leVentSouffle( "sud", 1); // On déplace l'oeil
+        p.leVentSouffle( CarteTempete.Direction.SUD, 1); // On déplace l'oeil
 
         assertSame("L'objet est bien sur la Zone (2,2)", type, p.getZone(2, 2).get_objet_pose());
         assertTrue("L'attente est vide", p.testGetObjetsEnAttente().isEmpty());

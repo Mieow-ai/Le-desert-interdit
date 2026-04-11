@@ -11,4 +11,17 @@ public class CarteTempete {
         this.direction = direction;
         this.force = force;
     }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public int getForce() {
+        return force;
+    }
+
 }

@@ -27,6 +27,7 @@ public class Plateau extends Observable {
     private int indiceJoueurActif = 0;
     private List<Equipement> pioche_equipement = new ArrayList<>();
     private Map<PIECE, Boolean> etatPieces = new HashMap<>();
+    private PaquetTempete paquetTempete = new PaquetTempete();
 
 
 
@@ -302,28 +303,16 @@ public class Plateau extends Observable {
                     return;
                 }
 
-                double tirage = Math.random();
-                if (tirage <= 0.77) {
-                    double tirage_dir = Math.random();
-                    int force = (int) (Math.random() * 3) + 1;
-                    String direction = "";
-                    if (tirage_dir <= 0.25) {
-                        direction = "nord";
-                        leVentSouffle(direction, force);
-                    } else if (tirage_dir <= 0.5) {
-                        direction = "sud";
-                        leVentSouffle(direction, force);
-                    } else if (tirage_dir <= 0.75) {
-                        direction = "ouest";
-                        leVentSouffle(direction, force);
-                    } else {
-                        direction = "est";
-                        leVentSouffle(direction, force);
-                    }
-                } else if (tirage <= 0.87) {
-                    LaTempeteSeDechaine();
-                } else {
-                    vagueDeChaleur();
+                CarteTempete carte = paquetTempete.piocher();
+                switch (carte.getType()){
+                    case VENT:
+                        leVentSouffle(carte.getDirection(),carte.getForce());
+                        break;
+                    case DECHAINE:
+                        LaTempeteSeDechaine();
+                        break;
+                    case CHALEUR:
+                        vagueDeChaleur();
                 }
                 notifyObservers();
                 i++;
@@ -336,24 +325,29 @@ public class Plateau extends Observable {
      * Déplace les tuiles du plateau dans la direction du vent
      * et ajoute du sable sur les tuiles déplacées.
      * 
-     * @param direction "nord", "sud", "est", ou "ouest"
+     * @param direction
      * @param force     Le nombre de tuiles déplacées (1 à 3)
      */
-    public void leVentSouffle(String direction, int force) {
+    public void leVentSouffle(CarteTempete.Direction direction, int force) {
 
         for (int k = 0; k < force; k++) {
             int iCible = oeilI;
             int jCible = oeilJ;
-
-            if (direction.equals("nord")) {
-                iCible += 1;
-            } else if (direction.equals("ouest")) {
-                jCible += 1;
-            } else if (direction.equals("est")) {
-                jCible -= 1;
-            } else {
-                iCible -= 1;
+            switch (direction){
+                case NORD:
+                    iCible += 1;
+                    break;
+                case SUD:
+                    iCible -= 1;
+                    break;
+                case EST:
+                    jCible -= 1;
+                    break;
+                case OUEST:
+                    jCible += 1;
+                    break;
             }
+
 
             if (iCible < 0 || iCible >= 5 || jCible < 0 || jCible >= 5) {
                 break;
