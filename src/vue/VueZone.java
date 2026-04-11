@@ -17,7 +17,14 @@ public class VueZone extends JPanel {
     private static Image imageOasisRev = new ImageIcon("oasis_rev.png").getImage();
     private static Image imageCrash = new ImageIcon("crash.png").getImage();
     private static Image imageMirage = new ImageIcon("mirage.png").getImage();
-
+    private static Image imageHorizontaleBoite = new ImageIcon("boiteHorizontale.png").getImage();
+    private static Image imageVerticaleBoite = new ImageIcon("boiteVerticale.png").getImage();
+    private static Image imageHorizontaleCristal = new ImageIcon("cristalHorizontale.png").getImage();
+    private static Image imageVerticaleCristal = new ImageIcon("cristalboiteVerticale.png").getImage();
+    private static Image imageHorizontaleHelice = new ImageIcon("heliceHorizontale.png").getImage();
+    private static Image imageVerticaleHelice = new ImageIcon("heliceVerticale.png").getImage();
+    private static Image imageHorizontaleNavigation = new ImageIcon("navigationHorizontale.png").getImage();
+    private static Image imageVerticaleNavigation = new ImageIcon("navigationVerticale.png").getImage();
 
     public VueZone() {
         this.setPreferredSize(new Dimension(100, 100));
@@ -81,7 +88,7 @@ public class VueZone extends JPanel {
                 this.setBorder(BorderFactory.createLineBorder(Theme.BORDURE_ACTIVE, 2));
             } else {
                 this.setBackground(Theme.SABLE_FONCE);
-                this.setBorder(BorderFactory.createLineBorder(new Color(0,0,0,30)));
+                this.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0, 30)));
             }
         }
 
@@ -115,7 +122,7 @@ public class VueZone extends JPanel {
                         break;
                 }
             } else {
-                switch (zone_actuelle.getType()){
+                switch (zone_actuelle.getType()) {
                     case CRASH:
                         if (imageCrash != null) {
                             g.drawImage(imageCrash, 0, 0, getWidth(), getHeight(), this);
@@ -131,11 +138,55 @@ public class VueZone extends JPanel {
                             g.drawImage(imageMirage, 0, 0, getWidth(), getHeight(), this);
                         }
                         break;
+                    case INDICE_BOITE:
+                        if (zone_actuelle.getAxe() == 'i') {
+                            if (imageHorizontaleBoite != null) {
+                                g.drawImage(imageHorizontaleBoite, 0, 0, getWidth(), getHeight(), this);
+                            }
+                        } else {
+                            if (imageVerticaleBoite != null) {
+                                g.drawImage(imageVerticaleBoite, 0, 0, getWidth(), getHeight(), this);
+                            }
+                        }
+                        break;
+                    case INDICE_HELICE:
+                        if (zone_actuelle.getAxe() == 'i') {
+                            if (imageHorizontaleHelice != null) {
+                                g.drawImage(imageHorizontaleHelice, 0, 0, getWidth(), getHeight(), this);
+                            }
+                        } else {
+                            if (imageVerticaleHelice != null) {
+                                g.drawImage(imageVerticaleHelice, 0, 0, getWidth(), getHeight(), this);
+                            }
+                        }
+                        break;
+                    case INDICE_CRISTAL:
+                        if (zone_actuelle.getAxe() == 'i') {
+                            if (imageHorizontaleCristal != null) {
+                                g.drawImage(imageHorizontaleCristal, 0, 0, getWidth(), getHeight(), this);
+                            }
+                        } else {
+                            if (imageVerticaleCristal != null) {
+                                g.drawImage(imageVerticaleCristal, 0, 0, getWidth(), getHeight(), this);
+                            }
+                        }
+                        break;
+                    case INDICE_NAVIGATION:
+                        if (zone_actuelle.getAxe() == 'i') {
+                            if (imageHorizontaleNavigation != null) {
+                                g.drawImage(imageHorizontaleNavigation, 0, 0, getWidth(), getHeight(), this);
+                            }
+                        } else {
+                            if (imageVerticaleNavigation != null) {
+                                g.drawImage(imageVerticaleNavigation, 0, 0, getWidth(), getHeight(), this);
+                            }
+                        }
+                        break;
                     default:
                         if (imageSable != null) {
                             g.drawImage(imageSable, 0, 0, getWidth(), getHeight(), this);
                         }
-                    break;
+                        break;
                 }
             }
 
