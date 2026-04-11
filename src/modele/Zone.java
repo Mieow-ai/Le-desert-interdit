@@ -4,10 +4,10 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 /**
  * Classe abstraite représentant une tuile (case) du plateau de jeu.
- * Elle gère l'état physique de la case (niveau de sable, statut révélé, coordonnées),
+ * Elle gère l'état physique de la case (niveau de sable, statut révélé,
+ * coordonnées),
  * les joueurs présents, et les pièces de la navette qui peuvent y apparaître.
  * Elle sert de super-classe pour tous les types spécifiques de zones.
  */
@@ -20,7 +20,9 @@ public abstract class Zone {
     private TypeZone objetpose = null;
     protected Plateau p;
 
-    public char getAxe(){throw new IllegalStateException("La zone n'est pas un indice");};
+    public char getAxe() {
+        throw new IllegalStateException("La zone n'est pas un indice");
+    };
 
     /**
      * Énumération de tous les types de tuiles possibles dans le jeu.
@@ -47,6 +49,7 @@ public abstract class Zone {
 
     /**
      * Constructeur Zone. Ne peut être appelé que par les classes filles.
+     * 
      * @param i Coordonnée X initiale
      * @param j Coordonnée Y initiale
      */
@@ -57,9 +60,11 @@ public abstract class Zone {
     }
 
     /**
-     * Factory Method : Instancie et retourne la bonne classe fille en fonction du type demandé.
-     * @param i Coordonnée X
-     * @param j Coordonnée Y
+     * Factory Method : Instancie et retourne la bonne classe fille en fonction du
+     * type demandé.
+     * 
+     * @param i    Coordonnée X
+     * @param j    Coordonnée Y
      * @param type Le type de la zone à créer
      * @return L'instance spécifique de la Zone (ex: ZoneEau, ZoneTunnel, etc.)
      */
@@ -68,9 +73,9 @@ public abstract class Zone {
             case CRASH:
                 return new ZoneCrash(i, j, p);
             case DECOLLAGE:
-                return new ZoneDecollage(i, j,  p);
+                return new ZoneDecollage(i, j, p);
             case EAU:
-                return new ZoneEau(i, j,  p);
+                return new ZoneEau(i, j, p);
             case MIRAGE:
                 return new ZoneMirage(i, j, p);
             case TUNNEL:
@@ -91,42 +96,61 @@ public abstract class Zone {
     public TypeZone get_objet_pose() {
         return this.objetpose;
     }
+
     public abstract TypeZone getType();
-    public void poser_objet(TypeZone objet){
+
+    public void poser_objet(TypeZone objet) {
         this.objetpose = objet;
     }
-    public TypeZone ramasser_objet(){
+
+    public TypeZone ramasser_objet() {
         TypeZone obj = this.objetpose;
         this.objetpose = null;
         return obj;
     }
+
     public boolean estRevelee() {
         return this.revelee;
     }
+
     public void set_position(int x, int y) {
         this.x = x;
         this.y = y;
     }
+
     public int getX() {
         return this.x;
     }
+
     public int getY() {
         return this.y;
     }
+
     public void ajouterJoueur(Joueur j) {
         joueurs.add(j);
     }
+
     public void retirerJoueur(Joueur j) {
         joueurs.remove(j);
     }
+
     public List<Joueur> getJoueurs() {
         return joueurs;
     }
+
     public int getNbSable() {
         return this.nbSable;
     }
+
     public boolean estAccessible() {
-        return this.nbSable <= 1;
+        boolean alpiniste = false;
+        for (Joueur j : joueurs) {
+            if (j.getRole() == Joueur.Role.ALPINISTE) {
+                alpiniste = true;
+                break;
+            }
+        }
+        return this.nbSable <= 1 || alpiniste;
     }
 
     // Mécanique de terrain
@@ -150,7 +174,7 @@ public abstract class Zone {
      * Détruit tout le sable d'un seul coup (utilisé par le Blaster des Dunes).
      * @return Le nombre exact de marqueurs de sable retirés.
      */
-    public int viderSable(){
+    public int viderSable() {
         int sable_retirer = this.nbSable;
         this.nbSable = 0;
         return sable_retirer;
@@ -160,7 +184,7 @@ public abstract class Zone {
      * Retourne la tuile face visible. Ne fonctionne que s'il n'y a plus de sable.
      * Déclenche l'effet spécifique de la tuile via `actionReveler()`.
      */
-    public void reveler () {
+    public void reveler() {
         if (nbSable == 0 && !this.revelee) {
             this.revelee = true;
             this.actionReveler();
@@ -204,7 +228,7 @@ class ZoneCrash extends Zone {
     }
 
     public ZoneCrash(int i, int j, Plateau p) {
-        super(i,j, p);
+        super(i, j, p);
         this.revelee = true;
     }
 }
@@ -212,7 +236,7 @@ class ZoneCrash extends Zone {
 /** Tuile classique contenant un symbole d'engrenage. Gérée dans la méthode creuser() du Joueur. **/
 class ZoneEngrenage extends Zone {
     public ZoneEngrenage(int i, int j, Plateau p) {
-        super(i,j, p);
+        super(i, j, p);
     }
     @Override
     public TypeZone getType() {
@@ -225,7 +249,7 @@ class ZoneIndice extends Zone {
     private TypeZone typeIndice;
     private char axe;
     public ZoneIndice(int i, int j, TypeZone type, char axe, Plateau p) {
-        super(i,j, p);
+        super(i, j, p);
         this.typeIndice = type;
         this.axe = axe;
     }
@@ -239,7 +263,7 @@ class ZoneIndice extends Zone {
         p.verifie_apparition_obj(this.typeIndice);
     }
     @Override
-    public char getAxe(){
+    public char getAxe() {
         return this.axe;
     }
 }
@@ -256,7 +280,7 @@ class ZoneTunnel extends Zone {
     }
 
     public ZoneTunnel(int i, int j, Plateau p) {
-        super(i,j, p);
+        super(i, j, p);
 
     }
 
@@ -283,12 +307,14 @@ class ZoneTunnel extends Zone {
     }
 }
 
-/** Lieu d'assemblage final. Tous les joueurs doivent s'y trouver pour gagner. **/
+
+ // Lieu d'assemblage final. Tous les joueurs doivent s'y trouver pour gagner.
+
 class ZoneDecollage extends Zone {
     public ZoneDecollage(int i, int j, Plateau p) {
         super(i, j, p);
     }
-        @Override
+    @Override
     public TypeZone getType() {
         return TypeZone.DECOLLAGE;
     }
@@ -299,7 +325,7 @@ class ZoneEau extends Zone {
     public ZoneEau(int i, int j, Plateau p) {
         super(i, j, p);
     }
-        @Override
+    @Override
     public TypeZone getType() {
         return TypeZone.EAU;
     }
@@ -312,7 +338,7 @@ class ZoneEau extends Zone {
     }
 }
 
-/** Fausse piste. Ne donne aucune eau lors de sa révélation. **/
+/** Ne donne aucune eau lors de sa révélation. **/
 class ZoneMirage extends Zone {
     public ZoneMirage(int i, int j, Plateau p) {
         super(i, j, p);
