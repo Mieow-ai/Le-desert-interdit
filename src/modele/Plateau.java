@@ -29,7 +29,9 @@ public class Plateau extends Observable {
     private Map<PIECE, Boolean> etatPieces = new HashMap<>();
     private PaquetTempete paquetTempete = new PaquetTempete();
 
-
+    public PaquetTempete getPaquetTempete() {
+        return paquetTempete;
+    }
 
     private List<Zone.TypeZone> attenteTempete = new ArrayList<>();
 

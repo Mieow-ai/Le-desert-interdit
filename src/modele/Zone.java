@@ -160,18 +160,20 @@ public abstract class Zone {
         nbSable += nbQuantite;
     }
 
-    /** Retire un marqueur de sable. Lève une exception si la case est déjà vide. **/
+    /**
+     * Retire un marqueur de sable. Lève une exception si la case est déjà vide.
+     **/
     public void creuser() {
         if (nbSable > 0) {
             nbSable--;
-        }
-        else {
+        } else {
             throw new IllegalStateException("Case sans sable, impossible de creuser");
         }
     }
 
     /**
      * Détruit tout le sable d'un seul coup (utilisé par le Blaster des Dunes).
+     * 
      * @return Le nombre exact de marqueurs de sable retirés.
      */
     public int viderSable() {
@@ -196,19 +198,24 @@ public abstract class Zone {
 
     // méthodes polymorphes
 
-
-    /** @return true si cette case protège de la carte "Vague de Chaleur". (Faux par défaut) */
+    /**
+     * @return true si cette case protège de la carte "Vague de Chaleur". (Faux par
+     *         défaut)
+     */
     public boolean protegeChaleur() {
         return false;
     }
 
-    /** * Action déclenchée automatiquement au moment où la case est révélée.
+    /**
+     * * Action déclenchée automatiquement au moment où la case est révélée.
      * Par défaut ne fait rien, mais est surchargée par Oasis, Tunnel, etc.
      */
     protected void actionReveler() {
     }
 
-    /** @return La liste des autres tunnels connectés à cette case. (Vide par défaut) */
+    /**
+     * @return La liste des autres tunnels connectés à cette case. (Vide par défaut)
+     */
     public Collection<Zone> getZonesTunnel() {
         return Collections.emptyList();
     }
@@ -233,21 +240,28 @@ class ZoneCrash extends Zone {
     }
 }
 
-/** Tuile classique contenant un symbole d'engrenage. Gérée dans la méthode creuser() du Joueur. **/
+/**
+ * Tuile classique contenant un symbole d'engrenage. Gérée dans la méthode
+ * creuser() du Joueur.
+ **/
 class ZoneEngrenage extends Zone {
     public ZoneEngrenage(int i, int j, Plateau p) {
         super(i, j, p);
     }
+
     @Override
     public TypeZone getType() {
         return TypeZone.ENGRENAGE;
     }
 }
 
-/** Tuile indiquant les coordonnées X ou Y d'une pièce de la machine volante. **/
+/**
+ * Tuile indiquant les coordonnées X ou Y d'une pièce de la machine volante.
+ **/
 class ZoneIndice extends Zone {
     private TypeZone typeIndice;
     private char axe;
+
     public ZoneIndice(int i, int j, TypeZone type, char axe, Plateau p) {
         super(i, j, p);
         this.typeIndice = type;
@@ -258,10 +272,12 @@ class ZoneIndice extends Zone {
     public TypeZone getType() {
         return this.typeIndice; // à gérer renvoie toujours le même
     }
+
     @Override
     protected void actionReveler() {
         p.verifie_apparition_obj(this.typeIndice);
     }
+
     @Override
     public char getAxe() {
         return this.axe;
@@ -307,28 +323,32 @@ class ZoneTunnel extends Zone {
     }
 }
 
-
- // Lieu d'assemblage final. Tous les joueurs doivent s'y trouver pour gagner.
+// Lieu d'assemblage final. Tous les joueurs doivent s'y trouver pour gagner.
 
 class ZoneDecollage extends Zone {
     public ZoneDecollage(int i, int j, Plateau p) {
         super(i, j, p);
     }
+
     @Override
     public TypeZone getType() {
         return TypeZone.DECOLLAGE;
     }
 }
 
-/** Restaure 2 unités d'eau à tous les joueurs présents lors de sa découverte. ù*/
+/**
+ * Restaure 2 unités d'eau à tous les joueurs présents lors de sa découverte. ù
+ */
 class ZoneEau extends Zone {
     public ZoneEau(int i, int j, Plateau p) {
         super(i, j, p);
     }
+
     @Override
     public TypeZone getType() {
         return TypeZone.EAU;
     }
+
     @Override
     protected void actionReveler() {
         System.out.println("Source d'eau découverte");
@@ -343,10 +363,12 @@ class ZoneMirage extends Zone {
     public ZoneMirage(int i, int j, Plateau p) {
         super(i, j, p);
     }
-        @Override
+
+    @Override
     public TypeZone getType() {
         return TypeZone.MIRAGE;
     }
+
     @Override
     protected void actionReveler() {
         System.out.println("C'est un mirage");

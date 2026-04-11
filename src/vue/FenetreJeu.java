@@ -51,11 +51,11 @@ public class FenetreJeu extends JFrame {
             this.add(vIG, BorderLayout.NORTH);
             this.add(vp, BorderLayout.CENTER);
             this.add(vc, BorderLayout.SOUTH);
-            JPanel panneauGauche = new JPanel(new GridLayout(3, 1, 10, 10));
-            panneauGauche.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            JPanel panneauJoueursGauche = new JPanel(new GridLayout(3, 1, 10, 10));
+            panneauJoueursGauche.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-            JPanel panneauDroite = new JPanel(new GridLayout(3, 1, 10, 10));
-            panneauDroite.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            JPanel panneauJoueursDroite = new JPanel(new GridLayout(3, 1, 10, 10));
+            panneauJoueursDroite.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
             java.util.List<modele.Joueur> Joueurs = p.getJoueurs();
 
@@ -65,14 +65,21 @@ public class FenetreJeu extends JFrame {
                 VuesJoueurs.add(blocJoueur);
                 boutonsSpeciaux.put(Joueurs.get(i).getRole(), blocJoueur.getBoutonPouvoir());
                 if (i %2 == 0) { // Un joueur sur 2 de chaque coté
-                    panneauGauche.add(blocJoueur);
+                    panneauJoueursGauche.add(blocJoueur);
                 } else {
-                    panneauDroite.add(blocJoueur);
+                    panneauJoueursDroite.add(blocJoueur);
                 }
             }
 
-            this.add(panneauGauche, BorderLayout.WEST);
-            this.add(panneauDroite, BorderLayout.EAST);
+            VuePaquet vuePaquetTempete = new VuePaquetTempete(p,p.getPaquetTempete());
+            JPanel panneauTotalGauche = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+            panneauTotalGauche.setOpaque(false);
+
+            panneauTotalGauche.add(vuePaquetTempete);
+            panneauTotalGauche.add(panneauJoueursGauche);
+            this.add(panneauTotalGauche, BorderLayout.WEST);
+            this.add(panneauJoueursDroite, BorderLayout.EAST);
+            this.add(panneauJoueursDroite, BorderLayout.EAST);
         }
         this.pack();
         this.setLocationRelativeTo(null);
