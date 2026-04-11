@@ -10,7 +10,7 @@ public class Theme {
     public static final Color TEXTE_FONCE   = new Color(80, 60, 30);
     public static final Color ACCENT_OR     = new Color(218, 165, 32);
     public static final Color ACCENT_DANGER = new Color(180, 50, 50);
-    public static final Color SURBRILLANCE  = new Color(100, 220, 100, 80);
+    public static final Color ENERGIE = new Color(255, 255, 0, 255);
 
     public static final Font TITRE    = new Font("SansSerif", Font.BOLD, 18);
     public static final Font SOUS_TITRE = new Font("SansSerif", Font.BOLD, 14);

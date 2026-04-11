@@ -356,9 +356,9 @@ public class Controleur implements Observer {
             if (this.joueurs.size() < 2) {
                 this.vue.getVl().set_texte_erreur("Il faut au minimum 2 joueurs pour lancer la partie");
             } else {
-                this.p.notifyObservers();
                 this.vue.getVl().reset_texte_erreur();
                 this.vue.afficherEcran(false);
+                this.p.notifyObservers();
             }
 
         });

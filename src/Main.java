@@ -3,11 +3,16 @@ import modele.Joueur;
 import modele.Plateau;
 import vue.FenetreJeu;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
-
+        try {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         Plateau p = new Plateau();
         System.out.println("--- État initial du désert ---");
         System.out.println(p.toString());

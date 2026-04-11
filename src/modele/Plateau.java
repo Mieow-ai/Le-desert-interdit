@@ -27,6 +27,11 @@ public class Plateau extends Observable {
     private Zone zoneCrash;
     private int indiceJoueurActif = 0;
     private List<Equipement> pioche_equipement = new ArrayList<>();
+
+    public Joueur getJoueurActif() {
+        return joueurs.get(indiceJoueurActif);
+    }
+
     public enum PIECE { BOITE, HELICE, CRISTAL, NAVIGATION }
 
     public Map<PIECE, Boolean> getEtatPieces() {

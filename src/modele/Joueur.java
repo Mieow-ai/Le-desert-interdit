@@ -316,7 +316,6 @@ class Archeologue extends Joueur {
     @Override
     public void creuserZone(Zone zone) {
         if(zone.getNbSable() > 1) {// Si il y a au moins 2 blocs de sable
-            this.joue_action();
             zone.creuser();
             zone.creuser(); // L'archéologue creuse 2 fois
         } else {

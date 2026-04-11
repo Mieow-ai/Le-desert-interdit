@@ -14,6 +14,10 @@ public class VueZone extends JPanel {
     private static Image imageSable = new ImageIcon("desert.png").getImage();
     private static Image imageTempete = new ImageIcon("tempete.png").getImage();
     private static Image imageOasis = new ImageIcon("oasis.png").getImage();
+    private static Image imageOasisRev = new ImageIcon("oasis_rev.png").getImage();
+    private static Image imageCrash = new ImageIcon("crash.png").getImage();
+    private static Image imageMirage = new ImageIcon("mirage.png").getImage();
+
 
     public VueZone() {
         this.setPreferredSize(new Dimension(100, 100));
@@ -96,18 +100,43 @@ public class VueZone extends JPanel {
             }
             return;
         } else {
-            switch (zone_actuelle.getType()) {
-                case EAU:
-                case MIRAGE:
-                    if (imageOasis != null) {
-                        g.drawImage(imageOasis, 0, 0, getWidth(), getHeight(), this);
-                    }
+            if (!zone_actuelle.estRevelee()) {
+                switch (zone_actuelle.getType()) {
+                    case EAU:
+                    case MIRAGE:
+                        if (imageOasis != null) {
+                            g.drawImage(imageOasis, 0, 0, getWidth(), getHeight(), this);
+                        }
+                        break;
+                    default:
+                        if (imageSable != null) {
+                            g.drawImage(imageSable, 0, 0, getWidth(), getHeight(), this);
+                        }
+                        break;
+                }
+            } else {
+                switch (zone_actuelle.getType()){
+                    case CRASH:
+                        if (imageCrash != null) {
+                            g.drawImage(imageCrash, 0, 0, getWidth(), getHeight(), this);
+                        }
+                        break;
+                    case EAU:
+                        if (imageOasisRev != null) {
+                            g.drawImage(imageOasisRev, 0, 0, getWidth(), getHeight(), this);
+                        }
+                        break;
+                    case MIRAGE:
+                        if (imageMirage != null) {
+                            g.drawImage(imageMirage, 0, 0, getWidth(), getHeight(), this);
+                        }
+                        break;
+                    default:
+                        if (imageSable != null) {
+                            g.drawImage(imageSable, 0, 0, getWidth(), getHeight(), this);
+                        }
                     break;
-                default:
-                    if (imageSable != null) {
-                        g.drawImage(imageSable, 0, 0, getWidth(), getHeight(), this);
-                    }
-                    break;
+                }
             }
 
         }
