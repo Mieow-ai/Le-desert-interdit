@@ -16,7 +16,7 @@ public abstract class Joueur {
 
     private final String nom;
     protected Zone zone;
-    private Plateau p;
+    private final Plateau p;
     private final Color couleur;
     private final int action_par_tour = 4;
     private int nb_action_restante = action_par_tour;

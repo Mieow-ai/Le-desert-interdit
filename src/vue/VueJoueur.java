@@ -7,8 +7,9 @@ import modele.Plateau;
 
 public class VueJoueur extends JPanel implements Observer {
     // La VueJoueur observe le plateau plutôt que son joueur car les actions des
-    // autres joueurs peuvent influencer les champs du joueur
-    private Joueur j;
+    // autres joueurs peuvent influencer les champs du joueur (exemple don)
+
+    private final Joueur j;
     private JLabel labelNom;
     private JLabel labelActions;
     private JLabel labelEau;

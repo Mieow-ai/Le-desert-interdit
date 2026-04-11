@@ -9,16 +9,6 @@ import java.util.stream.Collectors;
 
 import static modele.Joueur.Role.ARCHEOLOGUE;
 
-/**
- * class position {
- * private int x;
- * private int y;
- * public position(int i, int j){
- * this.x = i;
- * this.y = j;
- * }
- * }
- **/
 
 /**
  * Classe abstraite représentant une tuile (case) du plateau de jeu.

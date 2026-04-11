@@ -3,14 +3,12 @@ package modele;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.Math.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import vue.Observable;
 
 import javax.swing.*;
+import javax.swing.Timer;
 
 /**
  * La classe Plateau est le Modèle central du jeu
@@ -29,6 +27,15 @@ public class Plateau extends Observable {
     private Zone zoneCrash;
     private int indiceJoueurActif = 0;
     private List<Equipement> pioche_equipement = new ArrayList<>();
+    public enum PIECE { BOITE, HELICE, CRISTAL, NAVIGATION }
+
+    public Map<PIECE, Boolean> getEtatPieces() {
+        return etatPieces;
+    }
+
+    private Map<PIECE, Boolean> etatPieces = new HashMap<>();
+
+
 
     public double getNiveauTempete() {
         return niveauTempete;
@@ -44,7 +51,6 @@ public class Plateau extends Observable {
 
     private EtatPartie etat = EtatPartie.EN_COURS;
     private String raison_fin = "";
-    List<Zone.TypeZone> pieces_ramassees = new ArrayList<>();
 
     /**
      * Constructeur du Plateau. Prépare la grille vide puis lance l'initialisation.
@@ -52,6 +58,10 @@ public class Plateau extends Observable {
     public Plateau() {
         super();
         this.grille = new Zone[5][5];
+        etatPieces.put(PIECE.BOITE, false);
+        etatPieces.put(PIECE.HELICE, false);
+        etatPieces.put(PIECE.CRISTAL, false);
+        etatPieces.put(PIECE.NAVIGATION, false);
         initialiseGrille();
     }
 
@@ -104,8 +114,8 @@ public class Plateau extends Observable {
     public Zone getZoneCrash() {
         return this.zoneCrash;
     }
-    public void add_piece(Zone.TypeZone obj) {
-        this.pieces_ramassees.add(obj);
+    public void add_piece(Plateau.PIECE piece) {
+       etatPieces.put(piece, true);
     }
     public int getIndiceJoueurActif() {
         return this.indiceJoueurActif;
@@ -201,7 +211,7 @@ public class Plateau extends Observable {
                 tous_au_decollage = false;
             }
         }
-        if (tous_au_decollage && this.pieces_ramassees.size() == 4) {
+        if (tous_au_decollage && !this.etatPieces.containsValue(false)) { // Si tous les joueurs sont au décollage et qu'en plus toutes les pièces ont été ramassées (aucune pièce à false)
             this.etat = EtatPartie.VICTOIRE;
             this.raison_fin = "Vous avez gagné!";
             notifyObservers();

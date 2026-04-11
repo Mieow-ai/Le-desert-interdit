@@ -123,6 +123,7 @@ public class Controleur implements Observer {
                     actif_zone.poser_objet(null);
                     System.out.println("L'équipe vient de ramasser : " + objet);
                     actif.joue_action();
+                    p.add_piece(Plateau.PIECE.CRISTAL);
                     vue.getVc().reset_texte_erreur();
                     p.notifyObservers();
                 } else {
