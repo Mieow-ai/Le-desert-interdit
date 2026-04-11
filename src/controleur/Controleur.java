@@ -317,9 +317,9 @@ public class Controleur implements Observer {
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
                                     j.creuserZone(zone);
                                     joueurs.get(p.getIndiceJoueurActif()).joue_action();
-                                    if (zone.getType().name().startsWith("INDICE")) {
-                                        p.verifie_apparition_obj(zone);
-                                    }
+                                    //if (zone.getType().name().startsWith("INDICE")) {
+                                     //   p.verifie_apparition_obj(zone);
+                                  //  }
                                     p.notifyObservers();
                                 }
                                 break;

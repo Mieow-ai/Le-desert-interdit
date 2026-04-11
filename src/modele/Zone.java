@@ -1,13 +1,8 @@
 package modele;
 
-import org.junit.Test;
-
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static modele.Joueur.Role.ARCHEOLOGUE;
 
 
 /**
@@ -23,6 +18,9 @@ public abstract class Zone {
     private List<Joueur> joueurs = new ArrayList<>();
     protected boolean revelee = false;
     private TypeZone objetpose = null;
+    protected Plateau p;
+
+    public char getAxe(){throw new IllegalStateException("La zone n'est pas un indice");};
 
     /**
      * Énumération de tous les types de tuiles possibles dans le jeu.
@@ -52,7 +50,8 @@ public abstract class Zone {
      * @param i Coordonnée X initiale
      * @param j Coordonnée Y initiale
      */
-    protected Zone(int i, int j) {
+    protected Zone(int i, int j, Plateau p) {
+        this.p = p;
         this.x = i;
         this.y = j;
     }
@@ -64,26 +63,26 @@ public abstract class Zone {
      * @param type Le type de la zone à créer
      * @return L'instance spécifique de la Zone (ex: ZoneEau, ZoneTunnel, etc.)
      */
-    public static Zone creerZone(int i, int j, TypeZone type) {
+    public static Zone creerZone(int i, int j, TypeZone type, char axe, Plateau p) {
         switch (type) {
             case CRASH:
-                return new ZoneCrash(i, j);
+                return new ZoneCrash(i, j, p);
             case DECOLLAGE:
-                return new ZoneDecollage(i, j);
+                return new ZoneDecollage(i, j,  p);
             case EAU:
-                return new ZoneEau(i, j);
+                return new ZoneEau(i, j,  p);
             case MIRAGE:
-                return new ZoneMirage(i, j);
+                return new ZoneMirage(i, j, p);
             case TUNNEL:
-                return new ZoneTunnel(i, j);
+                return new ZoneTunnel(i, j, p);
             case INDICE_BOITE:
             case INDICE_CRISTAL:
             case INDICE_HELICE:
             case INDICE_NAVIGATION:
-                return new ZoneIndice(i, j, type);
+                return new ZoneIndice(i, j, type, axe, p);
             case ENGRENAGE:
             default:
-                return new ZoneEngrenage(i, j);
+                return new ZoneEngrenage(i, j, p);
         }
     }
 
@@ -204,16 +203,16 @@ class ZoneCrash extends Zone {
         return TypeZone.CRASH;
     }
 
-    public ZoneCrash(int i, int j) {
-        super(i, j);
+    public ZoneCrash(int i, int j, Plateau p) {
+        super(i,j, p);
         this.revelee = true;
     }
 }
 
 /** Tuile classique contenant un symbole d'engrenage. Gérée dans la méthode creuser() du Joueur. **/
 class ZoneEngrenage extends Zone {
-    public ZoneEngrenage(int i, int j) {
-        super(i, j);
+    public ZoneEngrenage(int i, int j, Plateau p) {
+        super(i,j, p);
     }
     @Override
     public TypeZone getType() {
@@ -224,17 +223,25 @@ class ZoneEngrenage extends Zone {
 /** Tuile indiquant les coordonnées X ou Y d'une pièce de la machine volante. **/
 class ZoneIndice extends Zone {
     private TypeZone typeIndice;
-
-    public ZoneIndice(int i, int j, TypeZone type) {
-        super(i, j);
+    private char axe;
+    public ZoneIndice(int i, int j, TypeZone type, char axe, Plateau p) {
+        super(i,j, p);
         this.typeIndice = type;
+        this.axe = axe;
     }
 
     @Override
     public TypeZone getType() {
         return this.typeIndice; // à gérer renvoie toujours le même
     }
-
+    @Override
+    protected void actionReveler() {
+        p.verifie_apparition_obj(this.typeIndice);
+    }
+    @Override
+    public char getAxe(){
+        return this.axe;
+    }
 }
 
 /**
@@ -248,8 +255,9 @@ class ZoneTunnel extends Zone {
         tunnelsReveles.clear();
     }
 
-    public ZoneTunnel(int i, int j) {
-        super(i, j);
+    public ZoneTunnel(int i, int j, Plateau p) {
+        super(i,j, p);
+
     }
 
     @Override
@@ -277,10 +285,10 @@ class ZoneTunnel extends Zone {
 
 /** Lieu d'assemblage final. Tous les joueurs doivent s'y trouver pour gagner. **/
 class ZoneDecollage extends Zone {
-    public ZoneDecollage(int i, int j) {
-        super(i, j);
+    public ZoneDecollage(int i, int j, Plateau p) {
+        super(i, j, p);
     }
-    @Override
+        @Override
     public TypeZone getType() {
         return TypeZone.DECOLLAGE;
     }
@@ -288,10 +296,10 @@ class ZoneDecollage extends Zone {
 
 /** Restaure 2 unités d'eau à tous les joueurs présents lors de sa découverte. ù*/
 class ZoneEau extends Zone {
-    public ZoneEau(int i, int j) {
-        super(i, j);
+    public ZoneEau(int i, int j, Plateau p) {
+        super(i, j, p);
     }
-    @Override
+        @Override
     public TypeZone getType() {
         return TypeZone.EAU;
     }
@@ -306,10 +314,10 @@ class ZoneEau extends Zone {
 
 /** Fausse piste. Ne donne aucune eau lors de sa révélation. **/
 class ZoneMirage extends Zone {
-    public ZoneMirage(int i, int j){
-        super(i, j);
+    public ZoneMirage(int i, int j, Plateau p) {
+        super(i, j, p);
     }
-    @Override
+        @Override
     public TypeZone getType() {
         return TypeZone.MIRAGE;
     }

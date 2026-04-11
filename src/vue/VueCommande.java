@@ -23,7 +23,7 @@ public class VueCommande extends JPanel {
 
         styliser_bouton(Bouton_fin_tour = new JButton("Fin de Tour"));
         styliser_bouton(Bouton_se_deplacer = new JButton("Marcher"));
-        styliser_bouton(Bouton_creuser = new JButton("Désensabler"));
+        styliser_bouton(Bouton_creuser = new JButton("Creuser/Révéler"));
         styliser_bouton(Bouton_ramasser = new JButton("Ramasser"));
         styliser_bouton(Bouton_utiliser_equipement = new JButton("Équipement"));
         styliser_bouton(Bouton_donner_eau = new JButton("Donner eau"));
