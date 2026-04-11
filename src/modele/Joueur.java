@@ -189,15 +189,14 @@ public abstract class Joueur {
      * Applique les effets d'une carte "Vague de Chaleur".
      * Baisse le niveau d'eau si le joueur n'est pas protégé par un tunnel.
      */
-    public void vagueDeChaleur() {
+    public boolean vagueDeChaleur() {
         if (!this.zone.protegeChaleur()) {
             this.niveauEau--;
-            if (this.niveauEau <= 0) {
-                p.declencher_defaite(this.nom + " est mort de soif !"); // A modifier pour gerer dans le controlleur
-            }
+            return this.niveauEau > 0;
         }
         else {
             System.out.println(this.nom + "est à l'abri dans le tunnel");
+            return true;
         }
     }
 

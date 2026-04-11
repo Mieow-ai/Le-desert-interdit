@@ -332,7 +332,10 @@ public class Plateau extends Observable {
 
     public void vagueDeChaleur() {
         for (Joueur j : joueurs) {
-            j.vagueDeChaleur();
+            boolean vivant = j.vagueDeChaleur();
+            if(!vivant){
+                declencher_defaite(j.getNom() + " est mort de soif !");
+            }
         }
     }
 
