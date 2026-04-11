@@ -84,7 +84,11 @@ public class Controleur implements Observer {
             if (actif.getNb_action_restante() > 0) {
                 vue.getVc().reset_texte_erreur();
                 action_courante = action.DEPLACEMENT;
-                p.setZonesAccessibles(actif.getZonesAccessibles(p));
+                if (!actif.getZonesAccessibles(p).isEmpty()) {
+                    p.setZonesAccessibles(actif.getZonesAccessibles(p));
+                } else {
+                    vue.getVc().set_texte_erreur("Aucune tuile accessible");
+                }
             } else {
                 vue.getVc().set_texte_erreur("Action impossible : plus d'actions..");
             }
@@ -248,8 +252,12 @@ public class Controleur implements Observer {
                         switch (action_courante) {
                             case DEPLACEMENT_ALLIE:
                                 if(zone != null && p.getZonesAccessibles().contains(zone) && allieADeplacer != null){
+                                    Joueur allieAlpiniste = alpinistePouvoir(allieADeplacer,zone);
+                                    if(allieAlpiniste != null){ // Si le joueur déplacé est un alpiniste et qu'il y a un allié sur sa case, il peut l'emmener
+                                        allieAlpiniste.setZone(zone);
+                                    }
                                     allieADeplacer.setZone(zone);
-                                    joueurs.get(p.getIndiceJoueurActif()).joue_action();
+                                    j.joue_action();
                                     System.out.println(allieADeplacer.getNom() + "a été déplacé par la navigatrice");
                                     p.verifier_victoire();
                                     gerer_fin_de_partie();
@@ -257,6 +265,10 @@ public class Controleur implements Observer {
                                 break;
                             case DEPLACEMENT:
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
+                                    Joueur allie = alpinistePouvoir(j,zone);
+                                    if(allie != null){ // Si le joueur est un alpiniste et qu'il y a un allié sur sa case, il peut l'emmener
+                                        allie.setZone(zone);
+                                    }
                                     j.setZone(zone);
                                     j.joue_action();
                                     p.verifier_victoire();
@@ -343,6 +355,21 @@ public class Controleur implements Observer {
         });
 
 
+    }
+
+    private Joueur alpinistePouvoir(Joueur j, Zone zone) {
+        if(j.getRole() == Joueur.Role.ALPINISTE) {
+            List<Joueur> joueursZoneCourante = j.getZone().getJoueurs();
+            joueursZoneCourante.remove(j);
+            if (!joueursZoneCourante.isEmpty()) {
+                Joueur cible = (Joueur) JOptionPane.showInputDialog(
+                        vue, "Alpiniste, voulez vous emmener un allié ?", "Emmener Allié",
+                        JOptionPane.QUESTION_MESSAGE, null,
+                        joueursZoneCourante.toArray(), joueursZoneCourante.get(0));
+                return cible;
+            }
+        }
+        return null;
     }
 
     private void setActionSpeciale(Joueur.Role roleAttribue) {
