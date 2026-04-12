@@ -34,7 +34,7 @@ Ce projet respecte strictement le patron de conception **MVC (Modèle-Vue-Contr�
 
 ### Prérequis
 * **Java Development Kit (JDK) :** Version 8 si possible
-* **Ressources (Assets) :** Il faut s'assurer que les images (`desert.png`, `tempete.png`, etc.) et les sons (`.wav`) sont situés dans la racine du projet.
+* **Ressources (Assets) :** Il faut s'assurer que les images (`desert.png`, `tempete.png`, etc.) sont situés dans le dossier images à la racine et les sons (`.wav`) sont situés dans la racine du projet.
 
 ### Lancement
 

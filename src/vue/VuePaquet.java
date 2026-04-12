@@ -50,8 +50,8 @@ public abstract class VuePaquet<T> extends JPanel implements Observer {
 }
 
 class VuePaquetTempete extends VuePaquet<CarteTempete> {
-    private static Image dosCarte = new ImageIcon("dos_carte_tempete.png").getImage();
-    private static Image faceCarte = new ImageIcon("face_carte_tempete.png").getImage();
+    private static Image dosCarte = new ImageIcon(FenetreJeu.PathImages + "dos_carte_tempete.png").getImage();
+    private static Image faceCarte = new ImageIcon(FenetreJeu.PathImages + "face_carte_tempete.png").getImage();
 
     public VuePaquetTempete(Plateau plateau, PaquetTempete paquet) {
         super(plateau, paquet, 220, 240);
@@ -92,8 +92,8 @@ class VuePaquetTempete extends VuePaquet<CarteTempete> {
 
 
 class VuePaquetEquipement extends VuePaquet<CarteEquipement> {
-    private static Image dosCarte = new ImageIcon("dos_carte_equipement.png").getImage();
-    private static Image faceCarte = new ImageIcon("face_carte_equipement.png").getImage();
+    private static Image dosCarte = new ImageIcon(FenetreJeu.PathImages + "dos_carte_equipement.png").getImage();
+    private static Image faceCarte = new ImageIcon(FenetreJeu.PathImages + "face_carte_equipement.png").getImage();
 
 
     public VuePaquetEquipement(Plateau plateau, PaquetEquipement paquet) {

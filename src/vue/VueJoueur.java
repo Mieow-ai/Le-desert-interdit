@@ -85,7 +85,7 @@ public class VueJoueur extends JPanel implements Observer {
         this.barreActions = new JProgressBar(0, 4);
         this.barreActions.setPreferredSize(new Dimension(140, 20));
         this.barreActions.setStringPainted(true);
-        this.barreActions.setForeground(Theme.ACCENT_OR.brighter());
+        this.barreActions.setForeground(Theme.COULEUR_OR.brighter());
         this.barreActions.setBackground(Color.GRAY);
 
         ligneActions.add(new JLabel("⚡️"));
@@ -171,7 +171,7 @@ public class VueJoueur extends JPanel implements Observer {
                 BorderFactory.createEmptyBorder(12, 18, 12, 18)
         ));
         if (plateau.getJoueurActif() == this.joueur) {
-            labelNom.setForeground(Theme.ACCENT_OR);
+            labelNom.setForeground(Theme.COULEUR_OR);
         } else{
             labelNom.setForeground(Theme.TEXTE_CLAIR);
 

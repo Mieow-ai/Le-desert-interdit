@@ -36,7 +36,7 @@ public class VueLancement extends JPanel {
         // 2. TITRE DU JEU
         JLabel titre = new JLabel("LE DÉSERT INTERDIT");
         titre.setFont(new Font("Serif", Font.BOLD, 48));
-        titre.setForeground(Theme.ACCENT_OR);
+        titre.setForeground(Theme.COULEUR_OR);
         titre.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel_central.add(titre);
 
@@ -79,7 +79,7 @@ public class VueLancement extends JPanel {
 
         this.labelMessage = new JLabel(" ", SwingConstants.CENTER);
         this.labelMessage.setFont(Theme.TEXTE);
-        this.labelMessage.setForeground(Theme.ACCENT_OR);
+        this.labelMessage.setForeground(Theme.COULEUR_OR);
         this.labelMessage.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel_central.add(this.labelMessage);
         this.add(panel_central, gbc);

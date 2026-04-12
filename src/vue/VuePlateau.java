@@ -19,8 +19,6 @@ public class VuePlateau extends JPanel implements Observer {
     private Plateau plateau;
     private VueZone[][] casesGrille = new VueZone[5][5];
 
-    private Image imageSable;
-    private Image imageTempete;
 
     /**
      * Initialise la grille visuelle du jeu.
@@ -30,9 +28,6 @@ public class VuePlateau extends JPanel implements Observer {
         this.plateau = plateau;
         this.setLayout(new GridLayout(5, 5, 5, 5));
         this.setBackground(Color.GRAY);
-
-        this.imageSable = new ImageIcon("desert.png").getImage();
-        this.imageTempete = new ImageIcon("tempete.png").getImage();
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {

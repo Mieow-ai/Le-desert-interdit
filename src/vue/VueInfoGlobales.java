@@ -52,7 +52,7 @@ public class VueInfoGlobales  extends JPanel implements Observer {
         conteneurPieces.setOpaque(false);
 
         for (Plateau.PIECE piece : Plateau.PIECE.values()) {
-            VuePiece imgPiece = new VuePiece(piece.name() + "GRISEE.png", 30, 30);
+            VuePiece imgPiece = new VuePiece(FenetreJeu.PathImages + piece.name() + "GRISEE.png", 30, 30);
             // On lie la piece et sa vue
             dictPieceVue.put(piece, imgPiece);
             // On ajoute la vue dans le conteneur
@@ -93,10 +93,10 @@ public class VueInfoGlobales  extends JPanel implements Observer {
         for (Plateau.PIECE piece : Plateau.PIECE.values()) {
             if (etatPieces.get(piece) == true) {
                 //Pièce trouvée (en couleur)
-                dictPieceVue.get(piece).setImage(piece.name() + ".png");
+                dictPieceVue.get(piece).setImage(FenetreJeu.PathImages +piece.name() + ".png");
             } else {
                 // Piece non trouvée (grisée)
-                dictPieceVue.get(piece).setImage(piece.name() + "GRISEE.png");
+                dictPieceVue.get(piece).setImage(FenetreJeu.PathImages +piece.name() + "GRISEE.png");
             }
         }
 

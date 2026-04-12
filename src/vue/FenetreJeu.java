@@ -9,13 +9,13 @@ import java.util.Map;
 
 import modele.Joueur;
 import modele.Plateau;
-
 /**
  * La FenêtreJeu c'est la fenêtre principale de l'application
  * C'est la fenêtre principale de la Vue dans le MVC.
  * Elle assemble les différentes composantes de la Vue.
  */
 public class FenetreJeu extends JFrame {
+    public static String PathImages = "Images/";
     private VuePlateau vp;
     private Plateau p;
     private VueCommande vc;

@@ -6,7 +6,6 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import modele.Joueur;
-import modele.Plateau;
 import modele.Zone;
 
 /**
@@ -19,30 +18,29 @@ import modele.Zone;
 public class VueZone extends JPanel {
 
     private Zone zone_actuelle;
+    private static Image imageSable = new ImageIcon(FenetreJeu.PathImages+"desert.png").getImage();
+    private static Image imageTempete = new ImageIcon(FenetreJeu.PathImages+"tempete.png").getImage();
+    private static Image imageOasis = new ImageIcon(FenetreJeu.PathImages+"oasis.png").getImage();
+    private static Image imageOasisRev = new ImageIcon(FenetreJeu.PathImages+"oasis_rev.png").getImage();
+    private static Image imageCrash = new ImageIcon(FenetreJeu.PathImages+"crash.png").getImage();
+    private static Image imageMirage = new ImageIcon(FenetreJeu.PathImages+"mirage.png").getImage();
+    private static Image imageEngrenage = new ImageIcon(FenetreJeu.PathImages+"engrenage.png").getImage();
+    private static Image imageDecollage = new ImageIcon(FenetreJeu.PathImages+"decollage.png").getImage();
+    private static Image imageTunnel = new ImageIcon(FenetreJeu.PathImages+"tunnel.png").getImage();
 
-    private static Image imageSable = new ImageIcon("desert.png").getImage();
-    private static Image imageTempete = new ImageIcon("tempete.png").getImage();
-    private static Image imageOasis = new ImageIcon("oasis.png").getImage();
-    private static Image imageOasisRev = new ImageIcon("oasis_rev.png").getImage();
-    private static Image imageCrash = new ImageIcon("crash.png").getImage();
-    private static Image imageMirage = new ImageIcon("mirage.png").getImage();
-    private static Image imageEngrenage = new ImageIcon("engrenage.png").getImage();
-    private static Image imageDecollage = new ImageIcon("decollage.png").getImage();
-    private static Image imageTunnel = new ImageIcon("tunnel.png").getImage();
+    private static Image imageHorizontaleBoite = new ImageIcon(FenetreJeu.PathImages+"boiteHorizontale.png").getImage();
+    private static Image imageVerticaleBoite = new ImageIcon(FenetreJeu.PathImages+"boiteVerticale.png").getImage();
+    private static Image imageHorizontaleCristal = new ImageIcon(FenetreJeu.PathImages+"cristalHorizontale.png").getImage();
+    private static Image imageVerticaleCristal = new ImageIcon(FenetreJeu.PathImages+"cristalVerticale.png").getImage();
+    private static Image imageHorizontaleHelice = new ImageIcon(FenetreJeu.PathImages+"heliceHorizontale.png").getImage();
+    private static Image imageVerticaleHelice = new ImageIcon(FenetreJeu.PathImages+"heliceVerticale.png").getImage();
+    private static Image imageHorizontaleNavigation = new ImageIcon(FenetreJeu.PathImages+"navigationHorizontale.png").getImage();
+    private static Image imageVerticaleNavigation = new ImageIcon(FenetreJeu.PathImages+"navigationVerticale.png").getImage();
 
-    private static Image imageHorizontaleBoite = new ImageIcon("boiteHorizontale.png").getImage();
-    private static Image imageVerticaleBoite = new ImageIcon("boiteVerticale.png").getImage();
-    private static Image imageHorizontaleCristal = new ImageIcon("cristalHorizontale.png").getImage();
-    private static Image imageVerticaleCristal = new ImageIcon("cristalVerticale.png").getImage();
-    private static Image imageHorizontaleHelice = new ImageIcon("heliceHorizontale.png").getImage();
-    private static Image imageVerticaleHelice = new ImageIcon("heliceVerticale.png").getImage();
-    private static Image imageHorizontaleNavigation = new ImageIcon("navigationHorizontale.png").getImage();
-    private static Image imageVerticaleNavigation = new ImageIcon("navigationVerticale.png").getImage();
-
-    private static Image imageBoite = new ImageIcon("BOITE.png").getImage();
-    private static Image imageCristal = new ImageIcon("CRISTAL.png").getImage();
-    private static Image imageHelice = new ImageIcon("HELICE.png").getImage();
-    private static Image imageNavigation = new ImageIcon("NAVIGATION.png").getImage();
+    private static Image imageBoite = new ImageIcon(FenetreJeu.PathImages+"BOITE.png").getImage();
+    private static Image imageCristal = new ImageIcon(FenetreJeu.PathImages+"CRISTAL.png").getImage();
+    private static Image imageHelice = new ImageIcon(FenetreJeu.PathImages+"HELICE.png").getImage();
+    private static Image imageNavigation = new ImageIcon(FenetreJeu.PathImages+"NAVIGATION.png").getImage();
 
 
     /**
@@ -117,7 +115,7 @@ public class VueZone extends JPanel {
 
             JLabel sableLabel = new JLabel(z.getNbSable() + " sable");
             sableLabel.setFont(Theme.TEXTE);
-            sableLabel.setForeground(z.getNbSable() >= 2 ? Theme.ACCENT_DANGER : Color.BLACK);
+            sableLabel.setForeground(z.getNbSable() >= 2 ? Theme.DANGER : Color.BLACK);
 
             gbc.gridy = 4;
             this.add(sableLabel, gbc);
@@ -140,7 +138,6 @@ public class VueZone extends JPanel {
     /**
      * Gère le dessin de l'image de fond de la tuile.
      * Cette méthode est appelée avant l'affichage des composants Swing
-     *
      * @param g L'outil de dessin de Java
      */
     @Override
