@@ -122,8 +122,8 @@ public class VueJoueur extends JPanel implements Observer {
         }
 
         // Inventaire
-        this.labelEquipements = new JLabel("🎒 Objets : Aucun");
-        this.labelEquipements.setFont(Theme.TITRE_CARTE);
+        this.labelEquipements = new JLabel("🎒 Équipements : Aucun");
+        this.labelEquipements.setFont(Theme.TEXTE_GRAS);
         this.labelEquipements.setForeground(Theme.TEXTE_CLAIR);
         JPanel ligneEquip = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         ligneEquip.setOpaque(false);
@@ -159,7 +159,7 @@ public class VueJoueur extends JPanel implements Observer {
             this.labelAmortissement.setText("🌪️ " + joueur.getReductionTempete());
         }
         if(joueur.get_equipement().isEmpty()){
-            this.labelEquipements.setText("🎒 Objets : Aucun");
+            this.labelEquipements.setText("🎒 Équipements : Aucun");
         }
         else {
             String liste = joueur.get_equipement().toString();

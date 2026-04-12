@@ -6,10 +6,12 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import modele.Joueur;
+import modele.Plateau;
 import modele.Zone;
 
 /**
- * La classe VueZone est le composant graphique représentant une tuile individuelle du plateau.
+ * La classe VueZone est le composant graphique représentant une tuile
+ * individuelle du plateau.
  * Elle superpose deux couches d'affichage :
  * 1. L'arrière-plan
  * 2. Les éléments de l'interface posés par-dessus
@@ -24,6 +26,9 @@ public class VueZone extends JPanel {
     private static Image imageOasisRev = new ImageIcon("oasis_rev.png").getImage();
     private static Image imageCrash = new ImageIcon("crash.png").getImage();
     private static Image imageMirage = new ImageIcon("mirage.png").getImage();
+    private static Image imageEngrenage = new ImageIcon("engrenage.png").getImage();
+    private static Image imageDecollage = new ImageIcon("decollage.png").getImage();
+
     private static Image imageHorizontaleBoite = new ImageIcon("boiteHorizontale.png").getImage();
     private static Image imageVerticaleBoite = new ImageIcon("boiteVerticale.png").getImage();
     private static Image imageHorizontaleCristal = new ImageIcon("cristalHorizontale.png").getImage();
@@ -51,7 +56,7 @@ public class VueZone extends JPanel {
     public void dessiner(Zone z, boolean estAccessible) {
         this.zone_actuelle = z;
         this.removeAll();
-
+        VuePiece imgPiece = null;
         if (z == null) { // Oeil du cyclone
             this.setBackground(Color.BLUE);
             this.setBorder(null);
@@ -60,25 +65,26 @@ public class VueZone extends JPanel {
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.insets = new Insets(1, 0, 1, 0);
-            gbc.weighty=1;
-            this.add(Box.createGlue(),gbc);
+            gbc.weighty = 1;
+            this.add(Box.createGlue(), gbc);
             gbc.weighty = 0;
             gbc.gridy = 1;
-            if (z.estRevelee()) {
-                String nomTuile = z.getType().name().replace("INDICE_", "");
-                JLabel reveleeLabel = new JLabel(nomTuile);
-                reveleeLabel.setFont(new Font("Arial", Font.BOLD, 14));
-                reveleeLabel.setForeground(Color.BLACK);
-                this.add(reveleeLabel, gbc);
-            }
-
             if (z.get_objet_pose() != null) {
-                String nomAbrege = z.get_objet_pose().name().replace("INDICE_", "");
-                JLabel objet_label = new JLabel("🏆 " + nomAbrege);
-                objet_label.setFont(new Font("Arial", Font.BOLD, 11));
-                objet_label.setForeground(Color.ORANGE);
-                gbc.gridy = 1;
-                this.add(objet_label, gbc);
+                switch (z.get_objet_pose()) {
+                    case INDICE_BOITE:
+                        imgPiece = new VuePiece(Plateau.PIECE.BOITE.name() + ".png", 50, 50);
+                        break;
+                    case INDICE_CRISTAL:
+                        imgPiece= new VuePiece(Plateau.PIECE.CRISTAL.name() + ".png", 50, 50);
+                        break;
+                    case INDICE_HELICE:
+                        imgPiece= new VuePiece(Plateau.PIECE.HELICE.name() + ".png", 50, 50);
+                        break;
+                    case INDICE_NAVIGATION:
+                        imgPiece= new VuePiece(Plateau.PIECE.HELICE.name() + ".png", 50, 50);
+                        break;
+                }
+                this.add(imgPiece,gbc);
             }
 
             // Affichage des joueurs
@@ -104,13 +110,12 @@ public class VueZone extends JPanel {
                     count++;
                 }
 
-
             }
             // Si pas de components, on ajoute du vide pour garder la structure visuelle identique
-            if(panelJoueurs1.getComponents().length == 0){
+            if (panelJoueurs1.getComponents().length == 0) {
                 panelJoueurs2.add(Box.createVerticalStrut(16));
             }
-            if(panelJoueurs2.getComponents().length == 0){
+            if (panelJoueurs2.getComponents().length == 0) {
                 panelJoueurs2.add(Box.createVerticalStrut(16));
             }
             gbc.gridy = 2; // On les place en dessous du texte
@@ -121,6 +126,10 @@ public class VueZone extends JPanel {
             JLabel sableLabel = new JLabel(z.getNbSable() + " sable");
             sableLabel.setFont(Theme.TEXTE);
             sableLabel.setForeground(z.getNbSable() >= 2 ? Theme.ACCENT_DANGER : Theme.TEXTE_FONCE);
+            if(zone_actuelle.estRevelee()){
+                sableLabel.setForeground(Color.black); // Si la case est révelée on met du noir pour éviter que ce soit illisible
+
+            }
             gbc.gridy = 4;
             this.add(sableLabel, gbc);
             Border borderAccessible;
@@ -130,7 +139,8 @@ public class VueZone extends JPanel {
             } else {
                 borderAccessible = BorderFactory.createLineBorder(new Color(0, 0, 0, 30));
             }
-            this.setBorder(BorderFactory.createCompoundBorder(borderAccessible,BorderFactory.createEmptyBorder(10, 10, 5, 10)));
+            this.setBorder(BorderFactory.createCompoundBorder(borderAccessible,
+                    BorderFactory.createEmptyBorder(10, 10, 5, 10)));
 
         }
 
@@ -182,6 +192,16 @@ public class VueZone extends JPanel {
                     case MIRAGE:
                         if (imageMirage != null) {
                             g.drawImage(imageMirage, 0, 0, getWidth(), getHeight(), this);
+                        }
+                        break;
+                    case ENGRENAGE:
+                        if (imageEngrenage != null) {
+                            g.drawImage(imageEngrenage, 0, 0, getWidth(), getHeight(), this);
+                        }
+                        break;
+                    case DECOLLAGE:
+                        if (imageDecollage != null) {
+                            g.drawImage(imageDecollage, 0, 0, getWidth(), getHeight(), this);
                         }
                         break;
                     case INDICE_BOITE:

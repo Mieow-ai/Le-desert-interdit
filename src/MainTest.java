@@ -62,6 +62,30 @@ public class MainTest {
         assertFalse("Le joueur peut sortir d'une case ensablée si l'alpiniste est dessus", j2.getZonesAccessibles(p).isEmpty());
         j.setZone(base);
         assertTrue("Le joueur ne peut pas sortir d'une case ensablée si l'alpiniste est dessus", j2.getZonesAccessibles(p).isEmpty());
+    }
 
+    // Test Spécifique à l'Alpiniste
+    @Test
+    public void testDeplacementExplora() {
+        Plateau p = new Plateau();
+        modele.Joueur j = modele.Joueur.creerJoueur(modele.Joueur.Role.ALPINISTE, "", p);
+        modele.Joueur j2 = modele.Joueur.creerJoueur(modele.Joueur.Role.METEOROLOGUE, "", p);
+        Zone base = p.getZone(0, 0);
+        j.setZone(base);
+        j2.setZone(base);
+        Zone voisin = p.getZone(0, 1);
+        voisin.viderSable();
+        assertTrue("Zone sans sable accessible pour les deux joueurs", j.getZonesAccessibles(p).contains(voisin));
+        voisin.ajouterSable(1);
+        assertTrue("Zone avec 1 sable accessible pour les deux joueurs", j.getZonesAccessibles(p).contains(voisin));
+        voisin.ajouterSable(1);
+        assertTrue("Zone avec >= 2 sable  accessible pour l'alpiniste", j.getZonesAccessibles(p).contains(voisin));
+        assertFalse("Zone avec >= 2 sable  non accessible pour le météorologue", j2.getZonesAccessibles(p).contains(voisin));
+        j.setZone(voisin);
+        assertTrue("Zone avec >= 2 sable  accessible lorsque l'alpiniste est dessus", j2.getZonesAccessibles(p).contains(voisin));
+        j2.setZone(voisin);
+        assertFalse("Le joueur peut sortir d'une case ensablée si l'alpiniste est dessus", j2.getZonesAccessibles(p).isEmpty());
+        j.setZone(base);
+        assertTrue("Le joueur ne peut pas sortir d'une case ensablée si l'alpiniste est dessus", j2.getZonesAccessibles(p).isEmpty());
     }
 }
