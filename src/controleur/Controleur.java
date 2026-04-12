@@ -28,7 +28,7 @@ public class Controleur implements Observer {
     private List<Joueur.Role> rolesDisponibles;
     private boolean partieTerminee = false;
     private Joueur allieADeplacer = null;
-    private Equipement objet_en_cours = null;
+    private CarteEquipement objet_en_cours = null;
 
     /**
      * Les différentes actions qu'un joueur peut efféctué
@@ -178,7 +178,7 @@ public class Controleur implements Observer {
                 vue.getVc().set_texte_erreur("Vous n'avez aucun équipement sur vous");
                 return;
             }
-            Equipement choix = (Equipement) JOptionPane.showInputDialog(
+            CarteEquipement choix = (CarteEquipement) JOptionPane.showInputDialog(
                     vue, "Quel objet voulez-vous utiliser ?", "Sac à dos",
                     JOptionPane.QUESTION_MESSAGE, null,
                     actif.get_equipement().toArray(),
@@ -188,7 +188,7 @@ public class Controleur implements Observer {
                 vue.getVc().reset_texte_erreur();
                 System.out.println(actif.getNom() + "utilise : " + choix);
 
-                switch (choix) {
+                switch (choix.getType()) {
                     case RESERVE_D_EAU:
                         for(Joueur j : actif.getZone().getJoueurs()){
                             j.boire_eau(2);

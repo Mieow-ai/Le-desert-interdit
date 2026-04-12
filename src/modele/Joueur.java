@@ -23,7 +23,7 @@ public abstract class Joueur {
     protected int niveauEau = 4;
     protected int niveauEauMax = 4;
     protected int reductionTempete = 0;
-    private List<Equipement> equipements = new ArrayList<>();
+    private List<CarteEquipement> equipements = new ArrayList<>();
     protected int[][] getDirections() {
         return new int[][] { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
     }
@@ -102,7 +102,7 @@ public abstract class Joueur {
     public int get_niveau_eau_max() {
         return this.niveauEauMax;
     }
-    public List<Equipement> get_equipement(){
+    public List<CarteEquipement> get_equipement(){
         return this.equipements;
     }
 
@@ -215,7 +215,7 @@ public abstract class Joueur {
             zone.reveler();
 
             if(zone.getType() == Zone.TypeZone.ENGRENAGE){
-                Equipement obj = p.piocher_equipement();
+                CarteEquipement obj = p.getPaquetEquipement().piocher();
                 if(obj != null){
                     this.equipements.add(obj);
                     System.out.println(this.nom + "a trouvé :" + obj);
