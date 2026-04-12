@@ -73,16 +73,16 @@ public class VueZone extends JPanel {
             if (z.get_objet_pose() != null) {
                 switch (z.get_objet_pose()) {
                     case INDICE_BOITE:
-                        imgPiece = new VuePiece(Plateau.PIECE.BOITE.name() + ".png", 50, 50);
+                        imgPiece = new VuePiece(Plateau.PIECE.BOITE.name() + ".png", 35, 35);
                         break;
                     case INDICE_CRISTAL:
-                        imgPiece= new VuePiece(Plateau.PIECE.CRISTAL.name() + ".png", 50, 50);
+                        imgPiece= new VuePiece(Plateau.PIECE.CRISTAL.name() + ".png", 35, 35);
                         break;
                     case INDICE_HELICE:
-                        imgPiece= new VuePiece(Plateau.PIECE.HELICE.name() + ".png", 50, 50);
+                        imgPiece= new VuePiece(Plateau.PIECE.HELICE.name() + ".png", 35, 35);
                         break;
                     case INDICE_NAVIGATION:
-                        imgPiece= new VuePiece(Plateau.PIECE.HELICE.name() + ".png", 50, 50);
+                        imgPiece= new VuePiece(Plateau.PIECE.NAVIGATION.name() + ".png", 35, 35);
                         break;
                 }
                 this.add(imgPiece,gbc);
