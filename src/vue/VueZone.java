@@ -117,11 +117,8 @@ public class VueZone extends JPanel {
 
             JLabel sableLabel = new JLabel(z.getNbSable() + " sable");
             sableLabel.setFont(Theme.TEXTE);
-            sableLabel.setForeground(z.getNbSable() >= 2 ? Theme.ACCENT_DANGER : Theme.TEXTE_FONCE);
-            if (zone_actuelle.estRevelee()) {
-                sableLabel.setForeground(Color.black); // Si la case est révelée on met du noir pour éviter que ce soit illisible
+            sableLabel.setForeground(z.getNbSable() >= 2 ? Theme.ACCENT_DANGER : Color.BLACK);
 
-            }
             gbc.gridy = 4;
             this.add(sableLabel, gbc);
             Border borderAccessible;
