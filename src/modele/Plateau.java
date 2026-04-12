@@ -294,7 +294,7 @@ public class Plateau extends Observable {
         CarteTempete carte = paquetTempete.piocher();
         switch (carte.getType()){
             case VENT:
-                Son.jouer_Bruitage("vent.mp3");
+                Son.jouer_Bruitage("vent.wav");
                 leVentSouffle(carte.getDirection(),carte.getForce());
                 break;
             case DECHAINE:

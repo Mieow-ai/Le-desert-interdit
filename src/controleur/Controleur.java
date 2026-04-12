@@ -118,18 +118,24 @@ public class Controleur implements Observer {
         // Bouton ramasser
         this.vue.getVc().getBouton_ramasser().addActionListener(e -> {
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
+
             if (actif.getNb_action_restante() > 0) {
                 Zone actif_zone = actif.getZone();
-                if (actif_zone.get_objet_pose() != null) {
-                    Zone.TypeZone objet = actif_zone.get_objet_pose();
-                    actif_zone.poser_objet(null);
-                    System.out.println("L'équipe vient de ramasser : " + objet);
-                    actif.joue_action();
-                    p.add_piece(Plateau.PIECE.CRISTAL);
-                    vue.getVc().reset_texte_erreur();
-                    p.notifyObservers();
+                Zone.TypeZone objet_sur_case = actif_zone.get_objet_pose();
+
+                if (objet_sur_case != null) {
+                    Plateau.PIECE piece_a_rajouter = getPiece(objet_sur_case);
+                    if (piece_a_rajouter != null) {
+                        p.add_piece(piece_a_rajouter);
+                        actif_zone.poser_objet(null);
+                        actif.joue_action();
+                        System.out.println("L'équipe a ramassé : " + piece_a_rajouter);
+                        vue.getVc().reset_texte_erreur();
+                        p.verifier_victoire();
+                        p.notifyObservers();
+                    }
                 } else {
-                    vue.getVc().set_texte_erreur("Vous n'êtes sur aucun objet !");
+                    vue.getVc().set_texte_erreur("Il n'y a aucune pièce à ramasser ici !");
                 }
             } else {
                 vue.getVc().set_texte_erreur("Action impossible : plus d'actions...");
@@ -294,7 +300,7 @@ public class Controleur implements Observer {
                                 break;
                             case CREUSER:
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
-                                    Son.jouer_Bruitage("creuser.mp3");
+                                    Son.jouer_Bruitage("creuser.wav");
                                     j.creuserZone(zone);
                                     joueurs.get(p.getIndiceJoueurActif()).joue_action();
                                     p.notifyObservers();
@@ -317,7 +323,7 @@ public class Controleur implements Observer {
                                 objet_en_cours = null;
                                 break;
                             case UTILISER_JETPACK:
-                                Son.jouer_Bruitage("jetpack.mp3");
+                                Son.jouer_Bruitage("jetpack.wav");
                                 if(zone != null && p.getZonesAccessibles().contains(zone)){
                                     Joueur compagnon = alpinistePouvoir(j, zone);
                                     if(compagnon != null){
@@ -334,6 +340,7 @@ public class Controleur implements Observer {
                                             "l'analyse révèle : " + zone.getType(),
                                             "Terrascope", JOptionPane.INFORMATION_MESSAGE);
                                 }
+                                break;
                             case AUCUNE:
                                 break;
                         }
@@ -341,6 +348,7 @@ public class Controleur implements Observer {
                         p.resetZonesAccessibles();
                         action_courante = action.AUCUNE;
                         vue.getVc().reset_texte_erreur();
+                        p.notifyObservers();
                     }
                 });
             }
@@ -348,7 +356,7 @@ public class Controleur implements Observer {
 
         // Action des boutons de la page de lancement
         this.vue.getVl().getBouton_play().addActionListener(e -> {
-            Son.jouer_musique_boucle("musique_jeu_desert_interdit.mp3");
+            Son.jouer_musique_boucle("musique_jeu_desert_interdit.wav");
             if (this.joueurs.size() < 2) {
                 this.vue.getVl().set_texte_erreur("Il faut au minimum 2 joueurs pour lancer la partie");
             } else {
@@ -389,6 +397,15 @@ public class Controleur implements Observer {
         });
 
 
+    }
+
+    private static Plateau.PIECE getPiece(Zone.TypeZone objet_sur_case) {
+        Plateau.PIECE piece_a_rajouter = null;
+        if (objet_sur_case == Zone.TypeZone.INDICE_BOITE) piece_a_rajouter = Plateau.PIECE.BOITE;
+        else if (objet_sur_case == Zone.TypeZone.INDICE_HELICE) piece_a_rajouter = Plateau.PIECE.HELICE;
+        else if (objet_sur_case == Zone.TypeZone.INDICE_CRISTAL) piece_a_rajouter = Plateau.PIECE.CRISTAL;
+        else if (objet_sur_case == Zone.TypeZone.INDICE_NAVIGATION) piece_a_rajouter = Plateau.PIECE.NAVIGATION;
+        return piece_a_rajouter;
     }
 
     private Joueur alpinistePouvoir(Joueur j, Zone zone) {
