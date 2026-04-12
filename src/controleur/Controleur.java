@@ -27,6 +27,7 @@ public class Controleur implements Observer {
     private FenetreJeu vue;
     private List<Joueur> joueurs;
     private List<Joueur.Role> rolesDisponibles;
+    private action action_courante;
     private boolean partieTerminee = false;
     private Joueur allieADeplacer = null;
     private CarteEquipement objet_en_cours = null;
@@ -48,7 +49,6 @@ public class Controleur implements Observer {
         gerer_fin_de_partie();
     }
 
-    private action action_courante;
 
     /**
      * Constructeur du contrôleur. Initialise le jeu et attache tous les "listener"
@@ -64,7 +64,7 @@ public class Controleur implements Observer {
         this.rolesDisponibles = new ArrayList<>(Arrays.asList(Joueur.Role.values()));
         Collections.shuffle(this.rolesDisponibles);
 
-        // Détection du GameOver
+        // Détection de la fin de partie
         p.addObserver(this);
 
         // Bouton fin de tour
@@ -148,7 +148,7 @@ public class Controleur implements Observer {
 
 
 
-        // bouton donner de l'eau (général)
+        // Bouton donner de l'eau (général)
         this.vue.getVc().getBoutonDonnerEau().addActionListener(e -> {
             Son.jouer_Bruitage("bouton6.wav");
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
@@ -174,7 +174,7 @@ public class Controleur implements Observer {
             if(cible != null){
                 if(actif.donner_eau(cible)){
                     vue.getVc().reset_texte_erreur();
-                    System.out.println(actif.getNom() + "donne de l'eau à" + cible.getNom());
+                    System.out.println(actif.getNom() + " donne de l'eau à" + cible.getNom());
                     p.notifyObservers();
                 }
             }
@@ -214,22 +214,7 @@ public class Controleur implements Observer {
                         vue.getVc().set_texte_erreur("Bouclier déployé sur cette case !");
                         break;
                     case BLASTER_DES_DUNES:
-                        List<Zone> cibles = new ArrayList<>();
-                        if(actif.getZone().getNbSable() > 0){
-                            cibles.add(actif.getZone());
-                        }
-                        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-                        for(int[] dir : directions){
-                            int ni = actif.getZone().getX() + dir[0];
-                            int nj = actif.getZone().getY() + dir[1];
-                            if(ni >= 0 && ni < 5 && nj >= 0 && nj < 5){
-                                Zone voisine = p.getZone(ni, nj);
-                                if(voisine != null && voisine.getNbSable() > 0){
-                                    cibles.add(voisine);
-                                }
-                            }
-                        }
-
+                        List<Zone> cibles = actif.getZonesCreusables(p);
                         if(cibles.isEmpty()){
                             vue.getVc().set_texte_erreur("Aucune case ne peut être blasterisée");
                             actif.get_equipement().add(choix);
@@ -238,7 +223,7 @@ public class Controleur implements Observer {
                             action_courante = action.UTILISER_BLASTER;
                             objet_en_cours = choix;
                             p.setZonesAccessibles(cibles);
-                            vue.getVc().set_texte_erreur("Cliquez sur la case à blasterisée");
+                            vue.getVc().set_texte_erreur("Cliquez sur la case à blasteriser");
                         }
                         break;
                     case JETPACK:
@@ -407,6 +392,7 @@ public class Controleur implements Observer {
             p.notifyObservers();
         });
 
+        // Permet de revéler toutes les cases (utile pour coder l'ui et débugger)
         InputMap inputMap = vue.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = vue.getRootPane().getActionMap();
         inputMap.put(KeyStroke.getKeyStroke("N"), "reveler_tout");
@@ -433,6 +419,7 @@ public class Controleur implements Observer {
         return piece_a_rajouter;
     }
 
+    // Fenêtre de dialogue pour que l'alpiniste puisse emmener un allié lors d'un déplacement.
     private Joueur alpinistePouvoir(Joueur j, Zone zone) {
         if(j.getRole() == Joueur.Role.ALPINISTE) {
             List<Joueur> joueursZoneCourante = j.getZone().getJoueurs();
@@ -448,6 +435,12 @@ public class Controleur implements Observer {
         return null;
     }
 
+    /**
+     * Implémente les actions effectuées par les boutons spéciaux présents dans les vues Joueurs
+     * Comme les vues Joueurs sont crées au lancement de la partie, il faut attendre le click sur jouer pour pouvoir
+     * accéder aux boutons
+     * @param roleAttribue
+     */
     private void setActionSpeciale(Joueur.Role roleAttribue) {
         switch (roleAttribue){
             case NAVIGATRICE:

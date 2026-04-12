@@ -14,11 +14,12 @@ import modele.Joueur;
  * des 25 tuiles individuelles qui composent le désert.
  * Elle observe le Plateau pour savoir quelles cases doivent être mises
  * en surbrillance (accessibles) au cours du tour d'un joueur.
+ * Les zones sont recrées à chaque action car les zones peuvent bouger
+ * Cela simplifie la logique de la vue
  */
 public class VuePlateau extends JPanel implements Observer {
     private Plateau plateau;
     private VueZone[][] casesGrille = new VueZone[5][5];
-
 
     /**
      * Initialise la grille visuelle du jeu.
@@ -51,6 +52,7 @@ public class VuePlateau extends JPanel implements Observer {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 Zone zone = plateau.getZone(i, j);
+                // Si la case fait parties des cases accessibles (peu importe l'action)
                 boolean accessible = accessibles.contains(zone);
                 casesGrille[i][j].dessiner(zone, accessible);
             }

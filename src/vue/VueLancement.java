@@ -22,18 +22,18 @@ public class VueLancement extends JPanel {
      * pour aligner proprement le titre, le champ de saisie et les boutons.
      */
     public VueLancement() {
-        // 1. Fond et Layout global
+        // Fond et Layout global
         this.setBackground(Theme.FOND_PANNEAU);
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        // --- PANNEAU CENTRAL (Contient tous les éléments) ---
+        // PANNEAU CENTRAL (Contient tous les éléments)
         JPanel panel_central = new JPanel();
         panel_central.setOpaque(false);
         panel_central.setLayout(new BoxLayout(panel_central, BoxLayout.Y_AXIS));
         panel_central.setBorder(new EmptyBorder(50, 50, 50, 50));
 
-        // 2. TITRE DU JEU
+        // TITRE DU JEU
         JLabel titre = new JLabel("LE DÉSERT INTERDIT");
         titre.setFont(new Font("Serif", Font.BOLD, 48));
         titre.setForeground(Theme.COULEUR_OR);
@@ -42,7 +42,7 @@ public class VueLancement extends JPanel {
 
         panel_central.add(Box.createVerticalStrut(40));
 
-        // 3. ZONE DE SAISIE DU NOM
+        // ZONE DE SAISIE DU NOM
         JLabel labelNom = new JLabel("NOM DE L'AVENTURIER :");
         labelNom.setFont(Theme.SOUS_TITRE);
         labelNom.setForeground(Theme.TEXTE_CLAIR);
@@ -74,7 +74,7 @@ public class VueLancement extends JPanel {
         panel_boutons.add(this.Bouton_ajouter_joueur);
         panel_boutons.add(this.Bouton_play);
         panel_central.add(panel_boutons);
-
+        // Ajoute du vide
         panel_central.add(Box.createVerticalStrut(20));
 
         this.labelMessage = new JLabel(" ", SwingConstants.CENTER);
@@ -82,6 +82,7 @@ public class VueLancement extends JPanel {
         this.labelMessage.setForeground(Theme.COULEUR_OR);
         this.labelMessage.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel_central.add(this.labelMessage);
+        // Ajout du panel central à la vue
         this.add(panel_central, gbc);
     }
 

@@ -1,11 +1,13 @@
 package modele;
-
+/**
+ * Classe représentant les cartes équipements
+ */
 public class CarteEquipement {
 
     public Type getType() {
         return type;
     }
-
+    // Chaque type possède un nom et une description (utile lors de l'affichage)
     public enum Type {
         BLASTER_DES_DUNES("Blaster", "Permet de retirer tout le sable d'une case" +
                 "cela ne coûte pas d'action et nettoie la case d'un seul coup, même s'il y a 4 ou 5 jetons de sable."),
@@ -26,7 +28,7 @@ public class CarteEquipement {
             this.nom_aff = nom_aff;
             this.description = description;
         }
-
+        //L'enum possède des méthodes utiles pour l'affichage
         @Override
         public String toString() {
             return nom_aff;

@@ -5,6 +5,11 @@ import modele.*;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Classe abstraite qui gère la vue du paquet de cartes T
+ * Permet de factoriser une grosse partie de code comme l'affichage souhaité pour les deux paquets est presque identique.
+ * @param <T> le type de carte
+ */
 public abstract class VuePaquet<T> extends JPanel implements Observer {
     private final Plateau plateau;
     protected final Paquet<T> paquet;
@@ -50,7 +55,9 @@ public abstract class VuePaquet<T> extends JPanel implements Observer {
 }
 
 class VuePaquetTempete extends VuePaquet<CarteTempete> {
+    // Image utilisée lorsqu'aucune carte a été piochée
     private static Image dosCarte = new ImageIcon(FenetreJeu.PathImages + "dos_carte_tempete.png").getImage();
+    // Image utilisée pour afficher la dernière carte tirée
     private static Image faceCarte = new ImageIcon(FenetreJeu.PathImages + "face_carte_tempete.png").getImage();
 
     public VuePaquetTempete(Plateau plateau, PaquetTempete paquet) {
@@ -62,6 +69,9 @@ class VuePaquetTempete extends VuePaquet<CarteTempete> {
         if (lastCarte != null) {
             this.titreCarte.setText(lastCarte.toString());
             if (lastCarte.getType() == CarteTempete.Type.VENT) {
+                // On avait utilisé un TextArea pour pouvoir avoir des retours à la ligne, cependant impossible de centrer le texte avec ce type
+                // Donc il est nécessaire d'utiliser des tags html qui gère automatiquement le retour à la ligne
+                // Pour les longs textss (ici la description)
                 this.description.setText("<html><center>Direction : " + lastCarte.getDirection() + "<br>Force : " + lastCarte.getForce() + "</center></html>");
             } else {
                 this.description.setText("<html><center>" + lastCarte.getDescription() + "</center></html>");
@@ -105,6 +115,8 @@ class VuePaquetEquipement extends VuePaquet<CarteEquipement> {
         super.update();
         if(lastCarte != null) {
             this.titreCarte.setText(lastCarte.toString());
+            // On avait utilisé un TextArea pour pouvoir avoir des retours à la ligne, cependant impossible de centrer le texte avec ce type
+            // Donc il est nécessaire d'utiliser des tags html qui gère automatiquement le retour à la ligne
             this.description.setText("<html><center>" + lastCarte.getDescription() + "</center></html>");
         }
 

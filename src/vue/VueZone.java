@@ -12,7 +12,7 @@ import modele.Zone;
  * La classe VueZone est le composant graphique représentant une tuile
  * individuelle du plateau.
  * Elle superpose deux couches d'affichage :
- * 1. L'arrière-plan
+ * 1. L'arrière-plan (une image voir 2 si un objet est apparu)
  * 2. Les éléments de l'interface posés par-dessus
  */
 public class VueZone extends JPanel {

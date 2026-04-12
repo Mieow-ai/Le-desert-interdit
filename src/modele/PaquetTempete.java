@@ -1,7 +1,8 @@
 package modele;
-
+/**
+ * Classe représentant le paquet de cartes équipements
+ */
 public class PaquetTempete extends Paquet<CarteTempete> {
-
     @Override
     protected void creerPaquet() {
        // Il y a 3 cartes la tempête se déchaine

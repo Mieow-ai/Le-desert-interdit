@@ -57,7 +57,7 @@ public abstract class Joueur {
      * @param role Le rôle souhaité
      * @param nom Le nom du joueur
      * @param p Le plateau de jeu
-     * @return Une instance d'une classe fille de Joueur comme Navigatrice
+     * @return Une instance d'une classe fille de Joueur comme Navigatrice ou Alpiniste...
      */
     public static Joueur creerJoueur(Role role, String nom, Plateau p) {
         switch (role) {
@@ -261,15 +261,7 @@ public abstract class Joueur {
     public boolean peut_donner_eau(Joueur cible) {
         return this.zone == cible.zone && cible.niveauEau < cible.niveauEauMax && this.niveauEau >= 1;
     }
-    public void remplirGourde(){
-        if (niveauEau < niveauEauMax){
-            niveauEau++;
-        }
-    }
 
-    public int get_eau_recuperee() {
-        return 1;
-    }
 
     // ----- Météorologue : amortir la tempête -----
     public int getReductionTempete(){
@@ -288,6 +280,7 @@ public abstract class Joueur {
     public List<Joueur> get_joueurs_deplacables() {
         return new ArrayList<>();
     }
+    // Non utilisé pour le moment
     public int get_max_pas_allié() {
         return 0;
     }
@@ -420,7 +413,7 @@ class Meteorologue extends Joueur {
 }
 
 /**
- * La Navigatrice peut déplacer d'autres joueurs jusqu'à 3 cases pour une seule action.
+ * La Navigatrice peut déplacer d'autres joueurs
  */
 class Navigatrice extends Joueur {
     public Navigatrice(String nom, Color couleur, Plateau p) {
@@ -452,6 +445,7 @@ class Navigatrice extends Joueur {
 
 /**
  * La Porteuse d'Eau a une plus grande réserve (5) et peut donner de l'eau aux cases adjacentes.
+ * Elle peut également récupérer de l'eau (2) sur les cases déjà révélées
  */
 class PorteuseEau extends Joueur {
     public PorteuseEau(String nom, Color couleur, Plateau p) {
@@ -465,29 +459,42 @@ class PorteuseEau extends Joueur {
         return Role.PORTEUSE_EAU;
     }
 
-    @Override
-    public int get_eau_recuperee() {
-        return 2;
-    }
 
-    // La porteuse d'eau peut donner de l'eau aux joueurs adjacents (N/S/E/O) ou sur
-    // la même case
 
+    // La porteuse d'eau peut donner de l'eau aux joueurs adjacents (N/S/E/O) ou sur la même case
     @Override
     public boolean peut_donner_eau(Joueur cible) {
         List<Zone> accessibles = getZonesAccessibles(this.get_plateau());
         accessibles.add(this.zone);
         return accessibles.contains(cible.getZone()) && cible.niveauEau < cible.niveauEauMax && this.niveauEau >= 1;
     }
-
     @Override
-    public void remplirGourde(){
-        for (int i = 0; i < 2; i++) {
-            if (niveauEau < niveauEauMax){
-                niveauEau++;
+    public List<Zone> getZonesCreusables(Plateau plateau) {
+        List<Zone> creusables = new ArrayList<>();
+        int[][] directions = getDirections();
+        for (int[] dir : directions) {
+            int ni = zone.getX() + dir[0];
+            int nj = zone.getY() + dir[1];
+            if (ni >= 0 && ni < 5 && nj >= 0 && nj < 5) {
+                Zone voisine = plateau.getZone(ni, nj);
+                if (voisine != null
+                        && (voisine.getNbSable() > 0 || (voisine.getNbSable() == 0 && (!voisine.estRevelee()|| (voisine.estRevelee() &&voisine.getType()==Zone.TypeZone.EAU))))) {
+                    creusables.add(voisine);
+                }
             }
         }
-
+        if (zone.getNbSable() > 0 || (zone.getNbSable() == 0 && (!zone.estRevelee()|| (zone.estRevelee() &&zone.getType()==Zone.TypeZone.EAU)))) {
+            creusables.add(this.zone);
+        }
+        return creusables;
+    }
+    @Override
+    public void creuserZone(Zone zone) {
+        // Si la zone est révélée et que c'est un point d'eau sans sable, alors la porteuse récupère 2 points d'eau
+        // Sinon elle fait comme tout le monde.
+        if(zone.estRevelee() && zone.getNbSable()==0 &&zone.getType()==Zone.TypeZone.EAU){
+            this.boire_eau(2);
+        } else {super.creuserZone(zone);}
     }
 
 }

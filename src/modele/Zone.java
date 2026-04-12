@@ -49,7 +49,7 @@ public abstract class Zone {
     }
 
     /**
-     * Constructeur Zone. Ne peut être appelé que par les classes filles.
+     * Constructeur Zone. Ne peut être appelé que par les classes filles. (Pattern Factory)
      * 
      * @param i Coordonnée X initiale
      * @param j Coordonnée Y initiale
@@ -61,8 +61,7 @@ public abstract class Zone {
     }
 
     /**
-     * Factory Method : Instancie et retourne la bonne classe fille en fonction du
-     * type demandé.
+     * Factory Method : Instancie et retourne la bonne classe fille en fonction du type demandé.
      * 
      * @param i    Coordonnée X
      * @param j    Coordonnée Y
@@ -92,61 +91,56 @@ public abstract class Zone {
         }
     }
 
-    // Getters et Setters
-
+    // Getters
+    public abstract TypeZone getType();
     public TypeZone get_objet_pose() {
         return this.objetpose;
     }
-
-    public abstract TypeZone getType();
-
+    public List<Joueur> getJoueurs() {
+        return joueurs;
+    }
+    public int getNbSable() {
+        return this.nbSable;
+    }
+    public int getX() {
+        return this.x;
+    }
+    public int getY() {
+        return this.y;
+    }
     public void poser_objet(TypeZone objet) {
         this.objetpose = objet;
     }
+    public boolean estRevelee() { return this.revelee; }
 
+    // Setters
+    public void set_protege_par_bouclier(boolean etat) {
+        this.protege_par_bouclier = etat;
+    }
+    public void set_position(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    // Méthodes
     public TypeZone ramasser_objet() {
         TypeZone obj = this.objetpose;
         this.objetpose = null;
         return obj;
     }
 
-    public void set_protege_par_bouclier(boolean etat) {
-        this.protege_par_bouclier = etat;
-    }
-
-    public boolean estRevelee() {
-        return this.revelee;
-    }
-
-    public void set_position(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public int getX() {
-        return this.x;
-    }
-
-    public int getY() {
-        return this.y;
-    }
-
     public void ajouterJoueur(Joueur j) {
         joueurs.add(j);
     }
-
     public void retirerJoueur(Joueur j) {
         joueurs.remove(j);
     }
 
-    public List<Joueur> getJoueurs() {
-        return joueurs;
-    }
-
-    public int getNbSable() {
-        return this.nbSable;
-    }
-
+    /**
+     * La case est toujours accessible si l'alpiniste est dessus
+     * Sinon il faut 0 ou 1 tonne sable
+     * @return Booléen indiquant si la case est accessible
+     */
     public boolean estAccessible() {
         boolean alpiniste = false;
         for (Joueur j : joueurs) {
@@ -160,7 +154,10 @@ public abstract class Zone {
 
     // Mécanique de terrain
 
-    // Ajoute du sable selon une quantité
+    /**
+     * Ajoute du sable
+     * @param nbQuantite quantité de sable à ajouter
+     */
     public void ajouterSable(int nbQuantite) {
         nbSable += nbQuantite;
     }
@@ -178,7 +175,6 @@ public abstract class Zone {
 
     /**
      * Détruit tout le sable d'un seul coup (utilisé par le Blaster des Dunes).
-     * 
      * @return Le nombre exact de marqueurs de sable retirés.
      */
     public int viderSable() {
@@ -189,7 +185,7 @@ public abstract class Zone {
 
     /**
      * Retourne la tuile face visible. Ne fonctionne que s'il n'y a plus de sable.
-     * Déclenche l'effet spécifique de la tuile via `actionReveler()`.
+     * Déclenche l'effet spécifique (selon le type) de la tuile via `actionReveler()`.
      */
     public void reveler() {
         if (nbSable == 0 && !this.revelee) {
@@ -203,7 +199,7 @@ public abstract class Zone {
 
     /**
      * Force la révélation de la zone sans vérifier la présence de sable.
-     * Utile pour les commandes de triche/débogage.
+     * Utile pour les tests et le débogage ainsi que pour le design de l'ui.
      */
     public void forcerRevelation() {
         if (!this.revelee) {
@@ -214,14 +210,13 @@ public abstract class Zone {
 
     // méthodes polymorphes
 
-    /**
-     * @return true si cette case protège de la carte "Vague de Chaleur". (Faux par
-     *         défaut)
+
+    /** Override par la zone tunnel
+     * @return true si cette case protège de la carte "Vague de Chaleur". (Faux par défaut)
      */
     public boolean protegeChaleur() {
-        return this.revelee && this.getType() == TypeZone.TUNNEL || protege_par_bouclier;
+        return protege_par_bouclier;
     }
-
     /**
      * * Action déclenchée automatiquement au moment où la case est révélée.
      * Par défaut ne fait rien, mais est surchargée par Oasis, Tunnel, etc.
@@ -286,7 +281,7 @@ class ZoneIndice extends Zone {
 
     @Override
     public TypeZone getType() {
-        return this.typeIndice; // à gérer renvoie toujours le même
+        return this.typeIndice;
     }
 
     @Override
@@ -301,24 +296,30 @@ class ZoneIndice extends Zone {
 }
 
 /**
- * Les tunnels protègent du soleil s'ils sont dispo
+ * Les tunnels protègent de la chaleur s'ils sont révélés
  * et permettent de se téléporter vers n'importe quel autre tunnel révélé.
  */
 class ZoneTunnel extends Zone {
     static Collection<Zone> tunnelsReveles = new HashSet<>();
+    public ZoneTunnel(int i, int j, Plateau p) {
+        super(i, j, p);
+        // Lors de la création les tunnels révélés sont réinitialisé (signe d'une nouvelle partie)
+        resetTunnels();
 
+    }
+    // L'attribut tunnels révélés doit être réinitialisé lorsqu'une nouvelle partie commence
     public static void resetTunnels() {
         tunnelsReveles.clear();
     }
 
-    public ZoneTunnel(int i, int j, Plateau p) {
-        super(i, j, p);
 
-    }
 
     @Override
     public boolean protegeChaleur() {
-        return this.revelee;
+        if (this.revelee){return true;}
+        else {
+            return super.protegeChaleur();
+        }
     }
 
     @Override

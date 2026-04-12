@@ -9,6 +9,7 @@ import vue.Observer;
  * par d'autres objets comme les Observeurs
  * Dès que les données de l'Observable changent, il appelle notifyObservers()
  * pour forcer les observeurs à agir.
+ * Prise dans le cours
  */
 public abstract class Observable {
     private ArrayList<Observer> observers;

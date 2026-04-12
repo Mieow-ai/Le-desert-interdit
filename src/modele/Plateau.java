@@ -1,22 +1,26 @@
 package modele;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
 
+import java.util.*;
 import vue.Observable;
 import vue.Son;
 
-import javax.swing.Timer;
+
 
 /**
- * La classe Plateau est le Modèle central du jeu
- * Elle gère la grille de 5x5, la position de l'œil de la tempête, le niveau de
- * sable,
+ * La classe Plateau est le modèle central du jeu
+ * Elle gère la grille de 5x5, la position de l'œil de la tempête, le niveau de sable,
  * les mécaniques de la tempête, et les conditions de victoire ou de défaite.
+ * C'est la seule classe qui est observée et notifie ses observateurs à chaque changement
  */
 public class Plateau extends Observable {
-    private Zone[][] grille;
+    public enum PIECE {
+        BOITE, HELICE, CRISTAL, NAVIGATION
+    }
+    public enum EtatPartie {
+        EN_COURS, VICTOIRE, DEFAITE
+    }
+    private final Zone[][] grille;
     private double niveauTempete = 2.0;
     private int oeilI = 2;
     private int oeilJ = 2;
@@ -29,69 +33,7 @@ public class Plateau extends Observable {
     private Map<PIECE, Boolean> etatPieces = new HashMap<>();
     private PaquetTempete paquetTempete = new PaquetTempete();
     private PaquetEquipement paquetEquipement = new PaquetEquipement();
-
-    public PaquetTempete getPaquetTempete() {
-        return paquetTempete;
-    }
-    public PaquetEquipement getPaquetEquipement() {
-        return paquetEquipement;
-    }
-
-
     private List<Zone.TypeZone> attenteTempete = new ArrayList<>();
-
-
-    public Joueur getJoueurActif() {
-        return joueurs.get(indiceJoueurActif);
-    }
-
-    /** Retourne toutes les zones du plateau (pour le Jetpack) */
-    public List<Zone> get_toutes_zones(){
-        List<Zone> toutes = new ArrayList<>();
-        for(int i = 0;i<5;i++){
-            for(int j = 0;j<5;j++){
-                if(grille[i][j] != null){
-                    toutes.add(grille[i][j]);
-                }
-            }
-        }
-        return toutes;
-    }
-
-    /** Retourne les zones non révélées (pour le Terrascope) */
-    public List<Zone> get_zones_cachees() {
-        List<Zone> cachees = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                if (grille[i][j] != null && !grille[i][j].estRevelee()) {
-                    cachees.add(grille[i][j]);
-                }
-            }
-        }
-        return cachees;
-    }
-
-    public enum PIECE {
-        BOITE, HELICE, CRISTAL, NAVIGATION
-    }
-
-    public Map<PIECE, Boolean> getEtatPieces() {
-        return etatPieces;
-    }
-
-
-    public double getNiveauTempete() {
-        return niveauTempete;
-    }
-
-    public int getTotalSable() {
-        return totalSable;
-    }
-
-    public enum EtatPartie {
-        EN_COURS, VICTOIRE, DEFAITE
-    };
-
     private EtatPartie etat = EtatPartie.EN_COURS;
     private String raison_fin = "";
 
@@ -166,7 +108,7 @@ public class Plateau extends Observable {
 
     }
 
-    // Getters et Setters
+    /** Getters **/
     public Zone getZoneCrash() {
         return this.zoneCrash;
     }
@@ -201,14 +143,54 @@ public class Plateau extends Observable {
         return oeilJ;
     }
 
-    public void setZonesAccessibles(List<Zone> zones) {
-        this.zonesAccessibles = zones;
-        notifyObservers();
+    public PaquetTempete getPaquetTempete() {
+        return paquetTempete;
+    }
+    public PaquetEquipement getPaquetEquipement() {
+        return paquetEquipement;
+    }
+    public Joueur getJoueurActif() {
+        return joueurs.get(indiceJoueurActif);
     }
 
-    public void resetZonesAccessibles() {
-        this.zonesAccessibles = new ArrayList<Zone>();
-        notifyObservers();
+    /** Retourne toutes les zones du plateau (pour le Jetpack) */
+    public List<Zone> get_toutes_zones(){
+        List<Zone> toutes = new ArrayList<>();
+        for(int i = 0;i<5;i++){
+            for(int j = 0;j<5;j++){
+                if(grille[i][j] != null){
+                    toutes.add(grille[i][j]);
+                }
+            }
+        }
+        return toutes;
+    }
+
+    /** Retourne les zones non révélées (pour le Terrascope) */
+    public List<Zone> get_zones_cachees() {
+        List<Zone> cachees = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (grille[i][j] != null && !grille[i][j].estRevelee()) {
+                    cachees.add(grille[i][j]);
+                }
+            }
+        }
+        return cachees;
+    }
+
+
+
+    public Map<PIECE, Boolean> getEtatPieces() {
+        return etatPieces;
+    }
+
+    public double getNiveauTempete() {
+        return niveauTempete;
+    }
+
+    public int getTotalSable() {
+        return totalSable;
     }
 
     public List<Zone> getZonesAccessibles() {
@@ -222,6 +204,20 @@ public class Plateau extends Observable {
     public String getRaison_fin() {
         return this.raison_fin;
     }
+
+    /** Setters **/
+
+    public void setZonesAccessibles(List<Zone> zones) {
+        this.zonesAccessibles = zones;
+        notifyObservers();
+    }
+
+    public void resetZonesAccessibles() {
+        this.zonesAccessibles = new ArrayList<Zone>();
+        notifyObservers();
+    }
+
+
 
 
 
@@ -310,7 +306,7 @@ public class Plateau extends Observable {
      * Déplace les tuiles du plateau dans la direction du vent
      * et ajoute du sable sur les tuiles déplacées.
      * 
-     * @param direction
+     * @param direction La direction du vent
      * @param force     Le nombre de tuiles déplacées (1 à 3)
      */
     public void leVentSouffle(CarteTempete.Direction direction, int force) {
@@ -346,7 +342,7 @@ public class Plateau extends Observable {
             tuileAspiree.set_position(oeilI, oeilJ);
             grille[iCible][jCible] = null;
 
-            // si la tempête a bougé alors il faut potentiellement faire apparaitre un objet en attente
+            // Si la tempête a bougé alors il faut potentiellement faire apparaitre un objet en attente
             if(!attenteTempete.isEmpty() && (oeilI != iCible || oeilJ != jCible)){
                 Zone z = getZone(oeilI,oeilJ);
                 for (Zone.TypeZone type : attenteTempete){
@@ -358,7 +354,7 @@ public class Plateau extends Observable {
             oeilJ = jCible;
         }
     }
-
+    //Action vague de Chaleur
     public void vagueDeChaleur() {
         for (Joueur j : joueurs) {
             boolean vivant = j.vagueDeChaleur();
@@ -369,6 +365,7 @@ public class Plateau extends Observable {
         }
     }
 
+    //Action Déchainement Tempête
     public void LaTempeteSeDechaine() {
         this.niveauTempete += 0.5;
         if (this.niveauTempete >= 5.0) {
@@ -377,8 +374,8 @@ public class Plateau extends Observable {
         }
     }
 
-    // Gestion du terrain
 
+    // Gestion du terrain
     /**
      * Ajoute du sable sur une case et vérifie la condition de défaite par
      * ensevelissement.
@@ -394,31 +391,16 @@ public class Plateau extends Observable {
             notifyObservers();
             return false;
         }
+        //Délegation de l'ajout à la zone
         zone.ajouterSable(quantite);
         totalSable += quantite;
         return true;
     }
 
-    /**
-     * Méthode de triche : révèle toutes les cases non révélées du plateau.
-     */
-    public void revelerToutLePlateau() {
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                Zone z = grille[i][j];
-                if (z != null && !z.estRevelee()) {
-                    z.forcerRevelation();
-                }
-            }
-        }
-        System.out.println("Cheat activé : Toute la carte a été révélée !");
-        notifyObservers();
-    }
 
     /**
      * Vérifie si les deux indices (ligne et colonne) d'une même pièce
      * ont été révélés. Si oui, fait apparaître l'objet à leur intersection.
-     * 
      * @param type Le type de la case indice venant d'être révélée
      */
     public void verifie_apparition_obj(Zone.TypeZone type) {
@@ -441,10 +423,10 @@ public class Plateau extends Observable {
             Zone intersection = getZone(ii, jj);
             if (intersection != null) {
                 intersection.poser_objet(type);
-                System.out.println("Une pièce de la navette (" + type + ") vient d'apparaitre !");
+                System.out.println("Une pièce de la navette (" + type + ") vient d'apparaitre.");
             } else {
                 attenteTempete.add(type);
-                System.out.println("L'objet (" + type + ") est dans la tempête pour le moment !");
+                System.out.println("L'objet (" + type + ") est dans la tempête pour le moment.");
             }
         }
     }
@@ -455,7 +437,7 @@ public class Plateau extends Observable {
         notifyObservers();
     }
 
-    // Méthode  utilisée pour les tests
+    /** Méthodes  utilisée pour les tests **/
     public void placerZonePourTest(int i, int j, Zone z) {
         grille[i][j] = z;
         if (z != null) {
@@ -466,4 +448,21 @@ public class Plateau extends Observable {
     public List<Zone.TypeZone> testGetObjetsEnAttente() {
         return attenteTempete;
     }
+
+    /**
+     * Méthode de triche : révèle toutes les cases non révélées du plateau.
+     */
+    public void revelerToutLePlateau() {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                Zone z = grille[i][j];
+                if (z != null && !z.estRevelee()) {
+                    z.forcerRevelation();
+                }
+            }
+        }
+        System.out.println("Cheat activé : Toute la carte a été révélée !");
+        notifyObservers();
+    }
+
 }

@@ -1,5 +1,11 @@
 package modele;
+
+/**
+ * Classe représentant les cartes de la tempête
+ */
 public class CarteTempete {
+
+    // Chaque type possède un nom et une description (utile lors de l'affichage)
     public enum Type {
         VENT("Vent", "Déplace l'œil du cyclone d'un nombre de cases défini par la force de la carte." +
                 "Toutes les tuiles survolées reçoivent +1 marqueur de sable. Si une case dépasse 1 sable, elle devient bloquée."),
@@ -15,7 +21,7 @@ public class CarteTempete {
             this.nom_aff = nom_aff;
             this.description = description;
         }
-
+        //L'enum possède des méthodes utiles pour l'affichage
         @Override
         public String toString() {
             return nom_aff;
@@ -25,6 +31,7 @@ public class CarteTempete {
             return description;
         }
     }
+
     public enum Direction {NORD, SUD, EST, OUEST, NODIRECTION};
     private final Type type;
     private final Direction direction;

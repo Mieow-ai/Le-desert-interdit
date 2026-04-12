@@ -8,21 +8,15 @@ import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
+        // Permet au vrai style de s'afficher (sinon Mac OS n'applique pas les effets désirés comme la couleur, largeur des boutons etc)
+        // Pris sur https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html#available
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        } catch (Exception e){
-            e.printStackTrace();
-        }
+        } catch (Exception _){}
+
         Plateau p = new Plateau();
         System.out.println("--- État initial du désert ---");
         System.out.println(p.toString());
-        /**
-         * Joueur j1 = new Joueur("Alice", Color.RED,p);
-         * Joueur j2 = new Joueur("Bob", Color.GREEN,p);
-         * j1.setZone(p.getZone(0, 0));
-         * j2.setZone(p.getZone(1, 2));
-         **/
-
         FenetreJeu f = new FenetreJeu(p);
         Controleur controleur = new Controleur(p, f);
         f.setVisible(true);

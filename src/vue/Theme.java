@@ -4,6 +4,7 @@ import java.awt.*;
 
 /**
  * La classe Theme centralise l'ensemble de la charte graphique du jeu
+ * Permet de modifier rapidement l'ui si l'on le souhaite
  */
 public class Theme {
     public static final Color SABLE_CLAIR   = new Color(237, 201, 141);
