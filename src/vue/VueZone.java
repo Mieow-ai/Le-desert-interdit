@@ -28,7 +28,7 @@ public class VueZone extends JPanel {
     private static Image imageMirage = new ImageIcon("mirage.png").getImage();
     private static Image imageEngrenage = new ImageIcon("engrenage.png").getImage();
     private static Image imageDecollage = new ImageIcon("decollage.png").getImage();
-    private static Image imageTunnel= new ImageIcon("tunnel.png").getImage();
+    private static Image imageTunnel = new ImageIcon("tunnel.png").getImage();
 
     private static Image imageHorizontaleBoite = new ImageIcon("boiteHorizontale.png").getImage();
     private static Image imageVerticaleBoite = new ImageIcon("boiteVerticale.png").getImage();
@@ -38,6 +38,12 @@ public class VueZone extends JPanel {
     private static Image imageVerticaleHelice = new ImageIcon("heliceVerticale.png").getImage();
     private static Image imageHorizontaleNavigation = new ImageIcon("navigationHorizontale.png").getImage();
     private static Image imageVerticaleNavigation = new ImageIcon("navigationVerticale.png").getImage();
+
+    private static Image imageBoite = new ImageIcon("BOITE.png").getImage();
+    private static Image imageCristal = new ImageIcon("CRISTAL.png").getImage();
+    private static Image imageHelice = new ImageIcon("HELICE.png").getImage();
+    private static Image imageNavigation = new ImageIcon("NAVIGATION.png").getImage();
+
 
     /**
      * Constructeur
@@ -51,7 +57,8 @@ public class VueZone extends JPanel {
     /**
      * Construit et positionne les composants textuels et les pions sur la tuile.
      * Appelée par VuePlateau à chaque mise à jour du Modèle.
-     * @param z La zone du modèle associée à cette tuile
+     *
+     * @param z             La zone du modèle associée à cette tuile
      * @param estAccessible Détermine si la tuile doit être mise en surbrillance
      */
     public void dessiner(Zone z, boolean estAccessible) {
@@ -70,23 +77,7 @@ public class VueZone extends JPanel {
             this.add(Box.createGlue(), gbc);
             gbc.weighty = 0;
             gbc.gridy = 1;
-            if (z.get_objet_pose() != null) {
-                switch (z.get_objet_pose()) {
-                    case INDICE_BOITE:
-                        imgPiece = new VuePiece(Plateau.PIECE.BOITE.name() + ".png", 35, 35);
-                        break;
-                    case INDICE_CRISTAL:
-                        imgPiece= new VuePiece(Plateau.PIECE.CRISTAL.name() + ".png", 35, 35);
-                        break;
-                    case INDICE_HELICE:
-                        imgPiece= new VuePiece(Plateau.PIECE.HELICE.name() + ".png", 35, 35);
-                        break;
-                    case INDICE_NAVIGATION:
-                        imgPiece= new VuePiece(Plateau.PIECE.NAVIGATION.name() + ".png", 35, 35);
-                        break;
-                }
-                this.add(imgPiece,gbc);
-            }
+
 
             // Affichage des joueurs
 
@@ -127,7 +118,7 @@ public class VueZone extends JPanel {
             JLabel sableLabel = new JLabel(z.getNbSable() + " sable");
             sableLabel.setFont(Theme.TEXTE);
             sableLabel.setForeground(z.getNbSable() >= 2 ? Theme.ACCENT_DANGER : Theme.TEXTE_FONCE);
-            if(zone_actuelle.estRevelee()){
+            if (zone_actuelle.estRevelee()) {
                 sableLabel.setForeground(Color.black); // Si la case est révelée on met du noir pour éviter que ce soit illisible
 
             }
@@ -152,6 +143,7 @@ public class VueZone extends JPanel {
     /**
      * Gère le dessin de l'image de fond de la tuile.
      * Cette méthode est appelée avant l'affichage des composants Swing
+     *
      * @param g L'outil de dessin de Java
      */
     @Override
@@ -262,6 +254,29 @@ public class VueZone extends JPanel {
                         break;
                 }
             }
+            Image objet = null;
+            // Si il y  a un objet on paint par dessus
+            if (zone_actuelle.get_objet_pose() != null) {
+                switch (zone_actuelle.get_objet_pose()) {
+                    case INDICE_BOITE:
+                        objet = imageBoite;
+                        break;
+                    case INDICE_CRISTAL:
+                        objet = imageCristal;
+                        break;
+                    case INDICE_HELICE:
+                        objet = imageHelice;
+                        break;
+                    case INDICE_NAVIGATION:
+                        objet = imageNavigation;
+                        break;
+                }
+            }
+            if (objet != null) {
+                // L'objet est dessiné avec une hauteur/largeur de 60px et centré
+                g.drawImage(objet, getWidth() / 2 - 60 / 2, getHeight() / 2 - 60 / 2 - 10, 60, 60, this);
+            }
+
 
         }
     }
