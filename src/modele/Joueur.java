@@ -266,16 +266,7 @@ public abstract class Joueur {
         return 1;
     }
 
-    // ----- Météorologue : amortir la tempête -----
-    public boolean peut_amortir_tempete() { return false; }
-    public int getReductionTempete(){
-        return this.reductionTempete;
-    }
-    public int getAndResetReductionTempete() {
-        int val = this.reductionTempete;
-        this.reductionTempete = 0;
-        return val;
-    }
+
     public void amortirTempete() {
         throw new IllegalStateException("Amortissement pour un joueur autre que météorologue");
     }
@@ -407,9 +398,6 @@ class Meteorologue extends Joueur {
     public Role getRole() {
         return Role.METEOROLOGUE;
     }
-
-    @Override
-    public boolean peut_amortir_tempete() { return true; }
 
     @Override
     public void amortirTempete(){

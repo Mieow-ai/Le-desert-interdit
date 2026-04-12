@@ -408,21 +408,20 @@ public class Controleur implements Observer {
                 // Bouton Amortir la Tempête (Météorologue)
                 this.vue.getBoutonsSpeciaux().get(Joueur.Role.METEOROLOGUE).addActionListener(e -> {
                     Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
-                    if(actif.getNb_action_restante() >0){
-                        if (actif.peut_amortir_tempete()) {
-                            if(actif.getReductionTempete() < (int) p.getNiveauTempete()) {
+                    if(actif.getRole()== Joueur.Role.METEOROLOGUE) {
+                        if (actif.getNb_action_restante() > 0) {
+                            if (actif.getReductionTempete() < (int) p.getNiveauTempete()) {
                                 actif.amortirTempete();
                                 vue.getVc().reset_texte_erreur();
                                 p.notifyObservers();
                             } else {
                                 vue.getVc().set_texte_erreur("Vous ne pouvez pas amortir plus la tempête");
                             }
-
                         } else {
-                            vue.getVc().set_texte_erreur("Vous ne pouvez pas amortir la tempête");
+                            vue.getVc().set_texte_erreur("Vous n'avez plus d'actions...");
                         }
                     } else {
-                        vue.getVc().set_texte_erreur("Action impossible : plus d'actions...");
+                        vue.getVc().set_texte_erreur("Ce n'est pas au tour du météorologue");
                     }
 
                 });

@@ -57,14 +57,11 @@ public class VueJoueur extends JPanel implements Observer {
         this.barreEau.setStringPainted(true);
         this.barreEau.setForeground(Theme.EAU_BLEU);
         this.barreEau.setBackground(Color.GRAY);
-        /**btnDonnerEau = new JButton("Donner");
-        btnDonnerEau.setFont(Theme.TEXTE);
-        btnDonnerEau.setMargin(new Insets(1, 4, 1, 4));**/
+
 
 
         ligneEau.add(new JLabel("💧"));
         ligneEau.add(barreEau);
-        //ligneEau.add(btnDonnerEau);
 
         this.add(ligneEau);
         this.add(Box.createVerticalStrut(5));
@@ -74,7 +71,7 @@ public class VueJoueur extends JPanel implements Observer {
         ligneActions.setOpaque(false);
 
         this.barreActions = new JProgressBar(0, 4);
-        this.barreActions.setPreferredSize(new Dimension(80, 30));
+        this.barreActions.setPreferredSize(new Dimension(120, 20));
         this.barreActions.setStringPainted(true);
         this.barreActions.setForeground(Theme.ENERGIE);
         this.barreActions.setBackground(Color.GRAY);
@@ -87,16 +84,14 @@ public class VueJoueur extends JPanel implements Observer {
 
 
 
-        // Amortissement météorologue
-        if(this.joueur.peut_amortir_tempete()){
-            this.labelAmortissement = new JLabel("🌪️ Amortissement : 0");
-            this.labelAmortissement.setFont(Theme.TEXTE);
-            this.labelAmortissement.setForeground(Theme.TEXTE_CLAIR);
-            this.add(labelAmortissement);
-        }
+
         switch (joueur.getRole()){
             case METEOROLOGUE:
                 boutonPouvoir = new JButton("Amortir Tempête");
+                this.labelAmortissement = new JLabel("🌪️ Amortissement : 0");
+                this.labelAmortissement.setFont(Theme.TEXTE);
+                this.labelAmortissement.setForeground(Theme.TEXTE_CLAIR);
+
                 break;
             case NAVIGATRICE:
                 boutonPouvoir = new JButton("Déplacer Allié");
@@ -110,6 +105,7 @@ public class VueJoueur extends JPanel implements Observer {
             JPanel lignePouvoir = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
             lignePouvoir.setOpaque(false);
             lignePouvoir.add(boutonPouvoir);
+            if(joueur.getRole() == Joueur.Role.METEOROLOGUE){lignePouvoir.add(labelAmortissement);}
             this.add(lignePouvoir);
             this.add(Box.createVerticalStrut(5));
 
@@ -139,7 +135,7 @@ public class VueJoueur extends JPanel implements Observer {
         barreActions.setValue(joueur.getNb_action_restante());
         barreActions.setString(joueur.getNb_action_restante() + "/4");
 
-        if(joueur.peut_amortir_tempete()) {
+        if(joueur.getRole() == Joueur.Role.METEOROLOGUE) {
             this.labelAmortissement.setText("🌪️ " + joueur.getReductionTempete());
         }
         if(joueur.get_equipement().isEmpty()){
@@ -165,7 +161,5 @@ public class VueJoueur extends JPanel implements Observer {
         this.repaint();
     }
 
-    public JButton getBoutonDonnerEau() { return btnDonnerEau; }
-    public JButton getBoutonAmortir() { return btnAmortir; }
     public Joueur getJoueur() { return joueur; }
 }
