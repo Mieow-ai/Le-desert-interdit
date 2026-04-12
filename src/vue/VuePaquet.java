@@ -27,11 +27,13 @@ public abstract class VuePaquet<T> extends JPanel implements Observer {
 
 class VuePaquetTempete extends VuePaquet<CarteTempete> {
     private static Image dosCarte = new ImageIcon("dos_carte_tempete.png").getImage();
+    private static Image faceCarte = new ImageIcon("face_carte_tempete.png").getImage();
+
     private JLabel titreCarte;
     private JLabel description;
 
     public VuePaquetTempete(Plateau plateau, PaquetTempete paquet) {
-        super(plateau, paquet, 155, 220);
+        super(plateau, paquet, 190, 220);
         // Layout vertical pour les que informations soit écrites lignes à lignes
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setBorder(
@@ -75,8 +77,9 @@ class VuePaquetTempete extends VuePaquet<CarteTempete> {
                 g.drawImage(dosCarte, 0, 0, getWidth(), getHeight(), this);
             }
         } else {
-            g.setColor(Color.WHITE);
-            g.fillRect(0, 0, getWidth(), getHeight());
+            if (faceCarte != null) {
+                g.drawImage(faceCarte, 0, 0, getWidth(), getHeight(), this);
+            }
         }
     }
 
@@ -85,6 +88,7 @@ class VuePaquetTempete extends VuePaquet<CarteTempete> {
 
 class VuePaquetEquipement extends VuePaquet<CarteEquipement> {
     private static Image dosCarte = new ImageIcon("dos_carte_equipement.png").getImage();
+    private static Image faceCarte = new ImageIcon("face_carte_equipement.png").getImage();
     private JLabel titreCarte;
     private JLabel description;
 
@@ -134,8 +138,9 @@ protected void paintComponent(Graphics g) {
             g.drawImage(dosCarte, 0, 0, getWidth(), getHeight(), this);
         }
     } else {
-        g.setColor(Color.WHITE);
-        g.fillRect(0, 0, getWidth(), getHeight());
+        if (faceCarte != null) {
+            g.drawImage(faceCarte, 0, 0, getWidth(), getHeight(), this);
+        }
     }
 }
 
