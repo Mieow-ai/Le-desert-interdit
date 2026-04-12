@@ -1,93 +1,42 @@
-# Projet_Pogl
+# Le Désert Interdit - Version Java
 
+## 1- Description
+Ce projet est une adaptation numérique du jeu de carte 'Le désert Interdit'. Nous étions deux à réaliser ce projet. Le principe du jeu est le suivant : Vous êtes une équipe de joueurs qui a survécu à un crash
+, vous vous retrouvez alors perdu dans le desert avec une quantité d'eau limitée. Vous devez survivre, trouver des indices et des pièces d'équipement pour réparer votre support. Il y aussi un danger permanent, la tempête.
 
+## 2- Fonctionnalités implémentées
+* **Interface Graphique complète (Java Swing) :** Menu de lancement, plateau dynamique, panneaux de joueurs et gestionnaire d'événements.
+* **Jeu Coopératif (2 à 6 joueurs) :** Implémentation des 6 rôles originaux avec leurs pouvoirs spécifiques :
+    * *Archéologue, Alpiniste, Explorateur, Météorologue, Navigatrice, Porteuse d'eau.*
+* **Mécaniques du jeu de société :**
+    * Gestion de la tempête de sable (déplacement de l'œil, ensablement des tuiles).
+    * Système de réserve d'eau et partage entre joueurs.
+    * Découverte des indices et apparition des 4 pièces (Boîte, Hélice, Cristal, Navigation).
+    * Utilisation de cartes Équipements (Jetpack, Blaster, Terrascope, etc.).
+* **Audio :** Intégration de musiques de fond et de bruitages d'interaction.
 
-## Getting started
+## 3- Architecture Technique
+Ce projet respecte strictement le patron de conception **MVC (Modèle-Vue-Contrôleur)** et utilise le patron **Observer/Observable** pour la communication entre la logique et l'interface.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Arborescence du projet
+* **`modele/`** : Cœur de la logique métier.
+    * Gestion de la grille et de la tempête (`Plateau`).
+    * Polymorphisme pour les cases (`Zone`, `ZoneCrash`, `ZoneTunnel`, etc.) et les rôles (`Joueur`, `Alpiniste`, etc.).
+    * Gestion des pioches et défausses (`Paquet`, `CarteTempete`, `CarteEquipement`).
+* **`vue/`** : Interface graphique (Swing).
+    * Fenêtre principale (`FenetreJeu`) et vues spécifiques (`VuePlateau`, `VueJoueur`, `VueCommande`, etc.).
+    * Classe `Theme` centralisant la charte graphique.
+    * Gestion des assets audio via la classe `Son`.
+* **`controleur/`** : Lien entre le modèle et la vue.
+    * La classe `Controleur` gère les interactions utilisateur (clics souris, boutons) via une machine à états (`enum action`).
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## 5- Prérequis et Installation
 
-## Add your files
+### Prérequis
+* **Java Development Kit (JDK) :** Version 8 si possible
+* **Ressources (Assets) :** Il faut s'assurer que les images (`desert.png`, `tempete.png`, etc.) et les sons (`.wav`) sont situés dans la racine du projet.
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+### Lancement
 
-```
-cd existing_repo
-git remote add origin https://gitlab.dsi.universite-paris-saclay.fr/sacha.donato/projet_pogl.git
-git branch -M main
-git push -uf origin main
-```
+Lancement automatique avec IntelliJ
 
-## Integrate with your tools
-
-* [Set up project integrations](https://gitlab.dsi.universite-paris-saclay.fr/sacha.donato/projet_pogl/-/settings/integrations)
-
-## Collaborate with your team
-
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
