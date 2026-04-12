@@ -28,6 +28,7 @@ public class VueZone extends JPanel {
     private static Image imageMirage = new ImageIcon("mirage.png").getImage();
     private static Image imageEngrenage = new ImageIcon("engrenage.png").getImage();
     private static Image imageDecollage = new ImageIcon("decollage.png").getImage();
+    private static Image imageTunnel= new ImageIcon("tunnel.png").getImage();
 
     private static Image imageHorizontaleBoite = new ImageIcon("boiteHorizontale.png").getImage();
     private static Image imageVerticaleBoite = new ImageIcon("boiteVerticale.png").getImage();
@@ -204,6 +205,12 @@ public class VueZone extends JPanel {
                             g.drawImage(imageDecollage, 0, 0, getWidth(), getHeight(), this);
                         }
                         break;
+                    case TUNNEL:
+                        if (imageTunnel != null) {
+                            g.drawImage(imageTunnel, 0, 0, getWidth(), getHeight(), this);
+                        }
+                        break;
+
                     case INDICE_BOITE:
                         if (zone_actuelle.getAxe() == 'i') {
                             if (imageHorizontaleBoite != null) {
