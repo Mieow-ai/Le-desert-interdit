@@ -22,7 +22,7 @@ public abstract class Paquet<T> {
             defausse.clear();
             Collections.shuffle(pioche);
         }
-        T carte = pioche.remove(0);
+        T carte = pioche.remove(pioche.size()-1);
         defausse.add(carte);
 
         return carte;
