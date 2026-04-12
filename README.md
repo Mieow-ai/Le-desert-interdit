@@ -3,7 +3,7 @@
 ## 1- Description
 Ce projet est une adaptation numérique du jeu de carte 'Le désert Interdit'. Nous étions deux à réaliser ce projet. Le principe du jeu est le suivant : Vous êtes une équipe de joueurs qui a survécu à un crash
 , vous vous retrouvez alors perdu dans le desert avec une quantité d'eau limitée. Vous devez survivre, trouver des indices et des pièces d'équipement pour réparer votre support. Il y aussi un danger permanent, la tempête.
-
+* Règles du jeu complètes : https://cdn.1j1ju.com/medias/5f/ad/62-le-desert-interdit-regle.pdf
 ## 2- Fonctionnalités implémentées
 * **Interface Graphique complète (Java Swing) :** Menu de lancement, plateau dynamique, panneaux de joueurs et gestionnaire d'événements.
 * **Jeu Coopératif (2 à 6 joueurs) :** Implémentation des 6 rôles originaux avec leurs pouvoirs spécifiques :
@@ -29,7 +29,15 @@ Ce projet respecte strictement le patron de conception **MVC (Modèle-Vue-Contr�
     * Gestion des assets audio via la classe `Son`.
 * **`controleur/`** : Lien entre le modèle et la vue.
     * La classe `Controleur` gère les interactions utilisateur (clics souris, boutons) via une machine à états (`enum action`).
-
+## 4- Ce que nous n'avons pas réalisé
+   * L'intégralité des images a été généré via Nano Banana 2 (Modèle de génération d'images de google)
+   * Les sons ont étés récupérés sur youtube ainsi que sur 101soundboaords (https://www.101soundboards.com/)
+   * Les personnalisations graphiques ne s'appliquaient pour la plupart pas jusqu'à que nous copions ce code sur la documentation d'Oracle (https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html#available)
+     ~~~
+     try {
+       UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+       } catch (Exception _){}
+     ~~~
 ## 5- Prérequis et Installation
 
 ### Prérequis
