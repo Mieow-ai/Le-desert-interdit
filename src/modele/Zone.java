@@ -19,6 +19,7 @@ public abstract class Zone {
     protected boolean revelee = false;
     private TypeZone objetpose = null;
     protected Plateau p;
+    private boolean protege_par_bouclier = false;
 
     public char getAxe() {
         throw new IllegalStateException("La zone n'est pas un indice");
@@ -107,6 +108,10 @@ public abstract class Zone {
         TypeZone obj = this.objetpose;
         this.objetpose = null;
         return obj;
+    }
+
+    public void set_protege_par_bouclier(boolean etat) {
+        this.protege_par_bouclier = etat;
     }
 
     public boolean estRevelee() {
@@ -203,7 +208,7 @@ public abstract class Zone {
      *         défaut)
      */
     public boolean protegeChaleur() {
-        return false;
+        return this.revelee && this.getType() == TypeZone.TUNNEL || protege_par_bouclier;
     }
 
     /**

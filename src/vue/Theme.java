@@ -24,6 +24,7 @@ public class Theme {
     public static final Color ACTION_ORANGE = new Color(255, 140, 0);
     public static final Color SELECTION = new Color(46, 204, 113, 150);
     public static final Color BORDURE_ACTIVE = new Color(255, 215, 0);
+    public static final Font TITRE_CARTE = new Font("Monospaced", Font.ITALIC, 16);
 
     /**
      * Applique le style standard du jeu à un bouton
