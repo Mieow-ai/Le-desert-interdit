@@ -318,7 +318,6 @@ class Archeologue extends Joueur {
         } else {
             super.creuserZone(zone); // Sinon il fait comme tout le monde
         }
-
     }
 }
 

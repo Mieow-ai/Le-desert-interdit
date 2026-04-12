@@ -26,7 +26,7 @@ public abstract class VuePaquet<T> extends JPanel implements Observer {
 }
 
 class VuePaquetTempete extends VuePaquet<CarteTempete> {
-    private static Image dosCarte = new ImageIcon("dosCarte.png").getImage();
+    private static Image dosCarte = new ImageIcon("dos_carte_tempete.png").getImage();
     private JLabel titreCarte;
     private JLabel description;
 
@@ -84,7 +84,7 @@ class VuePaquetTempete extends VuePaquet<CarteTempete> {
 
 
 class VuePaquetEquipement extends VuePaquet<CarteEquipement> {
-    private static Image dosCarte = new ImageIcon("dosCarte.png").getImage();
+    private static Image dosCarte = new ImageIcon("dos_carte_equipement.png").getImage();
     private JLabel titreCarte;
     private JLabel description;
 
