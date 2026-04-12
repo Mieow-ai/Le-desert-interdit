@@ -20,7 +20,7 @@ public class VueZone extends JPanel {
     private static Image imageHorizontaleBoite = new ImageIcon("boiteHorizontale.png").getImage();
     private static Image imageVerticaleBoite = new ImageIcon("boiteVerticale.png").getImage();
     private static Image imageHorizontaleCristal = new ImageIcon("cristalHorizontale.png").getImage();
-    private static Image imageVerticaleCristal = new ImageIcon("cristalboiteVerticale.png").getImage();
+    private static Image imageVerticaleCristal = new ImageIcon("cristalVerticale.png").getImage();
     private static Image imageHorizontaleHelice = new ImageIcon("heliceHorizontale.png").getImage();
     private static Image imageVerticaleHelice = new ImageIcon("heliceVerticale.png").getImage();
     private static Image imageHorizontaleNavigation = new ImageIcon("navigationHorizontale.png").getImage();
