@@ -39,7 +39,7 @@ class VuePaquetTempete extends VuePaquet<CarteTempete> {
                 BorderFactory.createEmptyBorder(12, 18, 12, 18));
         this.setOpaque(false); // Transparent
         this.titreCarte = new JLabel("");
-        this.titreCarte.setFont(Theme.SOUS_TITRE);
+        this.titreCarte.setFont(Theme.TITRE_CARTE);
         this.titreCarte.setForeground(Theme.TEXTE_FONCE);
         this.titreCarte.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(titreCarte);
@@ -97,7 +97,7 @@ class VuePaquetEquipement extends VuePaquet<CarteEquipement> {
                 BorderFactory.createEmptyBorder(12, 18, 12, 18));
         this.setOpaque(false); // Transparent
         this.titreCarte = new JLabel("");
-        this.titreCarte.setFont(Theme.SOUS_TITRE);
+        this.titreCarte.setFont(Theme.TITRE_CARTE);
         this.titreCarte.setForeground(Theme.TEXTE_FONCE);
         this.titreCarte.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(titreCarte);

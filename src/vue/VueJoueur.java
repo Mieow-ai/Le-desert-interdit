@@ -123,7 +123,7 @@ public class VueJoueur extends JPanel implements Observer {
 
         // Inventaire
         this.labelEquipements = new JLabel("🎒 Objets : Aucun");
-        this.labelEquipements.setFont(Theme.TEXTE);
+        this.labelEquipements.setFont(Theme.TITRE_CARTE);
         this.labelEquipements.setForeground(Theme.TEXTE_CLAIR);
         JPanel ligneEquip = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         ligneEquip.setOpaque(false);

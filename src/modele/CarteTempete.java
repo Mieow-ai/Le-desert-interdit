@@ -1,9 +1,12 @@
 package modele;
 public class CarteTempete {
     public enum Type {
-        VENT("Vent", ""),
-        CHALEUR("Chaleur", ""),
-        DECHAINE("Dechaine", "");
+        VENT("Vent", "Déplace l'œil du cyclone d'un nombre de cases défini par la force de la carte." +
+                "Toutes les tuiles survolées reçoivent +1 marqueur de sable. Si une case dépasse 1 sable, elle devient bloquée."),
+        CHALEUR("Chaleur", "Chaque joueur perd immédiatement 1 unité d'eau." +
+                "Exception : Les joueurs situés dans un tunnel révélé ou protégés par un \"Bouclier Solaire\" ne perdent rien."),
+        DECHAINE("Dechaine", "Fait progresser le niveau de la Tempête de 0.5." +
+                "Cela augmente le nombre de cartes que vous devrez piocher à la fin de chaque tour futur.");
 
         private final String nom_aff;
         private final String description;
