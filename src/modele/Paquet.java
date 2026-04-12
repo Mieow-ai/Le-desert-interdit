@@ -31,7 +31,7 @@ public abstract class Paquet<T> {
         if(defausse.isEmpty()){
             return null;
         } else {
-            return defausse.getLast();
+            return defausse.get(defausse.size() - 1);
         }
     }
 }

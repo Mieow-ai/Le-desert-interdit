@@ -10,6 +10,11 @@ import java.util.Map;
 import modele.Joueur;
 import modele.Plateau;
 
+/**
+ * La FenêtreJeu c'est la fenêtre principale de l'application
+ * C'est la fenêtre principale de la Vue dans le MVC.
+ * Elle assemble les différentes composantes de la Vue.
+ */
 public class FenetreJeu extends JFrame {
     private VuePlateau vp;
     private Plateau p;
@@ -20,16 +25,10 @@ public class FenetreJeu extends JFrame {
     private List<VueJoueur> VuesJoueurs = new ArrayList<>();
     private VuePaquetTempete vuePaquetTempete;
 
-    public Map<Joueur.Role, JButton> getBoutonsSpeciaux() {
-        return boutonsSpeciaux;
-    }
-
-    private Map<Joueur.Role, JButton> boutonsSpeciaux = new HashMap<>();
-    public List<VueJoueur> getVuesJoueurs() {
-        return VuesJoueurs;
-    }
-
-
+    /**
+     * Constructeur
+     * @param plateau Le modèle Plateau nécessaire pour lier les vues aux données.
+     */
     public FenetreJeu(Plateau plateau) {
         this.p = plateau;
         this.setTitle("Le Désert Interdit");
@@ -43,6 +42,10 @@ public class FenetreJeu extends JFrame {
 
     }
 
+    /**
+     * Alterne l'affichage entre le Menu de lancement et la Zone de jeu.
+     * @param afficherMenu Si vrai, affiche VueLancement. Si faux, assemble la scène de jeu.
+     */
     public void afficherEcran(boolean afficherMenu) {
         this.estSurMenu = afficherMenu;
         this.getContentPane().removeAll();
@@ -90,11 +93,6 @@ public class FenetreJeu extends JFrame {
             this.add(zoneJeu, BorderLayout.CENTER);
             this.setBackground(Theme.FOND_PANNEAU);
 
-
-
-
-
-
         }
         this.pack();
         this.setLocationRelativeTo(null);
@@ -104,19 +102,25 @@ public class FenetreJeu extends JFrame {
         this.repaint();
     }
 
+    // Getters
+
     public VuePlateau getVp() {
         return this.vp;
     }
-
     public VueCommande getVc() {
         return this.vc;
     }
-
     public VueLancement getVl() {
         return this.vueLancement;
     }
-
     public VuePaquetTempete getVuePaquetTempete(){return this.vuePaquetTempete;}
+    public Map<Joueur.Role, JButton> getBoutonsSpeciaux() {
+        return boutonsSpeciaux;
+    }
 
+    private Map<Joueur.Role, JButton> boutonsSpeciaux = new HashMap<>();
+    public List<VueJoueur> getVuesJoueurs() {
+        return VuesJoueurs;
+    }
 
 }

@@ -7,6 +7,11 @@ import modele.Plateau;
 
 import static vue.Theme.styliser_bouton;
 
+/**
+ * La classe VueJoueur représente la vue individuelle d'un joueur.
+ * Elle affiche son nom, ses jauges d'eau et d'actions, son équipement et un bouton
+ * d'action spéciale lié à son rôle.
+ */
 public class VueJoueur extends JPanel implements Observer {
 
     // La VueJoueur observe le plateau plutôt que son joueur car les actions du plateau et des
@@ -27,7 +32,11 @@ public class VueJoueur extends JPanel implements Observer {
     // Bouton spécifique au rôle
     private JButton boutonPouvoir;
 
-
+    /**
+     * Constructeur
+     * @param joueur Le joueur dont on veut afficher les statistiques
+     * @param p Le plateau de jeu
+     */
     public VueJoueur(Joueur joueur, Plateau p) {
         this.joueur = joueur;
         p.addObserver(this); // Comme ça les blocs sont redessinés à chaque modification du plateau
@@ -84,10 +93,7 @@ public class VueJoueur extends JPanel implements Observer {
         this.add(ligneActions);
         this.add(Box.createVerticalStrut(5));
 
-
-
-
-
+        // Pouvoir Spécial
         switch (joueur.getRole()){
             case METEOROLOGUE:
                 boutonPouvoir = new JButton("Amortir Tempête");
@@ -114,6 +120,8 @@ public class VueJoueur extends JPanel implements Observer {
             this.add(Box.createVerticalStrut(5));
 
         }
+
+        // Inventaire
         this.labelEquipements = new JLabel("🎒 Objets : Aucun");
         this.labelEquipements.setFont(Theme.TEXTE);
         this.labelEquipements.setForeground(Theme.TEXTE_CLAIR);
@@ -129,10 +137,16 @@ public class VueJoueur extends JPanel implements Observer {
         this.update();
 
     }
+
+    // Getters
     public JButton getBoutonPouvoir() {
         return boutonPouvoir;
     }
+    public Joueur getJoueur() { return joueur; }
 
+    /**
+     * Rafraîchit les données visuelles du panneau (jauges, inventaire, indicateur de tour).
+     */
     @Override
     public void update() {
         barreEau.setValue(joueur.getNvEau());
@@ -166,6 +180,4 @@ public class VueJoueur extends JPanel implements Observer {
         this.revalidate();
         this.repaint();
     }
-
-    public Joueur getJoueur() { return joueur; }
 }

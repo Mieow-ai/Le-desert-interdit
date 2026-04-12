@@ -8,6 +8,12 @@ import javax.swing.border.Border;
 import modele.Joueur;
 import modele.Zone;
 
+/**
+ * La classe VueZone est le composant graphique représentant une tuile individuelle du plateau.
+ * Elle superpose deux couches d'affichage :
+ * 1. L'arrière-plan
+ * 2. Les éléments de l'interface posés par-dessus
+ */
 public class VueZone extends JPanel {
 
     private Zone zone_actuelle;
@@ -27,12 +33,21 @@ public class VueZone extends JPanel {
     private static Image imageHorizontaleNavigation = new ImageIcon("navigationHorizontale.png").getImage();
     private static Image imageVerticaleNavigation = new ImageIcon("navigationVerticale.png").getImage();
 
+    /**
+     * Constructeur
+     */
     public VueZone() {
         this.setPreferredSize(new Dimension(100, 100));
 
         this.setLayout(new GridBagLayout());
     }
 
+    /**
+     * Construit et positionne les composants textuels et les pions sur la tuile.
+     * Appelée par VuePlateau à chaque mise à jour du Modèle.
+     * @param z La zone du modèle associée à cette tuile
+     * @param estAccessible Détermine si la tuile doit être mise en surbrillance
+     */
     public void dessiner(Zone z, boolean estAccessible) {
         this.zone_actuelle = z;
         this.removeAll();
@@ -123,7 +138,11 @@ public class VueZone extends JPanel {
         this.repaint();
     }
 
-    // Le moteur de dessin des images de fond
+    /**
+     * Gère le dessin de l'image de fond de la tuile.
+     * Cette méthode est appelée avant l'affichage des composants Swing
+     * @param g L'outil de dessin de Java
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

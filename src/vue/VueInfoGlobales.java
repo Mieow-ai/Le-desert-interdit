@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * La classe VueInfoGlobales représente le bandeau supérieur de l'interface du jeu.
+ * Elle affiche les informations de la partie en temps réel comme
+ * le niveau de la tempête, la quantité de sable globale, le joueur dont c'est le tour,
+ * ainsi que la progression de la collecte des pièces de la machine volante.
+ */
 public class VueInfoGlobales  extends JPanel implements Observer {
 
     private Plateau plateau;
@@ -15,6 +21,10 @@ public class VueInfoGlobales  extends JPanel implements Observer {
     // Le dictionnaire asssocie directement la piece à son image
     private Map<Plateau.PIECE, VuePiece> dictPieceVue = new HashMap<>();
 
+    /**
+     * Constructeur
+     * @param plateau Le modèle de jeu à observer
+     */
     public VueInfoGlobales(Plateau plateau) {
         this.plateau = plateau;
         plateau.addObserver(this);
@@ -63,6 +73,11 @@ public class VueInfoGlobales  extends JPanel implements Observer {
         this.add(labelSable);
         this.update();
     }
+
+    /**
+     * Méthode appelée automatiquement lorsque le Plateau notifie un changement.
+     * Rafraîchit les textes (tempête, sable, joueur) et l'état visuel des pièces ramassées.
+     */
     @Override
     public void update() {
         labelTempete.setText("🌪️ Niveau de la Tempête : " + plateau.getNiveauTempete() + "/ 5");
