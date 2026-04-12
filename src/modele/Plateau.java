@@ -399,6 +399,22 @@ public class Plateau extends Observable {
     }
 
     /**
+     * Méthode de triche : révèle toutes les cases non révélées du plateau.
+     */
+    public void revelerToutLePlateau() {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                Zone z = grille[i][j];
+                if (z != null && !z.estRevelee()) {
+                    z.forcerRevelation();
+                }
+            }
+        }
+        System.out.println("Cheat activé : Toute la carte a été révélée !");
+        notifyObservers();
+    }
+
+    /**
      * Vérifie si les deux indices (ligne et colonne) d'une même pièce
      * ont été révélés. Si oui, fait apparaître l'objet à leur intersection.
      * 

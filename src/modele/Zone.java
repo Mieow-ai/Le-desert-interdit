@@ -201,6 +201,17 @@ public abstract class Zone {
 
     }
 
+    /**
+     * Force la révélation de la zone sans vérifier la présence de sable.
+     * Utile pour les commandes de triche/débogage.
+     */
+    public void forcerRevelation() {
+        if (!this.revelee) {
+            this.revelee = true;
+            this.actionReveler();
+        }
+    }
+
     // méthodes polymorphes
 
     /**

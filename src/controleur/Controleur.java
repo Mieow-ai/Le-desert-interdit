@@ -403,6 +403,20 @@ public class Controleur implements Observer {
             p.notifyObservers();
         });
 
+        InputMap inputMap = vue.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = vue.getRootPane().getActionMap();
+        inputMap.put(KeyStroke.getKeyStroke("N"), "reveler_tout");
+        inputMap.put(KeyStroke.getKeyStroke("n"), "reveler_tout");
+
+        actionMap.put("reveler_tout", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (p.getEtat() == Plateau.EtatPartie.EN_COURS && !joueurs.isEmpty()) {
+                    Son.jouer_Bruitage("bouton3.wav");
+                    p.revelerToutLePlateau();
+                }
+            }
+        });
 
     }
 
