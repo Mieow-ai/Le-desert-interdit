@@ -3,6 +3,7 @@ package controleur;
 import modele.*;
 import vue.FenetreJeu;
 import vue.Observer;
+import vue.Son;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -293,11 +294,9 @@ public class Controleur implements Observer {
                                 break;
                             case CREUSER:
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
+                                    Son.jouer_Bruitage("creuser.mp3");
                                     j.creuserZone(zone);
                                     joueurs.get(p.getIndiceJoueurActif()).joue_action();
-                                    //if (zone.getType().name().startsWith("INDICE")) {
-                                     //   p.verifie_apparition_obj(zone);
-                                  //  }
                                     p.notifyObservers();
                                 }
                                 break;
@@ -318,6 +317,7 @@ public class Controleur implements Observer {
                                 objet_en_cours = null;
                                 break;
                             case UTILISER_JETPACK:
+                                Son.jouer_Bruitage("jetpack.mp3");
                                 if(zone != null && p.getZonesAccessibles().contains(zone)){
                                     Joueur compagnon = alpinistePouvoir(j, zone);
                                     if(compagnon != null){
@@ -348,6 +348,7 @@ public class Controleur implements Observer {
 
         // Action des boutons de la page de lancement
         this.vue.getVl().getBouton_play().addActionListener(e -> {
+            Son.jouer_musique_boucle("musique_jeu_desert_interdit.mp3");
             if (this.joueurs.size() < 2) {
                 this.vue.getVl().set_texte_erreur("Il faut au minimum 2 joueurs pour lancer la partie");
             } else {

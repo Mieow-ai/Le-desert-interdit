@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.*;
 
 import vue.Observable;
+import vue.Son;
 
 import javax.swing.Timer;
 
@@ -293,6 +294,7 @@ public class Plateau extends Observable {
         CarteTempete carte = paquetTempete.piocher();
         switch (carte.getType()){
             case VENT:
+                Son.jouer_Bruitage("vent.mp3");
                 leVentSouffle(carte.getDirection(),carte.getForce());
                 break;
             case DECHAINE:
