@@ -76,7 +76,10 @@ public abstract class Joueur {
                 throw new IllegalArgumentException("Rôle inconnu : " + role);
         }
     }
-
+    @Override
+    public String toString() {
+        return this.nom;
+    }
     // Getters
     public String getNom() {
         return this.nom;
