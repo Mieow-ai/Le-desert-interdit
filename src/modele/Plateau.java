@@ -364,6 +364,7 @@ public class Plateau extends Observable {
             boolean vivant = j.vagueDeChaleur();
             if (!vivant) {
                 declencher_defaite(j.getNom() + " est mort de soif !");
+                Son.jouer_Bruitage("death.wav");
             }
         }
     }
