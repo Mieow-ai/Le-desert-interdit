@@ -34,7 +34,8 @@ public class Controleur implements Observer {
      * Les différentes actions qu'un joueur peut efféctué
      */
     private enum action {
-        AUCUNE, DEPLACEMENT, CREUSER, DEPLACEMENT_ALLIE, UTILISER_BLASTER
+        AUCUNE, DEPLACEMENT, CREUSER, DEPLACEMENT_ALLIE, UTILISER_BLASTER,
+        UTILISER_JETPACK, UTILISER_TERRASCOPE
     };
 
     /**
@@ -196,6 +197,8 @@ public class Controleur implements Observer {
                         System.out.println("Tout le monde sur la case boit 2 d'eau");
                         break;
                     case BOUCLIER_SOLAIRE:
+                        actif.getZone().set_protege_par_bouclier(true);
+                        vue.getVc().set_texte_erreur("Bouclier déployé sur cette case !");
                         break;
                     case BLASTER_DES_DUNES:
                         List<Zone> cibles = new ArrayList<>();
@@ -226,14 +229,27 @@ public class Controleur implements Observer {
                         }
                         break;
                     case JETPACK:
+                        action_courante = action.UTILISER_JETPACK;
+                        objet_en_cours = choix;
+                        p.setZonesAccessibles(p.get_toutes_zones());
+                        vue.getVc().set_texte_erreur("Cliquez n'importe où pour voler !");
                         break;
-                        // pas encore implémenté
                     case TERRASCOPE:
+                        List<Zone> cachees = p.get_zones_cachees();
+                        if(cachees.isEmpty()){
+                            vue.getVc().set_texte_erreur("Toutes les zones sont déjà révélée !");
+                            actif.get_equipement().add(choix);
+                        }else{
+                            action_courante = action.UTILISER_TERRASCOPE;
+                            objet_en_cours = choix;
+                            p.setZonesAccessibles(cachees);
+                            vue.getVc().set_texte_erreur("Choisissez une zone à observer");
+                        }
                         break;
-                        // pas encore implémenté
                     case ACCELERATEUR_DE_TEMPS:
+                        actif.ajouter_actions_bonus(2);
+                        vue.getVc().set_texte_erreur("+2 actions pour " + actif.getNom());
                         break;
-                        // pas encore implémenté
                 }
                 p.notifyObservers();
             }
@@ -301,6 +317,23 @@ public class Controleur implements Observer {
                                 }
                                 objet_en_cours = null;
                                 break;
+                            case UTILISER_JETPACK:
+                                if(zone != null && p.getZonesAccessibles().contains(zone)){
+                                    Joueur compagnon = alpinistePouvoir(j, zone);
+                                    if(compagnon != null){
+                                        compagnon.setZone(zone);
+                                    }
+                                    j.setZone(zone);
+                                    System.out.println(j.getNom() + "a atterri en Jetpack");
+                                    p.verifier_victoire();
+                                }
+                                break;
+                            case UTILISER_TERRASCOPE:
+                                if(zone != null && p.getZonesAccessibles().contains(zone)){
+                                    JOptionPane.showMessageDialog(vue,
+                                            "l'analyse révèle : " + zone.getType(),
+                                            "Terrascope", JOptionPane.INFORMATION_MESSAGE);
+                                }
                             case AUCUNE:
                                 break;
                         }

@@ -44,7 +44,31 @@ public class Plateau extends Observable {
         return joueurs.get(indiceJoueurActif);
     }
 
+    /** Retourne toutes les zones du plateau (pour le Jetpack) */
+    public List<Zone> get_toutes_zones(){
+        List<Zone> toutes = new ArrayList<>();
+        for(int i = 0;i<5;i++){
+            for(int j = 0;j<5;j++){
+                if(grille[i][j] != null){
+                    toutes.add(grille[i][j]);
+                }
+            }
+        }
+        return toutes;
+    }
 
+    /** Retourne les zones non révélées (pour le Terrascope) */
+    public List<Zone> get_zones_cachees() {
+        List<Zone> cachees = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (grille[i][j] != null && !grille[i][j].estRevelee()) {
+                    cachees.add(grille[i][j]);
+                }
+            }
+        }
+        return cachees;
+    }
 
     public enum PIECE {
         BOITE, HELICE, CRISTAL, NAVIGATION
@@ -223,6 +247,7 @@ public class Plateau extends Observable {
      */
     public void finDeTour() {
         this.joueurs.get(indiceJoueurActif).reset_action();
+        this.joueurs.get(indiceJoueurActif).getZone().set_protege_par_bouclier(false);
         this.indiceJoueurActif = (this.indiceJoueurActif + 1) % joueurs.size();
         this.joueurs.get(indiceJoueurActif).reset_action();
     }

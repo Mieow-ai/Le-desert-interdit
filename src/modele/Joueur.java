@@ -28,6 +28,7 @@ public abstract class Joueur {
         return new int[][] { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
     }
 
+
     public enum Role {
         ARCHEOLOGUE,
         ALPINISTE,
@@ -188,18 +189,22 @@ public abstract class Joueur {
         this.nb_action_restante = this.action_par_tour;
     }
 
+    /** Accélérateur de temps : ajoute des actions sans reset le tour */
+    public void ajouter_actions_bonus(int nb){
+        this.nb_action_restante += nb;
+    }
+
     /**
      * Applique les effets d'une carte "Vague de Chaleur".
      * Baisse le niveau d'eau si le joueur n'est pas protégé par un tunnel.
      */
     public boolean vagueDeChaleur() {
-        if (!this.zone.protegeChaleur()) {
+        if(this.zone.protegeChaleur()){
+            System.out.println(this.nom + "est protégé de la chaleur !");
+            return true;
+        }else{
             this.niveauEau--;
             return this.niveauEau > 0;
-        }
-        else {
-            System.out.println(this.nom + "est à l'abri dans le tunnel");
-            return true;
         }
     }
 
