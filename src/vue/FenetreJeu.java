@@ -49,9 +49,11 @@ public class FenetreJeu extends JFrame {
         if (estSurMenu) {
             this.add(vueLancement); // On met le menu
         } else {
-            this.add(vIG, BorderLayout.NORTH);
-            this.add(vp, BorderLayout.CENTER);
-            this.add(vc, BorderLayout.SOUTH);
+            JPanel zoneJeu = new JPanel(new BorderLayout());
+
+            zoneJeu.add(vIG, BorderLayout.NORTH);
+            zoneJeu.add(vp, BorderLayout.CENTER);
+            zoneJeu.add(vc, BorderLayout.SOUTH);
             JPanel panneauJoueursGauche = new JPanel(new GridLayout(3, 1, 10, 10));
             panneauJoueursGauche.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -71,18 +73,28 @@ public class FenetreJeu extends JFrame {
                     panneauJoueursDroite.add(blocJoueur);
                 }
             }
+            panneauJoueursGauche.setBackground(Theme.FOND_PANNEAU_CLAIR);
+            panneauJoueursDroite.setBackground(Theme.FOND_PANNEAU_CLAIR);
+
+            zoneJeu.add(panneauJoueursGauche, BorderLayout.WEST);
+            zoneJeu.add(panneauJoueursDroite, BorderLayout.EAST);
 
             this.vuePaquetTempete = new VuePaquetTempete(p,p.getPaquetTempete());
-            JPanel panneauTotalGauche = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-            panneauTotalGauche.setOpaque(false);
 
-            panneauTotalGauche.add(vuePaquetTempete);
-            panneauTotalGauche.add(panneauJoueursGauche);
-            panneauTotalGauche.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+            JPanel zonePaquets = new JPanel(new GridLayout(2, 1, 20, 20));
+            zonePaquets.setBackground(Theme.FOND_PANNEAU);
+            zonePaquets.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+            zonePaquets.add(vuePaquetTempete);
 
-            this.add(panneauTotalGauche, BorderLayout.WEST);
-            this.add(panneauJoueursDroite, BorderLayout.EAST);
-            this.add(panneauJoueursDroite, BorderLayout.EAST);
+            this.add(zonePaquets,BorderLayout.WEST);
+            this.add(zoneJeu, BorderLayout.CENTER);
+            this.setBackground(Theme.FOND_PANNEAU);
+
+
+
+
+
+
         }
         this.pack();
         this.setLocationRelativeTo(null);

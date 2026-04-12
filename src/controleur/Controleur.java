@@ -428,7 +428,16 @@ public class Controleur implements Observer {
                 break;
             case PORTEUSE_EAU:
                 this.vue.getBoutonsSpeciaux().get(Joueur.Role.PORTEUSE_EAU).addActionListener(e -> {
-                    Joueur porteuse = this.joueurs.get(p.getIndiceJoueurActif());
+                    Joueur porteuse = null;
+                    for(Joueur j : joueurs){
+                        if(j.getRole() == Joueur.Role.PORTEUSE_EAU){
+                            porteuse=j;
+                            break;
+                        }
+                    }
+                    if(porteuse == null){
+                        throw new IllegalStateException("La porteuse n'a pas été trouvé (bouton don eau porteuse)");
+                    }
                     List<Joueur> cibles_possibles = new ArrayList<>();
 
                     if (porteuse.getNvEau() <= 1) {

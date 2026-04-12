@@ -17,7 +17,9 @@ public abstract class VuePaquet<T> extends JPanel implements Observer {
         plateau.addObserver(this);
         this.plateau = plateau;
         this.paquet = paquet;
-        this.setPreferredSize(new Dimension(width, height));
+        Dimension size = new Dimension(width, height);
+        this.setPreferredSize(size);
+        this.setMinimumSize(size);
     }
 
     @Override
@@ -32,7 +34,7 @@ class VuePaquetTempete extends VuePaquet<CarteTempete> {
     private JLabel description;
 
     public VuePaquetTempete(Plateau plateau, PaquetTempete paquet ) {
-        super(plateau, paquet, 150,220);
+        super(plateau, paquet, 155,220);
         // Layout vertical pour les que informations soit écrites lignes à lignes
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setBorder(

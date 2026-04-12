@@ -235,6 +235,7 @@ public class Plateau extends Observable {
      * tempête.
      */
     public void finDeTour() {
+        this.joueurs.get(indiceJoueurActif).reset_action();
         this.indiceJoueurActif = (this.indiceJoueurActif + 1) % joueurs.size();
         this.joueurs.get(indiceJoueurActif).reset_action();
     }

@@ -3,6 +3,8 @@ package vue;
 import javax.swing.*;
 import java.awt.*;
 
+import static vue.Theme.styliser_bouton;
+
 public class VueCommande extends JPanel {
     private JButton Bouton_fin_tour;
     private JButton Bouton_se_deplacer;
@@ -16,7 +18,7 @@ public class VueCommande extends JPanel {
         this.setLayout(new BorderLayout());
         this.setBackground(Theme.FOND_PANNEAU);
 
-        JPanel conteneurBoutons = new JPanel(new FlowLayout());
+        JPanel conteneurBoutons = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         conteneurBoutons.setOpaque(false);
 
         styliser_bouton(Bouton_fin_tour = new JButton("Fin de Tour"));
@@ -26,17 +28,21 @@ public class VueCommande extends JPanel {
         styliser_bouton(Bouton_utiliser_equipement = new JButton("Équipement"));
         styliser_bouton(Bouton_donner_eau = new JButton("Donner eau"));
 
-        conteneurBoutons.add(this.Bouton_fin_tour);
         conteneurBoutons.add(this.Bouton_creuser);
         conteneurBoutons.add(this.Bouton_se_deplacer);
         conteneurBoutons.add(this.Bouton_ramasser);
         conteneurBoutons.add(this.Bouton_donner_eau);
+        conteneurBoutons.add(this.Bouton_fin_tour);
 
         this.add(conteneurBoutons, BorderLayout.NORTH);
 
         this.labelMessage = new JLabel(" ", SwingConstants.CENTER);
         this.labelMessage.setForeground(Color.RED);
         this.add(this.labelMessage, BorderLayout.SOUTH);
+        this.setBorder(
+
+                BorderFactory.createEmptyBorder(12, 18, 12, 18)
+        );
     }
 
     public JButton getBouton_fin_tour() {
@@ -65,10 +71,4 @@ public class VueCommande extends JPanel {
         this.labelMessage.setText(" ");
     }
 
-    private void styliser_bouton(JButton b) {
-        b.setBackground(Theme.SABLE_FONCE);
-        b.setForeground(Theme.TEXTE_CLAIR);
-        b.setFocusPainted(false);
-        b.setBorder(BorderFactory.createRaisedBevelBorder());
-    }
 }

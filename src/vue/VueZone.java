@@ -3,6 +3,7 @@ package vue;
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import modele.Joueur;
 import modele.Zone;
@@ -28,6 +29,7 @@ public class VueZone extends JPanel {
 
     public VueZone() {
         this.setPreferredSize(new Dimension(100, 100));
+
         this.setLayout(new GridBagLayout());
     }
 
@@ -43,12 +45,11 @@ public class VueZone extends JPanel {
             gbc.gridx = 0;
             gbc.gridy = 0;
             gbc.insets = new Insets(1, 0, 1, 0);
-            if (!z.estRevelee()) {
-                JLabel sableLabel = new JLabel(z.getNbSable() + "sable(s)");
-                sableLabel.setFont(Theme.SOUS_TITRE);
-                sableLabel.setForeground(z.getNbSable() >= 2 ? Theme.ACCENT_DANGER : Theme.TEXTE_FONCE);
-                this.add(sableLabel, gbc);
-            } else {
+            gbc.weighty=1;
+            this.add(Box.createGlue(),gbc);
+            gbc.weighty = 0;
+            gbc.gridy = 1;
+            if (z.estRevelee()) {
                 String nomTuile = z.getType().name().replace("INDICE_", "");
                 JLabel reveleeLabel = new JLabel(nomTuile);
                 reveleeLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -68,28 +69,54 @@ public class VueZone extends JPanel {
             // Affichage des joueurs
 
             List<Joueur> joueurs = z.getJoueurs();
+            JPanel panelJoueurs1 = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0)); // 3 pions max par ligne car 5 pions débordent
+            JPanel panelJoueurs2 = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
+            panelJoueurs1.setOpaque(false);
+            panelJoueurs2.setOpaque(false);
             if (!joueurs.isEmpty()) {
-                JPanel panelJoueurs = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
-                panelJoueurs.setOpaque(false);
+
+                int count = 0;
                 for (Joueur joueur : joueurs) {
                     JPanel pion = new JPanel();
                     pion.setPreferredSize(new Dimension(15, 15));
                     pion.setBackground(joueur.getCouleur());
                     pion.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-                    panelJoueurs.add(pion);
+                    if (count < 3) {
+                        panelJoueurs1.add(pion);
+                    } else {
+                        panelJoueurs2.add(pion);
+                    }
+                    count++;
                 }
-                gbc.gridy = 2; // On les place en dessous du texte
-                this.add(panelJoueurs, gbc);
-            }
 
+
+            }
+            // Si pas de components, on ajoute du vide pour garder la structure visuelle identique
+            if(panelJoueurs1.getComponents().length == 0){
+                panelJoueurs2.add(Box.createVerticalStrut(16));
+            }
+            if(panelJoueurs2.getComponents().length == 0){
+                panelJoueurs2.add(Box.createVerticalStrut(16));
+            }
+            gbc.gridy = 2; // On les place en dessous du texte
+            this.add(panelJoueurs1, gbc);
+            gbc.gridy = 3;
+            this.add(panelJoueurs2, gbc);
+
+            JLabel sableLabel = new JLabel(z.getNbSable() + " sable");
+            sableLabel.setFont(Theme.TEXTE);
+            sableLabel.setForeground(z.getNbSable() >= 2 ? Theme.ACCENT_DANGER : Theme.TEXTE_FONCE);
+            gbc.gridy = 4;
+            this.add(sableLabel, gbc);
+            Border borderAccessible;
             // Mise en valeur des zones accessibles
             if (estAccessible) {
-                this.setBackground(Theme.SELECTION);
-                this.setBorder(BorderFactory.createLineBorder(Theme.BORDURE_ACTIVE, 2));
+                borderAccessible = BorderFactory.createLineBorder(Theme.BORDURE_ACTIVE, 2);
             } else {
-                this.setBackground(Theme.SABLE_FONCE);
-                this.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0, 30)));
+                borderAccessible = BorderFactory.createLineBorder(new Color(0, 0, 0, 30));
             }
+            this.setBorder(BorderFactory.createCompoundBorder(borderAccessible,BorderFactory.createEmptyBorder(10, 10, 5, 10)));
+
         }
 
         this.revalidate();

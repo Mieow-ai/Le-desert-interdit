@@ -472,6 +472,7 @@ class PorteuseEau extends Joueur {
     @Override
     public boolean peut_donner_eau(Joueur cible) {
         List<Zone> accessibles = getZonesAccessibles(this.get_plateau());
+        accessibles.add(this.zone);
         return accessibles.contains(cible.getZone()) && cible.niveauEau < cible.niveauEauMax && this.niveauEau >= 1;
     }
 

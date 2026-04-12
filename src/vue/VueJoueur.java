@@ -5,6 +5,8 @@ import java.awt.*;
 import modele.Joueur;
 import modele.Plateau;
 
+import static vue.Theme.styliser_bouton;
+
 public class VueJoueur extends JPanel implements Observer {
 
     // La VueJoueur observe le plateau plutôt que son joueur car les actions du plateau et des
@@ -31,6 +33,9 @@ public class VueJoueur extends JPanel implements Observer {
         p.addObserver(this); // Comme ça les blocs sont redessinés à chaque modification du plateau
         this.plateau = p;
         this.setBackground(Theme.FOND_PANNEAU);
+        Dimension size = new Dimension(230, 170);
+        this.setPreferredSize(size);
+        this.setMinimumSize(size);
         // Layout vertical pour les que informations soit écrites lignes à lignes
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         // Border de la couleur du joueur
@@ -43,17 +48,16 @@ public class VueJoueur extends JPanel implements Observer {
         // Nom
         this.labelNom = new JLabel(this.joueur.getNom());
         this.labelNom.setFont(Theme.SOUS_TITRE);
-        this.labelNom.setForeground(joueur.getCouleur());
         this.labelNom.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(labelNom);
         this.add(Box.createVerticalStrut(10));
 
         // Ligne eau (progressbar + bouton don)
-        JPanel ligneEau = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        JPanel ligneEau = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         ligneEau.setOpaque(false);
 
         this.barreEau = new JProgressBar(0, this.joueur.get_niveau_eau_max());
-        this.barreEau.setPreferredSize(new Dimension(120, 20));
+        this.barreEau.setPreferredSize(new Dimension(140, 20));
         this.barreEau.setStringPainted(true);
         this.barreEau.setForeground(Theme.EAU_BLEU);
         this.barreEau.setBackground(Color.GRAY);
@@ -64,16 +68,15 @@ public class VueJoueur extends JPanel implements Observer {
         ligneEau.add(barreEau);
 
         this.add(ligneEau);
-        this.add(Box.createVerticalStrut(5));
 
         // Ligne actions
-        JPanel ligneActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        JPanel ligneActions = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         ligneActions.setOpaque(false);
 
         this.barreActions = new JProgressBar(0, 4);
-        this.barreActions.setPreferredSize(new Dimension(120, 20));
+        this.barreActions.setPreferredSize(new Dimension(140, 20));
         this.barreActions.setStringPainted(true);
-        this.barreActions.setForeground(Theme.ENERGIE);
+        this.barreActions.setForeground(Theme.ACCENT_OR.brighter());
         this.barreActions.setBackground(Color.GRAY);
 
         ligneActions.add(new JLabel("⚡️"));
@@ -102,23 +105,26 @@ public class VueJoueur extends JPanel implements Observer {
             default: boutonPouvoir = null;
         }
         if (boutonPouvoir != null) {
-            JPanel lignePouvoir = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+            JPanel lignePouvoir = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
             lignePouvoir.setOpaque(false);
-            lignePouvoir.add(boutonPouvoir);
+            styliser_bouton(boutonPouvoir);
             if(joueur.getRole() == Joueur.Role.METEOROLOGUE){lignePouvoir.add(labelAmortissement);}
+            lignePouvoir.add(boutonPouvoir);
             this.add(lignePouvoir);
             this.add(Box.createVerticalStrut(5));
 
         }
-
         this.labelEquipements = new JLabel("🎒 Objets : Aucun");
         this.labelEquipements.setFont(Theme.TEXTE);
-        this.labelEquipements.setForeground(Theme.ACCENT_OR);
-        JPanel ligneEquip = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        this.labelEquipements.setForeground(Theme.TEXTE_CLAIR);
+        JPanel ligneEquip = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         ligneEquip.setOpaque(false);
         ligneEquip.add(this.labelEquipements);
 
         this.add(ligneEquip);
+        for (Component c : this.getComponents()) {
+            ((JComponent) c).setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
 
         this.update();
 
@@ -151,10 +157,10 @@ public class VueJoueur extends JPanel implements Observer {
                 BorderFactory.createEmptyBorder(12, 18, 12, 18)
         ));
         if (plateau.getJoueurActif() == this.joueur) {
-            this.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(Theme.BORDURE_ACTIVE, 10),
-                    BorderFactory.createEmptyBorder(12, 18, 12, 18)
-            ));
+            labelNom.setForeground(Theme.ACCENT_OR);
+        } else{
+            labelNom.setForeground(Theme.TEXTE_CLAIR);
+
         }
 
         this.revalidate();

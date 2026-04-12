@@ -1,4 +1,5 @@
 package vue;
+import javax.swing.*;
 import java.awt.*;
 public class Theme {
 
@@ -6,6 +7,7 @@ public class Theme {
     public static final Color SABLE_FONCE   = new Color(177, 141, 54);
     public static final Color FOND_PLATEAU  = new Color(60, 45, 30);
     public static final Color FOND_PANNEAU  = new Color(45, 35, 25);
+    public static final Color FOND_PANNEAU_CLAIR  = new Color(237, 201, 141);
     public static final Color TEXTE_CLAIR   = new Color(255, 240, 210);
     public static final Color TEXTE_FONCE   = new Color(80, 60, 30);
     public static final Color ACCENT_OR     = new Color(218, 165, 32);
@@ -19,4 +21,13 @@ public class Theme {
     public static final Color ACTION_ORANGE = new Color(255, 140, 0);
     public static final Color SELECTION = new Color(46, 204, 113, 150);
     public static final Color BORDURE_ACTIVE = new Color(255, 215, 0);
+    public static void styliser_bouton(JButton b) {
+        b.setBackground(Theme.SABLE_FONCE);
+        b.setForeground(Theme.TEXTE_CLAIR);
+        b.setFocusPainted(false);
+
+        b.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createRaisedBevelBorder(),
+                BorderFactory.createEmptyBorder(5, 12, 5, 12)));
+    }
 }
