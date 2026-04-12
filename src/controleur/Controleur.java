@@ -82,6 +82,7 @@ public class Controleur implements Observer {
 
         // Bouton se déplacer
         this.vue.getVc().getBouton_se_deplacer().addActionListener(e -> {
+            Son.jouer_Bruitage("bouton6.wav");
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             if (actif.getNb_action_restante() > 0) {
                 vue.getVc().reset_texte_erreur();
@@ -98,6 +99,7 @@ public class Controleur implements Observer {
 
         // Bouton creuser
         this.vue.getVc().getBouton_creuser().addActionListener(e -> {
+            Son.jouer_Bruitage("bouton6.wav");
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             if (actif.getNb_action_restante() > 0) {
                 action_courante = action.CREUSER;
@@ -117,6 +119,7 @@ public class Controleur implements Observer {
 
         // Bouton ramasser
         this.vue.getVc().getBouton_ramasser().addActionListener(e -> {
+            Son.jouer_Bruitage("bouton6.wav");
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
 
             if (actif.getNb_action_restante() > 0) {
@@ -146,6 +149,7 @@ public class Controleur implements Observer {
 
         // bouton donner de l'eau (général)
         this.vue.getVc().getBoutonDonnerEau().addActionListener(e -> {
+            Son.jouer_Bruitage("bouton6.wav");
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             List<Joueur> cibles_possibles = new ArrayList<>();
 
@@ -180,6 +184,7 @@ public class Controleur implements Observer {
 
         // Bouton Equipement
         vue.getVc().getBouton_utiliser_equipement().addActionListener(e -> {
+            Son.jouer_Bruitage("bouton6.wav");
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
 
             if(actif.get_equipement().isEmpty()){
@@ -288,6 +293,7 @@ public class Controleur implements Observer {
                                 break;
                             case DEPLACEMENT:
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
+                                    Son.jouer_Bruitage("deplacement.wav");
                                     Joueur allie = alpinistePouvoir(j,zone);
                                     if(allie != null){ // Si le joueur est un alpiniste et qu'il y a un allié sur sa case, il peut l'emmener
                                         allie.setZone(zone);
@@ -374,6 +380,7 @@ public class Controleur implements Observer {
         });
 
         this.vue.getVl().getBouton_ajouter_joueur().addActionListener(e -> {
+            Son.jouer_Bruitage("bouton1.wav");
             if (this.rolesDisponibles.isEmpty()) {
                 this.vue.getVl().set_texte_erreur("Nombre maximum de joueurs atteint (6).");
                 return;
@@ -510,6 +517,7 @@ public class Controleur implements Observer {
                             JOptionPane.QUESTION_MESSAGE, null, cibles_possibles.toArray(), cibles_possibles.get(0));
                     if(cible != null){
                         if(porteuse.donner_eau(cible)){
+                            Son.jouer_Bruitage("boire.wav");
                             vue.getVc().reset_texte_erreur();
                             System.out.println(porteuse.getNom() + "donne de l'eau à" + cible.getNom());
                             p.notifyObservers();
