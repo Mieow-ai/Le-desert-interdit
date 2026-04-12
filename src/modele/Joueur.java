@@ -266,7 +266,15 @@ public abstract class Joueur {
         return 1;
     }
 
-
+    // ----- Météorologue : amortir la tempête -----
+    public int getReductionTempete(){
+        return this.reductionTempete;
+    }
+    public int getAndResetReductionTempete() {
+        int val = this.reductionTempete;
+        this.reductionTempete = 0;
+        return val;
+    }
     public void amortirTempete() {
         throw new IllegalStateException("Amortissement pour un joueur autre que météorologue");
     }
