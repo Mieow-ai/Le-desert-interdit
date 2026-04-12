@@ -11,7 +11,7 @@ public abstract class VuePaquet<T> extends JPanel implements Observer {
     protected T lastCarte = null;
 
     protected JLabel titreCarte;
-    protected JTextArea description;
+    protected JLabel description;
 
     public VuePaquet(Plateau plateau, Paquet<T> paquet, int width, int height) {
         plateau.addObserver(this);
@@ -34,15 +34,11 @@ public abstract class VuePaquet<T> extends JPanel implements Observer {
         this.add(titreCarte);
         this.add(Box.createVerticalStrut(20));
 
-        this.description = new JTextArea("");
+        this.description = new JLabel("");
         this.description.setFont(Theme.TEXTE_CARTE);
         this.description.setForeground(Theme.TEXTE_FONCE);
         this.description.setAlignmentX(Component.CENTER_ALIGNMENT);
-        this.description.setLineWrap(true);
-        this.description.setWrapStyleWord(true);
-        this.description.setOpaque(false);
-        this.description.setEditable(false);
-        this.description.setFocusable(false);
+        this.description.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(description);
         this.add(Box.createVerticalStrut(10));
     }
@@ -65,7 +61,11 @@ class VuePaquetTempete extends VuePaquet<CarteTempete> {
         super.update();
         if (lastCarte != null) {
             this.titreCarte.setText(lastCarte.toString());
-            this.description.setText(lastCarte.getDescription());
+            if (lastCarte.getType() == CarteTempete.Type.VENT) {
+                this.description.setText("<html><center>Direction : " + lastCarte.getDirection() + "<br>Force : " + lastCarte.getForce() + "</center></html>");
+            } else {
+                this.description.setText("<html><center>" + lastCarte.getDescription() + "</center></html>");
+            }
         }
 
         this.revalidate();
@@ -105,7 +105,7 @@ class VuePaquetEquipement extends VuePaquet<CarteEquipement> {
         super.update();
         if(lastCarte != null) {
             this.titreCarte.setText(lastCarte.toString());
-            this.description.setText(lastCarte.getDescription());
+            this.description.setText("<html><center>" + lastCarte.getDescription() + "</center></html>");
         }
 
         this.revalidate();

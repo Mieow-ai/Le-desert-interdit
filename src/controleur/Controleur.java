@@ -559,7 +559,7 @@ public class Controleur implements Observer {
             nbCartes -= j.getAndResetReductionTempete();
         }
         final int nbcartestimer = nbCartes;
-        Timer timer = new javax.swing.Timer(700, null); // On crée un timer qui sera déclenché toutes les 1000ms après le départ du timer
+        Timer timer = new javax.swing.Timer(1500, null); // On crée un timer qui sera déclenché toutes les 1000ms après le départ du timer
         timer.addActionListener(new ActionListener() { // classe anonyme sur l'interface ActionListener
             int i = 0;
 
