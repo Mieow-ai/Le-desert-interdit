@@ -69,6 +69,7 @@ public class Controleur implements Observer {
 
         // Bouton fin de tour
         this.vue.getVc().getBouton_fin_tour().addActionListener(e -> {
+            Son.jouer_Bruitage("bouton7.wav");
             vue.getVc().reset_texte_erreur();
             System.out.println("Le désert s'agite...");
 
@@ -293,13 +294,13 @@ public class Controleur implements Observer {
                                 break;
                             case DEPLACEMENT:
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
-                                    Son.jouer_Bruitage("deplacement.wav");
                                     Joueur allie = alpinistePouvoir(j,zone);
                                     if(allie != null){ // Si le joueur est un alpiniste et qu'il y a un allié sur sa case, il peut l'emmener
                                         allie.setZone(zone);
                                     }
                                     j.setZone(zone);
                                     j.joue_action();
+                                    Son.jouer_Bruitage("deplacement.wav");
                                     p.verifier_victoire();
                                     gerer_fin_de_partie();
                                 }
@@ -362,6 +363,7 @@ public class Controleur implements Observer {
 
         // Action des boutons de la page de lancement
         this.vue.getVl().getBouton_play().addActionListener(e -> {
+            Son.jouer_Bruitage("bouton4.wav");
             Son.jouer_musique_boucle("musique_jeu_desert_interdit.wav");
             if (this.joueurs.size() < 2) {
                 this.vue.getVl().set_texte_erreur("Il faut au minimum 2 joueurs pour lancer la partie");
