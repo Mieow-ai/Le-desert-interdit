@@ -214,6 +214,7 @@ public abstract class Joueur {
      * @param zone La zone à creuser ou révéler
      */
     public void creuserZone(Zone zone) {
+        if (zone == null){throw new IllegalStateException("impossible de creuser l'oeil (ou null)");}
         if(zone.getNbSable() > 0) {
             zone.creuser();
         } else if (!zone.estRevelee() && zone.getNbSable() == 0){
