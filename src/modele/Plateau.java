@@ -28,10 +28,15 @@ public class Plateau extends Observable {
     private List<Equipement> pioche_equipement = new ArrayList<>();
     private Map<PIECE, Boolean> etatPieces = new HashMap<>();
     private PaquetTempete paquetTempete = new PaquetTempete();
+    private PaquetEquipement paquetEquipement = new PaquetEquipement();
 
     public PaquetTempete getPaquetTempete() {
         return paquetTempete;
     }
+    public PaquetEquipement getPaquetEquipement() {
+        return paquetEquipement;
+    }
+
 
     private List<Zone.TypeZone> attenteTempete = new ArrayList<>();
 
@@ -135,11 +140,6 @@ public class Plateau extends Observable {
             this.ajouterSable(grille[pos[0]][pos[1]], 1);
         }
 
-        for (Equipement e : Equipement.values()) {
-            this.pioche_equipement.add(e);
-            this.pioche_equipement.add(e);
-        }
-        Collections.shuffle(this.pioche_equipement);
     }
 
     // Getters et Setters
@@ -199,17 +199,7 @@ public class Plateau extends Observable {
         return this.raison_fin;
     }
 
-    /**
-     * Pioche la première carte équipement du paquet.
-     * 
-     * @return L'équipement pioché, ou null si la pioche est vide.
-     */
-    public Equipement piocher_equipement() {
-        if (!this.pioche_equipement.isEmpty()) {
-            return pioche_equipement.remove(pioche_equipement.size() - 1);
-        }
-        return null;
-    }
+
 
     // Convertisseur en String
     @Override

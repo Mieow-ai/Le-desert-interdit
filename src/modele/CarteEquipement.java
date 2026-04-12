@@ -2,6 +2,10 @@ package modele;
 
 public class CarteEquipement {
 
+    public Type getType() {
+        return type;
+    }
+
     public enum Type {
         BLASTER_DES_DUNES("Blaster", ""),
         JETPACK("Jetpack", ""),
