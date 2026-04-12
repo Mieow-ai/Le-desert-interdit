@@ -315,6 +315,7 @@ public class Controleur implements Observer {
                                 break;
                             case UTILISER_BLASTER:
                                 if(zone != null && p.getZonesAccessibles().contains(zone)){
+                                    Son.jouer_Bruitage("laser.wav");
                                     int sable_retire = zone.viderSable();
                                     p.enlever_sable(sable_retire);
                                     System.out.println("Boom ! Le Blaster a détruit " + sable_retire + "bloc(s) de sable");
@@ -343,6 +344,7 @@ public class Controleur implements Observer {
                                 break;
                             case UTILISER_TERRASCOPE:
                                 if(zone != null && p.getZonesAccessibles().contains(zone)){
+                                    Son.jouer_Bruitage("revelation.wav");
                                     JOptionPane.showMessageDialog(vue,
                                             "l'analyse révèle : " + zone.getType(),
                                             "Terrascope", JOptionPane.INFORMATION_MESSAGE);
@@ -451,6 +453,7 @@ public class Controleur implements Observer {
             case NAVIGATRICE:
                 // Bouton deplacer un allié
                 this.vue.getBoutonsSpeciaux().get(Joueur.Role.NAVIGATRICE).addActionListener(e -> {
+                    Son.jouer_Bruitage("bouton3.wav");
                     Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
 
                     if(actif.getNb_action_restante() > 0) {
@@ -481,6 +484,7 @@ public class Controleur implements Observer {
             case METEOROLOGUE:
                 // Bouton Amortir la Tempête (Météorologue)
                 this.vue.getBoutonsSpeciaux().get(Joueur.Role.METEOROLOGUE).addActionListener(e -> {
+                    Son.jouer_Bruitage("bouton3.wav");
                     Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
                     if(actif.getRole()== Joueur.Role.METEOROLOGUE) {
                         if (actif.getNb_action_restante() > 0) {
@@ -502,6 +506,7 @@ public class Controleur implements Observer {
                 break;
             case PORTEUSE_EAU:
                 this.vue.getBoutonsSpeciaux().get(Joueur.Role.PORTEUSE_EAU).addActionListener(e -> {
+                    Son.jouer_Bruitage("bouton3.wav");
                     Joueur porteuse = null;
                     for(Joueur j : joueurs){
                         if(j.getRole() == Joueur.Role.PORTEUSE_EAU){
