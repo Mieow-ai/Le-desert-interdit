@@ -86,7 +86,7 @@ public class FenetreJeu extends JFrame {
             this.vuePaquetTempete = new VuePaquetTempete(p,p.getPaquetTempete());
             this.vuePaquetEquipement = new VuePaquetEquipement(p,p.getPaquetEquipement());
 
-            JPanel zonePaquets = new JPanel(new GridLayout(2, 1, 20, 20));
+            JPanel zonePaquets = new JPanel(new GridLayout(2, 1, 20, 0));
             zonePaquets.setBackground(Theme.FOND_PANNEAU);
             zonePaquets.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
             zonePaquets.add(vuePaquetTempete);

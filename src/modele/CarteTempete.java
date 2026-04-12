@@ -50,5 +50,9 @@ public class CarteTempete {
     public int getForce() {
         return force;
     }
+    @Override
+    public String toString() {
+        return type.toString();
+    }
 
 }
