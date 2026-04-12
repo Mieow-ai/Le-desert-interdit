@@ -229,10 +229,8 @@ public class Plateau extends Observable {
     }
 
     // Déroulement du jeu
-
     /**
-     * Clôture le tour du joueur actif, réinitialise ses actions et déclenche la
-     * tempête.
+     * Clôture le tour du joueur actif, réinitialise ses actions et déclenche la tempête.
      */
     public void finDeTour() {
         this.joueurs.get(indiceJoueurActif).reset_action();
