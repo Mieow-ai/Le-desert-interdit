@@ -25,7 +25,6 @@ public class Plateau extends Observable {
     private List<Joueur> joueurs = new ArrayList<>();
     private Zone zoneCrash;
     private int indiceJoueurActif = 0;
-    private List<Equipement> pioche_equipement = new ArrayList<>();
     private Map<PIECE, Boolean> etatPieces = new HashMap<>();
     private PaquetTempete paquetTempete = new PaquetTempete();
     private PaquetEquipement paquetEquipement = new PaquetEquipement();
