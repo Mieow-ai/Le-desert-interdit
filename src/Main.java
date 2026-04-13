@@ -12,7 +12,7 @@ public class Main {
         // Pris sur https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html#available
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        } catch (Exception _){}
+        } catch (Exception e){}
 
         Plateau p = new Plateau();
         System.out.println("--- État initial du désert ---");
