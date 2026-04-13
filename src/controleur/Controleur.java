@@ -206,6 +206,7 @@ public class Controleur implements Observer {
                     case RESERVE_D_EAU:
                         for(Joueur j : actif.getZone().getJoueurs()){
                             j.boire_eau(2);
+                            Son.jouer_Bruitage("boire.wav");
                         }
                         System.out.println("Tout le monde sur la case boit 2 d'eau");
                         break;
@@ -395,8 +396,8 @@ public class Controleur implements Observer {
         // Permet de revéler toutes les cases (utile pour coder l'ui et débugger)
         InputMap inputMap = vue.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = vue.getRootPane().getActionMap();
-        inputMap.put(KeyStroke.getKeyStroke("N"), "reveler_tout");
-        inputMap.put(KeyStroke.getKeyStroke("n"), "reveler_tout");
+        inputMap.put(KeyStroke.getKeyStroke("K"), "reveler_tout");
+        inputMap.put(KeyStroke.getKeyStroke("k"), "reveler_tout");
 
         actionMap.put("reveler_tout", new AbstractAction() {
             @Override
@@ -457,7 +458,6 @@ public class Controleur implements Observer {
                                     vue, "Quel allié voulez-vous déplacer ?", "Déplacer allié",
                                     JOptionPane.QUESTION_MESSAGE, null,
                                     cibles.toArray(), cibles.get(0));
-
                             if (cible != null) {
                                 allieADeplacer = cible;
                                 action_courante = action.DEPLACEMENT_ALLIE;

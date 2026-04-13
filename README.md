@@ -12,6 +12,7 @@ L'intégralité du projet est strictement séparée en trois composantes princip
 * Le Modèle :  Le modèle (déplacement, gestion du sable, de l'eau, actions des joueurs) de manière totalement indépendante de tout affichage graphique.
 * La Vue  : C'est l'interface graphique en Java Swing. Elle ne fait qu'afficher l'état actuel du modèle. Toutes ses classes redessinent les composants (via le gestionnaire paintComponent ou le GridBagLayout) en lisant les données du Modèle.
 * Le Contrôleur : Il gère les actions de l'utilisateur (clics de souris ou boutons). C'est lui qui interprète ces événements, met à jour le Modèle en appelant ses méthodes, puis ordonne le rafraîchissement de la Vue.
+* On a une entorse dans le modèle MVC pour les fenêtres de dialogue, on a été obligé de les faire dans la Vue et non dans le Contrôleur car sinon on aurait eu trop de booléen à traiter.
 
 ### B. Mise à jour dynamique : Pattern Observer / Observable
 Pour maintenir le Modèle indépendant de la Vue, nous avons implémenté le patron Observer / Observable vu en cours. Le Modèle n'a aucune référence directe vers l'interface graphique. À la place, les objets majeurs (comme le Plateau) héritent de notre classe Observable. La VuePlateau (et les autres vues) s'y abonnent en tant qu'Observer. Dès qu'une mécanique altère l'état du jeu (ex: une tempête s'abat ou un joueur creuse), le plateau notifie ses observateurs, déclenchant ainsi un redessinage automatique de l'interface.
@@ -27,8 +28,20 @@ Afin de centraliser et sécuriser l'instanciation des objets polymorphes, nous u
 ### E. Machine à états dans le Contrôleur
 Pour partager de façon claire les rôles d'interaction, la classe Controleur s'appuie sur une structure d'états (souvent gérée via Enum). Cela permet au jeu de contextualiser le clic du joueur : si l'état est DEPLACEMENT, un clic sur une case invoque la méthode setZone(), mais si l'état est CREUSER, ce même clic invoquera creuserZone().
 
+### F. Arborescence du projet
+* **`modele/`** : Cœur de la logique métier.
+  * Gestion de la grille et de la tempête (`Plateau`).
+  * Polymorphisme pour les cases (`Zone`, `ZoneCrash`, `ZoneTunnel`, etc.) et les rôles (`Joueur`, `Alpiniste`, etc.).
+  * Gestion des pioches et défausses (`Paquet`, `CarteTempete`, `CarteEquipement`).
+* **`vue/`** : Interface graphique (Swing).
+  * Fenêtre principale (`FenetreJeu`) et vues spécifiques (`VuePlateau`, `VueJoueur`, `VueCommande`, etc.).
+  * Classe `Theme` centralisant la charte graphique.
+  * Gestion des assets audio via la classe `Son`.
+* **`controleur/`** : Lien entre le modèle et la vue.
+  * La classe `Controleur` gère les interactions utilisateur (clics souris, boutons) via une machine à états (`enum action`).
+
 ## 3. Les problèmes qui sont présents et que nous n'avons pas pu éliminer
-   - A notre conaissance la seule règle qui diffère entre notre implémentation et le jeu de société est que la navigatrice peut déplacer un joueur d'une case pour une action dans notre implémentation tandis que dans le vrai jeu elle peut déplacer le joueur de 3 cases pour une action.
+   - A notre connaissance la seule règle qui diffère entre notre implémentation et le jeu de société est que la navigatrice peut déplacer un joueur d'une case pour une action dans notre implémentation tandis que dans le vrai jeu elle peut déplacer le joueur de 3 cases pour une action.
 Cela aurait ajouté plusieurs contraintes dans notre code car il aurait fallu gérer les cas où la navigatrice veut déplacer un joueur d'une seule ou de deux cases seulement tout en enlevant 1 point d'action. Par manque de temps nous n'avons pas implémenté cette feature.
 - Un problème réside dans notre implémentation qui est le suivant : 
 Si deux objets apparaissent au même endroit et que le premier n'a pas été ramassé alors un objet disparait (ce qui a peu de chance d'arriver lors d'une partie). Le changement vers une liste nécessite de nombreuses modifications dans le code.
