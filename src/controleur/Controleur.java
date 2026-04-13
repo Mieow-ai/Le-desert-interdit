@@ -212,6 +212,7 @@ public class Controleur implements Observer {
                         break;
                     case BOUCLIER_SOLAIRE:
                         actif.getZone().set_protege_par_bouclier(true);
+                        Son.jouer_Bruitage("bouclier_solaire.wav");
                         vue.getVc().set_texte_erreur("Bouclier déployé sur cette case !");
                         break;
                     case BLASTER_DES_DUNES:
