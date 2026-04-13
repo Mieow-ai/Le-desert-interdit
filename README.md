@@ -24,7 +24,7 @@ L'intégralité du projet est strictement séparée en trois composantes princip
 * Le Modèle : Le modèle (déplacement, gestion du sable, de l'eau, actions des joueurs) de manière totalement indépendante de tout affichage graphique.
 * La Vue  : C'est l'interface graphique en Java Swing. Elle ne fait qu'afficher l'état actuel du modèle. Toutes ses classes redessinent les composants (via le gestionnaire paintComponent ou le GridBagLayout) en lisant les données du Modèle.
 * Le Contrôleur : Il gère les actions de l'utilisateur (clics de souris ou boutons). C'est lui qui interprète ces événements, met à jour le Modèle en appelant ses méthodes, puis ordonne le rafraîchissement de la Vue.
-* On a une entorse dans le modèle MVC pour les fenêtres de dialogue, on a été obligé de les faire dans la Vue et non dans le Contrôleur car sinon on aurait eu trop de booléen à traiter.
+* La seule entorse au modèle MVC est d'utiliser les fenêtres de dialogue, cela nous permet de ne pas passer par la vue pour ces dernières, ce qui permet une facilité de code.
 
 ### B. Mise à jour dynamique : Pattern Observer / Observable
 Pour maintenir le Modèle indépendant de la Vue, nous avons implémenté le patron Observer / Observable vu en cours. Le Modèle n'a aucune référence directe vers l'interface graphique. À la place, les objets majeurs (comme le Plateau) héritent de notre classe Observable. La VuePlateau (et les autres vues) s'y abonnent en tant qu'Observer. Dès qu'une mécanique altère l'état du jeu (ex: une tempête s'abat ou un joueur creuse), le plateau notifie ses observateurs, déclenchant ainsi un redessinage automatique de l'interface.
