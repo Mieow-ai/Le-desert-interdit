@@ -343,4 +343,47 @@ public class MainTest {
         assertEquals("La partie est en mode défaite",Plateau.EtatPartie.DEFAITE, p.getEtat());
     }
 
+    @Test
+    public void testMortEnsablee() {
+        Plateau p = new Plateau();
+        modele.Joueur j1 = modele.Joueur.creerJoueur(Joueur.Role.ALPINISTE, "", p);
+        Zone zone = p.getZone(0,0);
+        j1.setZone(zone);
+        assertEquals("La partie est en cours",Plateau.EtatPartie.EN_COURS, p.getEtat());
+        p.enlever_sable(8);
+        p.ajouterSable(zone, 49);
+        assertEquals("La partie est en mode défaite",Plateau.EtatPartie.DEFAITE, p.getEtat());
+    }
+
+    @Test
+    public void testMortNiveauTempete() {
+        Plateau p = new Plateau();
+        modele.Joueur j1 = modele.Joueur.creerJoueur(Joueur.Role.ALPINISTE, "", p);
+        Zone zone = p.getZone(0,0);
+        j1.setZone(zone);
+        assertEquals("La partie est en cours",Plateau.EtatPartie.EN_COURS, p.getEtat());
+        for(int i = 0;i<6;i++) {
+            p.LaTempeteSeDechaine();
+        }
+        assertEquals("La partie est en mode défaite",Plateau.EtatPartie.DEFAITE, p.getEtat());
+    }
+
+    @Test
+    public void TestVictoire() {
+        Plateau p = new Plateau();
+        modele.Joueur j1 = modele.Joueur.creerJoueur(Joueur.Role.ALPINISTE, "", p);
+        Zone z_deco  = Zone.creerZone(0, 0, Zone.TypeZone.DECOLLAGE,' ', p);
+        j1.setZone(z_deco);
+        assertEquals("La partie est en cours",Plateau.EtatPartie.EN_COURS, p.getEtat());
+        for(Plateau.PIECE piece : Plateau.PIECE.values()){
+            p.add_piece(piece);
+        }
+        p.verifier_victoire();
+        assertEquals("La partie est en mode victoire",Plateau.EtatPartie.VICTOIRE, p.getEtat());
+    }
+
+
+
+
+
 }
