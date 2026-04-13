@@ -1,0 +1,599 @@
+@startuml
+class vue.VueLancement {
+- JButton Bouton_ajouter_joueur
+- JButton Bouton_play
+- JLabel labelMessage
+- JTextField champNom
++ JButton getBouton_ajouter_joueur()
++ JButton getBouton_play()
++ String getNomSaisi()
++ void resetNomSaisi()
++ void set_texte_erreur(String)
++ void reset_texte_erreur()
+- void styliser_bouton(JButton,Color)
+}
+
+
+class vue.VueJoueur {
+- Joueur joueur
+- Plateau plateau
+- JLabel labelNom
+- JProgressBar barreEau
+- JButton btnDonnerEau
+- JProgressBar barreActions
+- JLabel labelEquipements
+- JLabel labelAmortissement
+- JButton btnAmortir
+- JButton boutonPouvoir
++ JButton getBoutonPouvoir()
++ Joueur getJoueur()
++ void update()
+}
+
+
+class controleur.Controleur {
+- Plateau p
+- FenetreJeu vue
+- List<Joueur> joueurs
+- List<Joueur.Role> rolesDisponibles
+- action action_courante
+- boolean partieTerminee
+- Joueur allieADeplacer
+- CarteEquipement objet_en_cours
++ void update()
+- {static} Plateau.PIECE getPiece(Zone.TypeZone)
+- Joueur alpinistePouvoir(Joueur,Zone)
+- void setActionSpeciale(Joueur.Role)
+- void gerer_fin_de_partie()
++ void action_desert()
+}
+
+
+enum controleur.action {
++  AUCUNE
++  DEPLACEMENT
++  CREUSER
++  DEPLACEMENT_ALLIE
++  UTILISER_BLASTER
++  UTILISER_JETPACK
++  UTILISER_TERRASCOPE
+}
+
+class vue.VuePlateau {
+- Plateau plateau
+- VueZone[][] casesGrille
+- void mettreAJour()
++ JPanel getCase(int,int)
++ void update()
+}
+
+
+class modele.PaquetEquipement {
+# void creerPaquet()
+}
+
+class vue.VuePiece {
+- Image image
++ void setImage(String)
+# void paintComponent(Graphics)
+}
+
+
+class vue.Theme {
++ {static} Color SABLE_CLAIR
++ {static} Color SABLE_FONCE
++ {static} Color FOND_PANNEAU
++ {static} Color FOND_PANNEAU_CLAIR
++ {static} Color TEXTE_CLAIR
++ {static} Color TEXTE_FONCE
++ {static} Color COULEUR_OR
++ {static} Color DANGER
++ {static} Font TITRE
++ {static} Font SOUS_TITRE
++ {static} Font TEXTE
++ {static} Font TEXTE_GRAS
++ {static} Color EAU_BLEU
++ {static} Color BORDURE_ACTIVE
++ {static} Font TITRE_CARTE
++ {static} Font TEXTE_CARTE
++ {static} void styliser_bouton(JButton)
+}
+
+
+class vue.VueZone {
+- Zone zone_actuelle
+- {static} Image imageSable
+- {static} Image imageTempete
+- {static} Image imageOasis
+- {static} Image imageOasisRev
+- {static} Image imageCrash
+- {static} Image imageMirage
+- {static} Image imageEngrenage
+- {static} Image imageDecollage
+- {static} Image imageTunnel
+- {static} Image imageHorizontaleBoite
+- {static} Image imageVerticaleBoite
+- {static} Image imageHorizontaleCristal
+- {static} Image imageVerticaleCristal
+- {static} Image imageHorizontaleHelice
+- {static} Image imageVerticaleHelice
+- {static} Image imageHorizontaleNavigation
+- {static} Image imageVerticaleNavigation
+- {static} Image imageBoite
+- {static} Image imageCristal
+- {static} Image imageHelice
+- {static} Image imageNavigation
++ void dessiner(Zone,boolean)
+# void paintComponent(Graphics)
+}
+
+
+class Main {
++ {static} void main(String[])
+}
+
+abstract class modele.Joueur {
+- String nom
+# Zone zone
+- Plateau p
+- Color couleur
+- int action_par_tour
+- int nb_action_restante
+# int niveauEau
+# int niveauEauMax
+# int reductionTempete
+- List<CarteEquipement> equipements
+# int[][] getDirections()
++ {static} Joueur creerJoueur(Role,String,Plateau)
++ String toString()
++ String getNom()
++ int getNvEau()
++ int getNb_action_restante()
++ Zone getZone()
++ Color getCouleur()
++ Plateau get_plateau()
++ int get_niveau_eau_max()
++ List<CarteEquipement> get_equipement()
++ {abstract}Role getRole()
++ List<Zone> getZonesAccessibles(Plateau)
++ List<Zone> getZonesCreusables(Plateau)
++ void setZone(Zone)
++ void joue_action()
++ void reset_action()
++ void ajouter_actions_bonus(int)
++ boolean vagueDeChaleur()
++ void creuserZone(Zone)
++ int boire_eau(int)
++ boolean donner_eau(Joueur)
++ boolean peut_donner_eau(Joueur)
++ int getReductionTempete()
++ int getAndResetReductionTempete()
++ void amortirTempete()
++ List<Joueur> get_joueurs_deplacables()
++ int get_max_pas_allié()
++ boolean peut_emmener_compagnon()
++ List<Joueur> get_compagnons_possibles()
+}
+
+
+enum modele.Role {
++  ARCHEOLOGUE
++  ALPINISTE
++  EXPLORATEUR
++  METEOROLOGUE
++  NAVIGATRICE
++  PORTEUSE_EAU
+}
+
+class modele.Archeologue {
++ Role getRole()
++ void creuserZone(Zone)
+}
+
+class modele.Alpiniste {
++ Role getRole()
++ List<Zone> getZonesAccessibles(Plateau)
++ boolean peut_emmener_compagnon()
++ List<Joueur> get_compagnons_possibles()
+}
+
+class modele.Explorateur {
++ Role getRole()
+# int[][] getDirections()
+}
+
+class modele.Meteorologue {
++ Role getRole()
++ void amortirTempete()
+}
+
+class modele.Navigatrice {
++ Role getRole()
++ List<Joueur> get_joueurs_deplacables()
++ int get_max_pas_allié()
+}
+
+class modele.PorteuseEau {
++ Role getRole()
++ boolean peut_donner_eau(Joueur)
++ List<Zone> getZonesCreusables(Plateau)
++ void creuserZone(Zone)
+}
+
+class modele.CarteEquipement {
+- Type type
++ Type getType()
++ String getDescription()
++ String toString()
+}
+
+
+enum modele.Type {
++  BLASTER_DES_DUNES
++  JETPACK
++  BOUCLIER_SOLAIRE
++  TERRASCOPE
++  ACCELERATEUR_DE_TEMPS
++  RESERVE_D_EAU
+- String nom_aff
+- String description
++ String toString()
++ String getDescription()
+}
+
+
+class modele.CarteTempete {
+- Type type
+- Direction direction
+- int force
++ String getDescription()
++ Type getType()
++ Direction getDirection()
++ int getForce()
++ String toString()
+}
+
+
+enum modele.Type {
++  VENT
++  CHALEUR
++  DECHAINE
+- String nom_aff
+- String description
++ String toString()
++ String getDescription()
+}
+
+
+enum modele.Direction {
++  NORD
++  SUD
++  EST
++  OUEST
++  NODIRECTION
+}
+
+abstract class vue.Observable {
+- ArrayList<Observer> observers
++ void addObserver(Observer)
++ void notifyObservers()
+}
+
+
+class vue.VueCommande {
+- JButton Bouton_fin_tour
+- JButton Bouton_se_deplacer
+- JButton Bouton_creuser
+- JButton Bouton_ramasser
+- JButton Bouton_donner_eau
+- JLabel labelMessage
+- JButton Bouton_utiliser_equipement
++ JButton getBouton_fin_tour()
++ JButton getBouton_se_deplacer()
++ JButton getBouton_creuser()
++ JButton getBouton_ramasser()
++ JButton getBoutonDonnerEau()
++ JButton getBouton_utiliser_equipement()
++ void set_texte_erreur(String)
++ void reset_texte_erreur()
+}
+
+
+class vue.Son {
++ {static} void jouer_Bruitage(String)
++ {static} Clip jouer_musique_boucle(String)
+}
+
+class vue.FenetreJeu {
++ {static} String PathImages
+- VuePlateau vp
+- Plateau p
+- VueCommande vc
+- VueLancement vueLancement
+- VueInfoGlobales vIG
+- boolean estSurMenu
+- List<VueJoueur> VuesJoueurs
+- VuePaquetTempete vuePaquetTempete
+- VuePaquetEquipement vuePaquetEquipement
+- Map<Joueur.Role,JButton> boutonsSpeciaux
++ void afficherEcran(boolean)
++ VuePlateau getVp()
++ VueCommande getVc()
++ VueLancement getVl()
++ Map<Joueur.Role,JButton> getBoutonsSpeciaux()
++ List<VueJoueur> getVuesJoueurs()
+}
+
+
+class MainTest {
++ void PlateauTest()
++ void tunnelProtege()
++ void tunnelDeplacement()
++ void testIntersectionOeilTempete()
++ void testDeplacementAlpiniste()
++ void testDeplacementExplorateur()
++ void testCreusableExplorateur()
++ void testCreuserArcheologue()
++ void testAmortirMeteorologue()
++ void testPorteuseEau()
++ void obtenirEquipement()
++ void zonesCreusablesBlaster()
++ void testToutesZonesJetpack()
++ void testZonesRegardableTerrascope()
++ void testAccelerateurTemps()
++ void testBouclierSolaire()
++ void testVagueChaleur()
++ void testMortEnsablee()
++ void testMortNiveauTempete()
++ void TestVictoire()
+}
+
+abstract class modele.Zone {
+- int nbSable
+- int x
+- int y
+- List<Joueur> joueurs
+# boolean revelee
+- TypeZone objetpose
+# Plateau p
+- boolean protege_par_bouclier
++ char getAxe()
++ {static} Zone creerZone(int,int,TypeZone,char,Plateau)
++ {abstract}TypeZone getType()
++ TypeZone get_objet_pose()
++ List<Joueur> getJoueurs()
++ int getNbSable()
++ int getX()
++ int getY()
++ void poser_objet(TypeZone)
++ boolean estRevelee()
++ void set_protege_par_bouclier(boolean)
++ void set_position(int,int)
++ TypeZone ramasser_objet()
++ void ajouterJoueur(Joueur)
++ void retirerJoueur(Joueur)
++ boolean estAccessible()
++ void ajouterSable(int)
++ void creuser()
++ int viderSable()
++ void reveler()
++ void forcerRevelation()
++ boolean protegeChaleur()
+# void actionReveler()
++ Collection<Zone> getZonesTunnel()
++ String toString()
+}
+
+
+enum modele.TypeZone {
++  ENGRENAGE
++  DECOLLAGE
++  CRASH
++  EAU
++  MIRAGE
++  INDICE_BOITE
++  INDICE_HELICE
++  INDICE_CRISTAL
++  INDICE_NAVIGATION
++  TUNNEL
++ int nb
+}
+
+class modele.ZoneCrash {
++ TypeZone getType()
+}
+
+class modele.ZoneEngrenage {
++ TypeZone getType()
+}
+
+class modele.ZoneIndice {
+- TypeZone typeIndice
+- char axe
++ TypeZone getType()
+# void actionReveler()
++ char getAxe()
+}
+
+
+class modele.ZoneTunnel {
+~ {static} Collection<Zone> tunnelsReveles
++ {static} void resetTunnels()
++ boolean protegeChaleur()
++ Collection<Zone> getZonesTunnel()
+# void actionReveler()
++ TypeZone getType()
+}
+
+
+class modele.ZoneDecollage {
++ TypeZone getType()
+}
+
+class modele.ZoneEau {
++ TypeZone getType()
+# void actionReveler()
+}
+
+class modele.ZoneMirage {
++ TypeZone getType()
+# void actionReveler()
+}
+
+class modele.PaquetTempete {
+# void creerPaquet()
+}
+
+abstract class vue.VuePaquet {
+- Plateau plateau
+# Paquet<T> paquet
+# T lastCarte
+# JLabel titreCarte
+# JLabel description
++ void update()
+}
+
+
+class vue.VuePaquetTempete {
+- {static} Image dosCarte
+- {static} Image faceCarte
++ void update()
+# void paintComponent(Graphics)
+}
+
+
+class vue.VuePaquetEquipement {
+- {static} Image dosCarte
+- {static} Image faceCarte
++ void update()
+# void paintComponent(Graphics)
+}
+
+
+interface vue.Observer {
+~ void update()
+}
+
+class modele.Plateau {
+- Zone[][] grille
+- double niveauTempete
+- int oeilI
+- int oeilJ
+- int totalSable
+- {static} int SABLE_MAX
+- List<Zone> zonesAccessibles
+- List<Joueur> joueurs
+- Zone zoneCrash
+- int indiceJoueurActif
+- Map<PIECE,Boolean> etatPieces
+- PaquetTempete paquetTempete
+- PaquetEquipement paquetEquipement
+- List<Zone.TypeZone> attenteTempete
+- EtatPartie etat
+- String raison_fin
++ void initialiseGrille()
++ Zone getZoneCrash()
++ void add_piece(Plateau.PIECE)
++ int getIndiceJoueurActif()
++ List<Joueur> getJoueurs()
++ void add_joueur(Joueur)
++ Zone getZone(int,int)
++ int getOeilI()
++ int getOeilJ()
++ PaquetTempete getPaquetTempete()
++ PaquetEquipement getPaquetEquipement()
++ Joueur getJoueurActif()
++ List<Zone> get_toutes_zones()
++ List<Zone> get_zones_cachees()
++ Map<PIECE,Boolean> getEtatPieces()
++ double getNiveauTempete()
++ int getTotalSable()
++ List<Zone> getZonesAccessibles()
++ EtatPartie getEtat()
++ String getRaison_fin()
++ void setZonesAccessibles(List<Zone>)
++ void resetZonesAccessibles()
++ String toString()
++ void finDeTour()
++ void verifier_victoire()
++ void declencher_defaite(String)
++ void action_desert()
++ void leVentSouffle(CarteTempete.Direction,int)
++ void vagueDeChaleur()
++ void LaTempeteSeDechaine()
++ boolean ajouterSable(Zone,int)
++ void verifie_apparition_obj(Zone.TypeZone)
++ void enlever_sable(int)
++ void placerZonePourTest(int,int,Zone)
++ List<Zone.TypeZone> testGetObjetsEnAttente()
++ void revelerToutLePlateau()
+}
+
+
+enum modele.PIECE {
++  BOITE
++  HELICE
++  CRISTAL
++  NAVIGATION
+}
+
+enum modele.EtatPartie {
++  EN_COURS
++  VICTOIRE
++  DEFAITE
+}
+
+abstract class modele.Paquet {
+# List<T> pioche
+# List<T> defausse
+# {abstract}void creerPaquet()
++ T piocher()
++ T regarderDefausse()
+}
+
+
+class vue.VueInfoGlobales {
+- Plateau plateau
+- JLabel labelTempete
+- JLabel labelSable
+- JLabel labelJoueurCourant
+- Map<Plateau.PIECE,VuePiece> dictPieceVue
++ void update()
+}
+
+
+
+
+vue.JPanel <|-- vue.VueLancement
+vue.Observer <|.. vue.VueJoueur
+vue.JPanel <|-- vue.VueJoueur
+vue.Observer <|.. controleur.Controleur
+vue.Observer <|.. vue.VuePlateau
+vue.JPanel <|-- vue.VuePlateau
+modele.Paquet <|-- modele.PaquetEquipement
+vue.JPanel <|-- vue.VuePiece
+vue.JPanel <|-- vue.VueZone
+modele.Joueur <|-- modele.Archeologue
+modele.Joueur <|-- modele.Alpiniste
+modele.Joueur <|-- modele.Explorateur
+modele.Joueur <|-- modele.Meteorologue
+modele.Joueur <|-- modele.Navigatrice
+modele.Joueur <|-- modele.PorteuseEau
+vue.JPanel <|-- vue.VueCommande
+vue.JFrame <|-- vue.FenetreJeu
+modele.Zone <|-- modele.ZoneCrash
+modele.Zone <|-- modele.ZoneEngrenage
+modele.Zone <|-- modele.ZoneIndice
+modele.Zone <|-- modele.ZoneTunnel
+modele.Zone <|-- modele.ZoneDecollage
+modele.Zone <|-- modele.ZoneEau
+modele.Zone <|-- modele.ZoneMirage
+modele.Paquet <|-- modele.PaquetTempete
+vue.Observer <|.. vue.VuePaquet
+vue.JPanel <|-- vue.VuePaquet
+vue.VuePaquet <|-- vue.VuePaquetTempete
+vue.VuePaquet <|-- vue.VuePaquetEquipement
+vue.Observable <|-- modele.Plateau
+vue.Observer <|.. vue.VueInfoGlobales
+vue.JPanel <|-- vue.VueInfoGlobales
+@enduml
