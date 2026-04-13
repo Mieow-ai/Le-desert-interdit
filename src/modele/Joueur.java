@@ -135,7 +135,7 @@ public abstract class Joueur {
             }
             accessibles.addAll(zone.getZonesTunnel().stream()
                     .filter(Zone::estAccessible)
-                    .toList());
+                    .collect(Collectors.toList()));
             if (accessibles.contains(this.zone)){accessibles.remove(this.zone);}
 
         }
