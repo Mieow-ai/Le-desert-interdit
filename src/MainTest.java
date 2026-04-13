@@ -324,14 +324,23 @@ public class MainTest {
         assertEquals("j2 n'est plus protégé par le bouclier",2, j2.getNvEau());
     }
 
-
-
-
-
+    // L'équipement Réserve d'eau utilise la fonction générale Boire Eau
 
 
     // Tests relatifs aux fins de parties
-    
-
+    @Test
+    public void testVagueChaleur() {
+        Plateau p = new Plateau();
+        modele.Joueur j1 = modele.Joueur.creerJoueur(Joueur.Role.ALPINISTE, "", p);
+        Zone zone = p.getZone(0,0);
+        j1.setZone(zone);
+        assertEquals("La partie est en cours",Plateau.EtatPartie.EN_COURS, p.getEtat());
+        for (int i = 0; i <4 ; i++) {
+            p.vagueDeChaleur();
+            //Le joueur doit mourir de soif -> fin de la partie
+        }
+        assertEquals("Le joueur n'a plus d'eau", 0, j1.getNvEau());
+        assertEquals("La partie est en mode défaite",Plateau.EtatPartie.DEFAITE, p.getEtat());
+    }
 
 }
