@@ -3,30 +3,42 @@
 
 # Rapport POGL
 
-## 1. Les parties du sujet que vous avez traitées
+## 1. Les parties du sujet que nous avons traitées
+
+Nous avons implémenté la totalité du sujet et des règles du jeu de société:
+* **Interface Graphique  avec Java swing :** Menu de lancement, plateau, vues des joueurs avec boutons spéciaux, vues des paquets de carte, actions de la tempête effectuées avec un délai visuel, apparition des objets à ramasser
+* ** Multi-joueurs (Obligatoirement 2 à 6 joueurs) :** Implémentation des 6 rôles originaux avec leurs pouvoirs spécifiques :
+  * *Archéologue, Alpiniste, Explorateur, Météorologue, Navigatrice, Porteuse d'eau.*
+* **Mécaniques du jeu de société :**
+  * Gestion de la tempête de sable (déplacement de l'œil, ensablement des tuiles).
+  * Système de réserve d'eau et partage entre joueurs.
+  * Découverte des indices et apparition des 4 pièces (Boîte, Hélice, Cristal, Navigation).
+  * Utilisation de cartes Équipements (Jetpack, Blaster, Terrascope, Bouclier Solaire, Accélérateur de temps et Réserve d’eau).
+* **Audio :** Intégration de musiques de fond et de bruitages d'interaction.
+
 
 
 ## 2. Vos choix d’architectures.
 ### A. Architecture Globale : Le Modèle-Vue-Contrôleur (MVC)
 L'intégralité du projet est strictement séparée en trois composantes principales :
-* Le Modèle :  Le modèle (déplacement, gestion du sable, de l'eau, actions des joueurs) de manière totalement indépendante de tout affichage graphique.
-* La Vue  : C'est l'interface graphique en Java Swing. Elle ne fait qu'afficher l'état actuel du modèle. Toutes ses classes redessinent les composants (via le gestionnaire paintComponent ou le GridBagLayout) en lisant les données du Modèle.
-* Le Contrôleur : Il gère les actions de l'utilisateur (clics de souris ou boutons). C'est lui qui interprète ces événements, met à jour le Modèle en appelant ses méthodes, puis ordonne le rafraîchissement de la Vue.
+* Le Modèle : Le modèle (déplacement, gestion du sable, de l'eau, actions des joueurs) de manière totalement indépendante de tout affichage graphique.
+* La Vue  : C'est l'interface graphique en Java Swing. Elle ne fait qu'afficher l'état actuel du modèle. Toutes ses classes redessinent les composants (via le gestionnaire paintComponent ou le GridBagLayout) en lisant les données du Modèle.
+* Le Contrôleur : Il gère les actions de l'utilisateur (clics de souris ou boutons). C'est lui qui interprète ces événements, met à jour le Modèle en appelant ses méthodes, puis ordonne le rafraîchissement de la Vue.
 * On a une entorse dans le modèle MVC pour les fenêtres de dialogue, on a été obligé de les faire dans la Vue et non dans le Contrôleur car sinon on aurait eu trop de booléen à traiter.
 
 ### B. Mise à jour dynamique : Pattern Observer / Observable
-Pour maintenir le Modèle indépendant de la Vue, nous avons implémenté le patron Observer / Observable vu en cours. Le Modèle n'a aucune référence directe vers l'interface graphique. À la place, les objets majeurs (comme le Plateau) héritent de notre classe Observable. La VuePlateau (et les autres vues) s'y abonnent en tant qu'Observer. Dès qu'une mécanique altère l'état du jeu (ex: une tempête s'abat ou un joueur creuse), le plateau notifie ses observateurs, déclenchant ainsi un redessinage automatique de l'interface.
+Pour maintenir le Modèle indépendant de la Vue, nous avons implémenté le patron Observer / Observable vu en cours. Le Modèle n'a aucune référence directe vers l'interface graphique. À la place, les objets majeurs (comme le Plateau) héritent de notre classe Observable. La VuePlateau (et les autres vues) s'y abonnent en tant qu'Observer. Dès qu'une mécanique altère l'état du jeu (ex: une tempête s'abat ou un joueur creuse), le plateau notifie ses observateurs, déclenchant ainsi un redessinage automatique de l'interface.
 
 ### C. L'Héritage et Polymorphisme abstrait
 L'organisation des classes internes implémentent des fonctions polymorphes.
-* Modélisation des Rôles : Nous avons créé une classe abstraite Joueur qui regroupe les actions standard (marcher, boire, creuser). Chaque rôle spécifique (Alpiniste, Explorateur...) hérite de cette classe et redéfinit (override) ses méthodes. Par exemple, l'explorateur redéfinit getDirections() pour ajouter les diagonales, modifiant ses déplacements sans altérer la boucle principale.
-* Modélisation du Terrain : De la même manière, la classe abstraite Zone dicte le comportement de base d'une tuile (contenir des joueurs, stocker du sable). Les sous-classes (ZoneEau, ZoneTunnel, ZoneIndice) surchargent principalement la méthode actionReveler(), déclenchant automatiquement leurs effets uniques (donner l'eau coordonnée, devenir un relais de téléportation) sans intervention lourde du contrôleur.
+* Modélisation des Rôles : Nous avons créé une classe abstraite Joueur qui regroupe les actions standard (marcher, boire, creuser). Chaque rôle spécifique (Alpiniste, Explorateur...) hérite de cette classe et redéfinit (override) ses méthodes. Par exemple, l'explorateur redéfinit getDirections() pour ajouter les diagonales, modifiant ses déplacements sans altérer la boucle principale.
+* Modélisation du Terrain : De la même manière, la classe abstraite Zone dicte le comportement de base d'une tuile (contenir des joueurs, stocker du sable). Les sous-classes (ZoneEau, ZoneTunnel, ZoneIndice) surchargent principalement la méthode actionReveler(), déclenchant automatiquement leurs effets uniques (donner l'eau coordonnée, devenir un relais de téléportation) sans intervention lourde du contrôleur.
 
 ### D. Pattern Factory
-Afin de centraliser et sécuriser l'instanciation des objets polymorphes, nous utilisons des méthodes fabriques statiques (Zone.creerZone(...) et Joueur.creerJoueur(...)). Lors de la génération aléatoire du board ou du lobby, le système passe simplement un Enum du composant souhaité, et la fabrique renvoie la bonne sous-classe configurée.
+Afin de centraliser et sécuriser l'instanciation des objets polymorphes, nous utilisons des méthodes fabriques statiques (Zone.creerZone(...) et Joueur.creerJoueur(...)). Lors de la génération aléatoire du board ou du lobby, le système passe simplement un Enum du composant souhaité, et la fabrique renvoie la bonne sous-classe configurée.
 
 ### E. Machine à états dans le Contrôleur
-Pour partager de façon claire les rôles d'interaction, la classe Controleur s'appuie sur une structure d'états (souvent gérée via Enum). Cela permet au jeu de contextualiser le clic du joueur : si l'état est DEPLACEMENT, un clic sur une case invoque la méthode setZone(), mais si l'état est CREUSER, ce même clic invoquera creuserZone().
+Pour partager de façon claire les rôles d'interaction, la classe Controleur s'appuie sur une structure d'états (souvent gérée via Enum). Cela permet au jeu de contextualiser le clic du joueur : si l'état est DEPLACEMENT, un clic sur une case invoque la méthode setZone(), mais si l'état est CREUSER, ce même clic invoquera creuserZone().
 
 ### F. Arborescence du projet
 * **`modele/`** : Cœur de la logique métier.
