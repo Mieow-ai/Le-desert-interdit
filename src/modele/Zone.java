@@ -324,9 +324,7 @@ class ZoneTunnel extends Zone {
 
     @Override
     public Collection<Zone> getZonesTunnel() {
-        return tunnelsReveles.stream()
-                .filter(Zone::estAccessible)
-                .collect(Collectors.toList());
+        return tunnelsReveles;
     }
 
     @Override

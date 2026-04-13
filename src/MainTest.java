@@ -1,11 +1,7 @@
 import static org.junit.Assert.*;
 
-import modele.CarteTempete;
-import modele.Joueur;
-import modele.Zone;
+import modele.*;
 import org.junit.Test;
-
-import modele.Plateau;
 
 public class MainTest {
     @Test
@@ -15,6 +11,64 @@ public class MainTest {
         Zone oeil = p.getZone(2,2);
         j.setZone(p.getZone(2,1));
         assertThrows("Creuser oeil",IllegalStateException.class,()->j.creuserZone(oeil));
+    }
+
+    @Test
+    public void tunnelProtege() {
+        Plateau p = new Plateau();
+        modele.Joueur j1 = modele.Joueur.creerJoueur(Joueur.Role.ALPINISTE, "", p);
+        modele.Joueur j2 = modele.Joueur.creerJoueur(Joueur.Role.EXPLORATEUR, "", p);
+        Zone zoneTunnel1 = Zone.creerZone(0,0,Zone.TypeZone.TUNNEL,' ', p);
+        p.placerZonePourTest(0,0,zoneTunnel1);
+        j1.setZone(zoneTunnel1);
+        j2.setZone(zoneTunnel1);
+        assertEquals("TUNNEL Les joueurs ont 4 en niveau d'eau",4, j1.getNvEau());
+        assertEquals("TUNNEL Les joueurs ont 4 en niveau d'eau",4, j2.getNvEau());
+        p.vagueDeChaleur();
+        assertEquals("TUNNEL Les joueurs ont 3 en niveau d'eau",3, j1.getNvEau());
+        assertEquals("TUNNEL Les joueurs ont 3 en niveau d'eau",3, j2.getNvEau());
+        assertEquals("TUNNEL La zone ne protege pas de la chaleur",false, zoneTunnel1.protegeChaleur());
+        zoneTunnel1.reveler();
+        assertEquals("TUNNEL La zone protege de la chaleur",true, zoneTunnel1.protegeChaleur());
+        p.vagueDeChaleur();
+        assertEquals("Les joueurs ont toujours 3 en niveau d'eau",3, j1.getNvEau());
+        assertEquals("Les joueurs ont toujours 3 en niveau d'eau",3, j2.getNvEau());
+        p.vagueDeChaleur();
+        j2.setZone(p.getZone(0,1));
+        assertEquals("j1 toujours protégé le tunnel",3, j1.getNvEau());
+        assertEquals("j2 n'est plus protégé par le tunnel",3, j2.getNvEau());
+
+    }
+
+    @Test
+    public void tunnelDeplacement() {
+        Plateau p = new Plateau();
+        modele.Joueur j1 = modele.Joueur.creerJoueur(Joueur.Role.METEOROLOGUE, "", p);
+        Zone zoneTunnel1 = Zone.creerZone(0,0,Zone.TypeZone.TUNNEL,' ', p);
+        Zone zoneTunnel2 = Zone.creerZone(4,4,Zone.TypeZone.TUNNEL,' ', p);
+        p.placerZonePourTest(0,0,zoneTunnel1);
+        j1.setZone(zoneTunnel1);
+        p.placerZonePourTest(4,4,zoneTunnel2);
+
+        assertEquals("TUNNEL j1 a bien seulement 2 cases accessibles (il est dans le coin)",2, j1.getZonesAccessibles(p).size());
+        zoneTunnel1.reveler();
+        assertFalse("TUNNEL j1 ne peut accéder au second tunnel", j1.getZonesAccessibles(p).contains(zoneTunnel2));
+        assertEquals("TUNNEL j1 a toujours 2 cases accessibles (il est dans le coin)",2, j1.getZonesAccessibles(p).size());
+        zoneTunnel2.reveler();
+        assertTrue("TUNNEL j1 peut accéder au second tunnel", j1.getZonesAccessibles(p).contains(zoneTunnel2));
+        zoneTunnel2.ajouterSable(1);
+        assertFalse("TUNNEL par contre il ne peut pas creuser le second tunnel a distance", j1.getZonesCreusables(p).contains(zoneTunnel2));
+        zoneTunnel2.ajouterSable(1);
+        assertFalse("TUNNEL j1 ne peut pas accéder au second tunnel (ensablé)", j1.getZonesAccessibles(p).contains(zoneTunnel2));
+        modele.Joueur alpiniste = modele.Joueur.creerJoueur(Joueur.Role.ALPINISTE, "", p);
+        alpiniste.setZone(zoneTunnel1);
+        assertTrue("TUNNEL alpiniste peut accéder au second tunnel (même ensablé)", alpiniste.getZonesAccessibles(p).contains(zoneTunnel2));
+        alpiniste.setZone(zoneTunnel2);
+        assertTrue("TUNNEL j1  peut accéder au second tunnel ensablé si alpiniste", j1.getZonesAccessibles(p).contains(zoneTunnel2));
+
+        // Si le joueur recommence une partie
+        Plateau p2 = new Plateau();
+        assertFalse("TUNNEL verification que l'attribut statique est bien remis à 0 lors de la création d'un nouveau PLateau", j1.getZonesAccessibles(p).contains(zoneTunnel2));
     }
 
     @Test
@@ -69,7 +123,7 @@ public class MainTest {
         assertTrue("Le joueur ne peut pas sortir d'une case ensablée si l'alpiniste est dessus", j2.getZonesAccessibles(p).isEmpty());
     }
 
-    // Test Spécifique à l'Explorateur
+    // Tests Spécifiques à l'Explorateur
     @Test
     public void testDeplacementExplorateur() {
         Plateau p = new Plateau();
@@ -89,6 +143,7 @@ public class MainTest {
         alpiniste.setZone(voisin);
         assertTrue("Zone en diagonale ensablée accessible pour l'explorateur si l'alpiniste est dessus", explo.getZonesAccessibles(p).contains(voisin));
     }
+
     @Test
     public void testCreusableExplorateur() {
         Plateau p = new Plateau();
@@ -107,6 +162,7 @@ public class MainTest {
         assertTrue("Zone en diagonale avec sable creusable pour l'explorateur", explo.getZonesCreusables(p).contains(voisin));
     }
 
+    // Test archéologue
     @Test
     public void testCreuserArcheologue() {
         Plateau p = new Plateau();
@@ -126,6 +182,7 @@ public class MainTest {
         archeo.creuserZone(voisin);
         assertEquals("L'archéologue a enlever 1 sable car il en restait qu'un", 0, voisin.getNbSable());
     }
+    // Test méteorologue
     @Test
     public void testAmortirMeteorologue() {
         Plateau p = new Plateau();
@@ -142,6 +199,7 @@ public class MainTest {
     // Les joueurs peuvent être déplacés dans les bonnes cases (ensablées et accompagné pour l'alpiniste,
     // en diagonale pour l'explorateur etc
 
+    // Test Porteuse d'eau
     @Test
     public void testPorteuseEau() {
         Plateau p = new Plateau();
@@ -188,6 +246,89 @@ public class MainTest {
 
 
     // Test Spécifiques aux équipements
+    @Test
+    public void obtenirEquipement() {
+        Plateau p = new Plateau();
+        modele.Joueur lambda = modele.Joueur.creerJoueur(Joueur.Role.ALPINISTE, "", p);
+        Zone zoneEquip = Zone.creerZone(0,0, Zone.TypeZone.ENGRENAGE, ' ', p);
+        zoneEquip.viderSable();
+        assertTrue("Le joueur n'a pas d'équipements",lambda.get_equipement().isEmpty());
+        lambda.creuserZone(zoneEquip);
+        assertEquals("Le joueur a 1 equipement",1,lambda.get_equipement().size());
+    }
+
+    @Test
+    public void zonesCreusablesBlaster() {
+        Plateau p = new Plateau();
+        modele.Joueur lambda = modele.Joueur.creerJoueur(Joueur.Role.ALPINISTE, "", p);
+        lambda.get_equipement().add(new CarteEquipement(CarteEquipement.Type.BLASTER_DES_DUNES));
+        lambda.setZone(p.getZone(0,0));
+        Zone voisin = p.getZone(1, 0);
+        voisin.viderSable();
+        voisin.ajouterSable(3);
+        assertEquals(3,voisin.getNbSable());
+        assertTrue("La zone voisin est creusable",lambda.getZonesCreusables(p).contains(voisin));
+        // Ensuite le blaster utilise viderSable
+        voisin.viderSable();
+        assertEquals(0, voisin.getNbSable());
+    }
+
+    @Test
+    public void testToutesZonesJetpack() {
+        Plateau p = new Plateau();
+        assertEquals("24 cases accessibles avec le jetpack (toutes sauf l'oeil)",24, p.get_toutes_zones().size());
+    }
+
+    @Test
+    public void testZonesRegardableTerrascope() {
+        Plateau p = new Plateau();
+        assertEquals("2 cases peuvent êtres regardées avec le Terrascope (toutes sauf l'oeil et la zone crash)",23, p.get_zones_cachees().size());
+        p.revelerToutLePlateau();
+        assertEquals("Aucune case regardable",0, p.get_zones_cachees().size());
+    }
+
+    @Test
+    public void testAccelerateurTemps() {
+        Plateau p = new Plateau();
+        modele.Joueur lambda = modele.Joueur.creerJoueur(Joueur.Role.ALPINISTE, "", p);
+        lambda.setZone(p.getZone(0,0));
+        assertEquals("Le joueur a 4 actions restantes",4, lambda.getNb_action_restante());
+        lambda.ajouter_actions_bonus(2);
+        assertEquals("Le joueur a 6 actions restantes",6, lambda.getNb_action_restante());
+        p.finDeTour();
+        assertEquals("Si le joueur n'utilise pas ses actions supplémentaires alors a la fin du tour il les perds",4,lambda.getNb_action_restante());
+    }
+
+    @Test
+    public void testBouclierSolaire() {
+        Plateau p = new Plateau();
+        modele.Joueur j1 = modele.Joueur.creerJoueur(Joueur.Role.ALPINISTE, "", p);
+        modele.Joueur j2 = modele.Joueur.creerJoueur(Joueur.Role.EXPLORATEUR, "", p);
+        Zone zone = p.getZone(0,0);
+        j1.setZone(zone);
+        j2.setZone(zone);
+        assertEquals("Les joueurs ont 4 en niveau d'eau",4, j1.getNvEau());
+        assertEquals("Les joueurs ont 4 en niveau d'eau",4, j2.getNvEau());
+        p.vagueDeChaleur();
+        assertEquals("Les joueurs ont 3 en niveau d'eau",3, j1.getNvEau());
+        assertEquals("Les joueurs ont 3 en niveau d'eau",3, j2.getNvEau());
+        assertEquals("La zone ne protege pas de la chaleur",false, zone.protegeChaleur());
+        zone.set_protege_par_bouclier(true);
+        assertEquals("La zone protege de la chaleur",true, zone.protegeChaleur());
+        p.vagueDeChaleur();
+        assertEquals("Les joueurs ont toujours 3 en niveau d'eau",3, j1.getNvEau());
+        assertEquals("Les joueurs ont toujours 3 en niveau d'eau",3, j2.getNvEau());
+        j2.setZone(p.getZone(0,1));
+        p.vagueDeChaleur();
+        assertEquals("j1 toujours protégé le bouclier",3, j1.getNvEau());
+        assertEquals("j2 n'est plus protégé par le bouclier",2, j2.getNvEau());
+    }
+
+
+
+
+
+
 
     // Tests relatifs aux fins de parties
     

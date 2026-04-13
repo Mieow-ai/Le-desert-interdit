@@ -217,7 +217,7 @@ public class Controleur implements Observer {
                         List<Zone> cibles = actif.getZonesCreusables(p);
                         if(cibles.isEmpty()){
                             vue.getVc().set_texte_erreur("Aucune case ne peut être blasterisée");
-                            actif.get_equipement().add(choix);
+                            actif.get_equipement().add(choix); // On remet l'equipement
                         }
                         else {
                             action_courante = action.UTILISER_BLASTER;

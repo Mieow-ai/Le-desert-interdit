@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -121,7 +122,7 @@ public abstract class Joueur {
     public List<Zone> getZonesAccessibles(Plateau plateau) {
         Set<Zone> accessibles = new HashSet<>();
         int[][] directions = getDirections();
-        if (zone.estAccessible()) { // à tester
+        if (zone.estAccessible()) {
             for (int[] dir : directions) {
                 int ni = zone.getX() + dir[0];
                 int nj = zone.getY() + dir[1];
@@ -132,7 +133,11 @@ public abstract class Joueur {
                     }
                 }
             }
-            accessibles.addAll(zone.getZonesTunnel());
+            accessibles.addAll(zone.getZonesTunnel().stream()
+                    .filter(Zone::estAccessible)
+                    .toList());
+            if (accessibles.contains(this.zone)){accessibles.remove(this.zone);}
+
         }
         return new ArrayList<>(accessibles);
     }
@@ -350,6 +355,8 @@ class Alpiniste extends Joueur {
             }
 
         }
+        accessibles.addAll(zone.getZonesTunnel()); // L'alpiniste peut accéder a toutes les zones tunnel
+        if (accessibles.contains(this.zone)){accessibles.remove(this.zone);}
         return accessibles;
     }
 
