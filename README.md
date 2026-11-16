@@ -17,12 +17,12 @@ You play as a team of adventurers who survived a crash landing and are stranded 
 ## How to Run the Game
 
 ### Prerequisites
-* **Java Development Kit (JDK):** Version 8 or higher.
-* **Resources:** Ensure that the image assets (`desert.png`, `tempete.png`, etc.) are located in the `images/` folder at the root of the project, and the audio files (`.wav`) are located at the project root (if running from source).
+* **Java Development Kit (JDK) / JRE:** Version 8 or higher.
 
-### Option 1: Executable JAR (Recommended)
-1. Go to the **[Releases](../../releases)** section on the right side of this repository and download the latest `.jar` file.
-2. Double-click the `.jar` file, or launch it from your terminal:
+### Option 1: Playable Release Archive (Recommended)
+1. Go to the **[Releases](../../releases)** section on the right side of this repository and download **`LeDesertInterdit.zip`**.
+2. **Extract the `.zip` archive** (make sure to keep `LeDesertInterdit.jar` and the `src/` resource folder together in the same directory).
+3. Double-click **`LeDesertInterdit.jar`**, or launch it from your terminal inside the extracted folder:
    ```bash
    java -jar LeDesertInterdit.jar
    ```
@@ -33,12 +33,12 @@ You play as a team of adventurers who survived a crash landing and are stranded 
    git clone [https://github.com/](https://github.com/)Mieow-ai/Le-desert-interdit.git
    cd Le-desert-interdit
    ```
-2. Open the project in **IntelliJ IDEA** and run `Main.java`, or compile and run via terminal:
+2. Open the project in **IntelliJ IDEA** and run `Main.java`, or compile and run via terminal from the project root:
    ```bash
-   javac -d out src/*.java
+   javac -d out src/**/*.java
    java -cp out Main
    ```
-
+   
 ---
 
 ## 1. Implemented Features
