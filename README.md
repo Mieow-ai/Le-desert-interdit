@@ -1,84 +1,112 @@
-# Le Désert Interdit - Projet POGL 
-## Membres : Simon Corvoysier, Sacha Donato
+# Forbidden Desert (*Le Désert Interdit*)
 
-# Rapport POGL
+## Description
 
-## 1. Les parties du sujet que nous avons traitées
+This project is a digital adaptation of the cooperative board game **Forbidden Desert** (*Le Désert Interdit*), developed in **Java** using **Swing**. 
 
-Nous avons implémenté la totalité du sujet et des règles du jeu de société:
-* **Interface Graphique  avec Java swing :** Menu de lancement, plateau, vues des joueurs avec boutons spéciaux, vues des paquets de carte, actions de la tempête effectuées avec un délai visuel, apparition des objets à ramasser
-* ** Multi-joueurs (Obligatoirement 2 à 6 joueurs) :** Implémentation des 6 rôles originaux avec leurs pouvoirs spécifiques :
-  * *Archéologue, Alpiniste, Explorateur, Météorologue, Navigatrice, Porteuse d'eau.*
-* **Mécaniques du jeu de société :**
-  * Gestion de la tempête de sable (déplacement de l'œil, ensablement des tuiles).
-  * Système de réserve d'eau et partage entre joueurs.
-  * Découverte des indices et apparition des 4 pièces (Boîte, Hélice, Cristal, Navigation).
-  * Utilisation de cartes Équipements (Jetpack, Blaster, Terrascope, Bouclier Solaire, Accélérateur de temps et Réserve d’eau).
-* **Audio :** Intégration de musiques de fond et de bruitages d'interaction.
+You play as a team of adventurers who survived a crash landing and are stranded in a shifting desert with a limited water supply. To win, you must work together to survive, excavate buried ruins, uncover clues, and collect the four missing flying machine parts before the relentless sandstorm buries you or you run out of water. You will discover the unique abilities of each role, equipment cards, and desert tiles as you play or by consulting the rules.
 
+---
 
+## Demo
 
-## 2. Vos choix d’architectures.
-### A. Architecture Globale : Le Modèle-Vue-Contrôleur (MVC)
-L'intégralité du projet est strictement séparée en trois composantes principales :
-* Le Modèle : Le modèle (déplacement, gestion du sable, de l'eau, actions des joueurs) de manière totalement indépendante de tout affichage graphique.
-* La Vue  : C'est l'interface graphique en Java Swing. Elle ne fait qu'afficher l'état actuel du modèle. Toutes ses classes redessinent les composants (via le gestionnaire paintComponent ou le GridBagLayout) en lisant les données du Modèle.
-* Le Contrôleur : Il gère les actions de l'utilisateur (clics de souris ou boutons). C'est lui qui interprète ces événements, met à jour le Modèle en appelant ses méthodes, puis ordonne le rafraîchissement de la Vue.
-* La seule entorse au modèle MVC est d'utiliser les fenêtres de dialogue, cela nous permet de ne pas passer par la vue pour ces dernières, ce qui permet une facilité de code.
+![Gameplay Demo](demo.gif)
 
-### B. Mise à jour dynamique : Pattern Observer / Observable
-Pour maintenir le Modèle indépendant de la Vue, nous avons implémenté le patron Observer / Observable vu en cours. Le Modèle n'a aucune référence directe vers l'interface graphique. À la place, les objets majeurs (comme le Plateau) héritent de notre classe Observable. La VuePlateau (et les autres vues) s'y abonnent en tant qu'Observer. Dès qu'une mécanique altère l'état du jeu (ex: une tempête s'abat ou un joueur creuse), le plateau notifie ses observateurs, déclenchant ainsi un redessinage automatique de l'interface.
+---
 
-### C. L'Héritage et Polymorphisme abstrait
-L'organisation des classes internes implémentent des fonctions polymorphes.
-* Modélisation des Rôles : Nous avons créé une classe abstraite Joueur qui regroupe les actions standard (marcher, boire, creuser). Chaque rôle spécifique (Alpiniste, Explorateur...) hérite de cette classe et redéfinit (override) ses méthodes. Par exemple, l'explorateur redéfinit getDirections() pour ajouter les diagonales, modifiant ses déplacements sans altérer la boucle principale.
-* Modélisation du Terrain : De la même manière, la classe abstraite Zone dicte le comportement de base d'une tuile (contenir des joueurs, stocker du sable). Les sous-classes (ZoneEau, ZoneTunnel, ZoneIndice) surchargent principalement la méthode actionReveler(), déclenchant automatiquement leurs effets uniques (donner l'eau coordonnée, devenir un relais de téléportation) sans intervention lourde du contrôleur.
+## How to Run the Game
 
-### D. Pattern Factory
-Afin de centraliser et sécuriser l'instanciation des objets polymorphes, nous utilisons des méthodes fabriques statiques (Zone.creerZone(...) et Joueur.creerJoueur(...)). Lors de la génération aléatoire du board ou du lobby, le système passe simplement un Enum du composant souhaité, et la fabrique renvoie la bonne sous-classe configurée.
+### Prerequisites
+* **Java Development Kit (JDK):** Version 8 or higher.
+* **Resources:** Ensure that the image assets (`desert.png`, `tempete.png`, etc.) are located in the `images/` folder at the root of the project, and the audio files (`.wav`) are located at the project root (if running from source).
 
-### E. Machine à états dans le Contrôleur
-Pour partager de façon claire les rôles d'interaction, la classe Controleur s'appuie sur une structure d'états (souvent gérée via Enum). Cela permet au jeu de contextualiser le clic du joueur : si l'état est DEPLACEMENT, un clic sur une case invoque la méthode setZone(), mais si l'état est CREUSER, ce même clic invoquera creuserZone().
+### Option 1: Executable JAR (Recommended)
+1. Go to the **[Releases](../../releases)** section on the right side of this repository and download the latest `.jar` file.
+2. Double-click the `.jar` file, or launch it from your terminal:
+   ```bash
+   java -jar LeDesertInterdit.jar
+   ```
 
-### F. Arborescence du projet
-* **`modele/`** : Cœur de la logique métier.
-  * Gestion de la grille et de la tempête (`Plateau`).
-  * Polymorphisme pour les cases (`Zone`, `ZoneCrash`, `ZoneTunnel`, etc.) et les rôles (`Joueur`, `Alpiniste`, etc.).
-  * Gestion des pioches et défausses (`Paquet`, `CarteTempete`, `CarteEquipement`).
-* **`vue/`** : Interface graphique (Swing).
-  * Fenêtre principale (`FenetreJeu`) et vues spécifiques (`VuePlateau`, `VueJoueur`, `VueCommande`, etc.).
-  * Classe `Theme` centralisant la charte graphique.
-  * Gestion des assets audio via la classe `Son`.
-* **`controleur/`** : Lien entre le modèle et la vue.
-  * La classe `Controleur` gère les interactions utilisateur (clics souris, boutons) via une machine à états (`enum action`).
+### Option 2: Build & Run from Source (IntelliJ IDEA / CLI)
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/](https://github.com/)Mieow-ai/Le-desert-interdit.git
+   cd Le-desert-interdit
+   ```
+2. Open the project in **IntelliJ IDEA** and run `Main.java`, or compile and run via terminal:
+   ```bash
+   javac -d out src/*.java
+   java -cp out Main
+   ```
 
-## 3. Les problèmes qui sont présents et que nous n'avons pas pu éliminer
-   - A notre connaissance la seule règle qui diffère entre notre implémentation et le jeu de société est que la navigatrice peut déplacer un joueur d'une case pour une action dans notre implémentation tandis que dans le vrai jeu elle peut déplacer le joueur de 3 cases pour une action.
-Cela aurait ajouté plusieurs contraintes dans notre code car il aurait fallu gérer les cas où la navigatrice veut déplacer un joueur d'une seule ou de deux cases seulement tout en enlevant 1 point d'action. Par manque de temps nous n'avons pas implémenté cette feature.
-- Un problème réside dans notre implémentation qui est le suivant : 
-Si deux objets apparaissent au même endroit et que le premier n'a pas été ramassé alors un objet disparait (ce qui a peu de chance d'arriver lors d'une partie). Le changement vers une liste nécessite de nombreuses modifications dans le code.
-## 4- Ce que nous n'avons pas réalisé nous même
-* L'intégralité des images a été généré via Nano Banana 2 (Modèle de génération d'images de google)
-* Les sons ont étés récupérés sur youtube ainsi que sur 101soundboaords (https://www.101soundboards.com/)
-* Les personnalisations graphiques ne s'appliquaient pour la plupart pas jusqu'à que nous copions ce code sur la documentation d'Oracle (https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html#available)
-  ~~~
+---
+
+## 1. Implemented Features
+
+We implemented the full ruleset and mechanics of the original board game:
+* **Graphical User Interface (Java Swing):** Start menu, interactive desert board, player dashboards with special action buttons, card deck views, delayed visual animations for storm actions, and collectible items appearing on the board.
+* **Multiplayer (2 to 6 Players):** Implementation of all 6 original roles with their unique abilities:
+  * *Archaeologist, Climber, Explorer, Meteorologist, Navigator, Water Carrier.*
+* **Core Board Game Mechanics:**
+  * Sandstorm management (eye of the storm movement, sand tile accumulation).
+  * Water reserve system and water sharing between adjacent players.
+  * Clue discovery and spawning of the 4 flying machine parts (*Engine, Propeller, Solar Crystal, Navigation Deck*).
+  * Equipment cards (*Jetpack, Dune Blaster, Terrascope, Solar Shield, Time Throttle, and Secret Water Reserve*).
+* **Audio:** Integrated background music and interactive sound effects.
+
+---
+
+## 2. Software Architecture & Design Choices
+
+### A. Global Architecture: Model-View-Controller (MVC)
+The entire project is strictly separated into three main components:
+* **Model:** Handles the core game logic (movement, sand levels, water reserves, player actions) completely independently of any graphical interface.
+* **View:** Built with Java Swing, responsible solely for rendering the current state of the Model. All view classes redraw components (via `paintComponent` or `GridBagLayout`) by reading data from the Model.
+* **Controller:** Handles user input (mouse clicks and buttons), interprets events, updates the Model through its methods, and triggers UI refreshes.
+* *Note:* The only exception to strict MVC separation is the use of Swing dialog pop-ups directly from the controller for simplicity and cleaner code flow.
+
+### B. Dynamic Updates: Observer / Observable Pattern
+To keep the Model decoupled from the View, we implemented the **Observer / Observable** design pattern. The Model holds no direct references to the GUI. Instead, core objects (such as `Plateau`) inherit from our `Observable` class, while `VuePlateau` (and other views) subscribe as `Observer` instances. Whenever a game mechanic alters the state (e.g., the storm moves or a player excavates a tile), the board notifies its observers, automatically triggering a UI repaint.
+
+### C. Inheritance & Abstract Polymorphism
+Internal classes rely on polymorphic behavior:
+* **Role Modeling:** An abstract `Joueur` class encapsulates standard actions (move, drink, excavate). Each specific role (`Alpiniste`, `Explorateur`, etc.) inherits from `Joueur` and overrides relevant methods. For example, `Explorateur` overrides `getDirections()` to enable diagonal movement and excavation without altering the main game loop.
+* **Terrain Modeling:** Similarly, the abstract `Zone` class defines the baseline behavior of a desert tile (holding players, accumulating sand). Subclasses (`ZoneEau`, `ZoneTunnel`, `ZoneIndice`) override `actionReveler()` to automatically trigger unique effects (granting water, acting as a teleportation tunnel) without heavy controller intervention.
+
+### D. Factory Pattern
+To centralize and safeguard the instantiation of polymorphic objects, we use static factory methods (`Zone.creerZone(...)` and `Joueur.creerJoueur(...)`). During random board generation or lobby setup, the system passes an `Enum` representing the desired component, and the factory returns the properly configured subclass instance.
+
+### E. State Machine in the Controller
+To cleanly manage user interactions, the `Controleur` class relies on an explicit state machine (managed via an `Enum`). This contextualizes player clicks: if the current state is `DEPLACEMENT` (Move), clicking a tile invokes `setZone()`; if the state is `CREUSER` (Excavate), clicking the same tile invokes `creuserZone()`.
+
+### F. Project Structure
+* **`modele/`**: Core business logic.
+  * Board grid and sandstorm management (`Plateau`).
+  * Polymorphic tiles (`Zone`, `ZoneCrash`, `ZoneTunnel`, etc.) and player roles (`Joueur`, `Alpiniste`, etc.).
+  * Deck and discard pile management (`Paquet`, `CarteTempete`, `CarteEquipement`).
+* **`vue/`**: Graphical User Interface (Swing).
+  * Main window (`FenetreJeu`) and dedicated views (`VuePlateau`, `VueJoueur`, `VueCommande`, etc.).
+  * `Theme` class centralizing visual styling.
+  * Audio asset management via the `Son` class.
+* **`controleur/`**: Bridge between the Model and the View.
+  * `Controleur` manages user interactions (mouse clicks, buttons) via a state machine (`enum action`).
+
+---
+
+## 3. Known Limitations
+
+* **Navigator Ability:** To our knowledge, the only rule difference from the physical board game concerns the Navigator: in our implementation, the Navigator can move another player by **1 tile** per action instead of up to **3 tiles** per action. Implementing variable 1-to-3 tile movement within a single action point would have required significant additional state handling, which was omitted due to time constraints.
+* **Item Stacking on Tiles:** If two collectible items spawn on the exact same tile before the first one is picked up, the previous item is overwritten (a rare edge case during standard gameplay). Refactoring tile item storage into a list structure would have required widespread changes across the codebase.
+
+---
+
+## 4. External Assets & Acknowledgments
+
+* **Artwork & Visuals:** All game illustrations and icons were generated using **Nano Banana 2** (Google's image generation model).
+* **Audio:** Sound effects and music were sourced from YouTube and [101soundboards](https://www.101soundboards.com/).
+* **Cross-Platform Swing Styling:** Custom button colors and dimensions initially failed to render on macOS until applying the cross-platform LookAndFeel snippet from the [Oracle Java Swing Documentation](https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html#available):
+  ```java
   try {
-    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-    } catch (Exception _){}
-  ~~~
-  
-# Read-Me
-## 1- Description
-Ce projet est une adaptation numérique du jeu de carte 'Le désert Interdit'. Le principe du jeu est le suivant : Vous êtes une équipe de joueurs ayant survécu à un crash
-, vous vous retrouvez alors perdu dans le desert avec une quantité d'eau limitée. Vous devez survivre, trouver des indices et des pièces d'équipement pour réparer votre machine. Cependant il y aussi un danger permanent, la tempête. Vous découvrirez les différentes fonctionnalités des joueurs, des équipements et des zones en jouant, ou en regardant les règles.
-
-## 2- Prérequis et Lancement
-
-### Prérequis
-* **Java Development Kit (JDK) :** Version 8 
-* **Ressources :** Il faut s'assurer que les images (`desert.png`, `tempete.png`, etc.) sont situés dans le dossier images à la racine et les sons (`.wav`) sont situés dans la racine du projet.
-
-### Lancement
-
-Lancement automatique avec IntelliJ IDEA
-
+      UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+  } catch (Exception _) {}
+  ```
