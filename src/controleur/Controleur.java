@@ -69,7 +69,7 @@ public class Controleur implements Observer {
 
         // Bouton fin de tour
         this.vue.getVc().getBouton_fin_tour().addActionListener(e -> {
-            Son.jouer_Bruitage("bouton7.wav");
+            Son.jouer_Bruitage("src/Sounds/bouton7.wav");
             vue.getVc().reset_texte_erreur();
             System.out.println("Le désert s'agite...");
 
@@ -83,7 +83,7 @@ public class Controleur implements Observer {
 
         // Bouton se déplacer
         this.vue.getVc().getBouton_se_deplacer().addActionListener(e -> {
-            Son.jouer_Bruitage("bouton6.wav");
+            Son.jouer_Bruitage("src/Sounds/bouton6.wav");
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             if (actif.getNb_action_restante() > 0) {
                 vue.getVc().reset_texte_erreur();
@@ -100,7 +100,7 @@ public class Controleur implements Observer {
 
         // Bouton creuser
         this.vue.getVc().getBouton_creuser().addActionListener(e -> {
-            Son.jouer_Bruitage("bouton6.wav");
+            Son.jouer_Bruitage("src/Sounds/bouton6.wav");
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             if (actif.getNb_action_restante() > 0) {
                 action_courante = action.CREUSER;
@@ -120,7 +120,7 @@ public class Controleur implements Observer {
 
         // Bouton ramasser
         this.vue.getVc().getBouton_ramasser().addActionListener(e -> {
-            Son.jouer_Bruitage("bouton6.wav");
+            Son.jouer_Bruitage("src/Sounds/bouton6.wav");
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
 
             if (actif.getNb_action_restante() > 0) {
@@ -150,7 +150,7 @@ public class Controleur implements Observer {
 
         // Bouton donner de l'eau (général)
         this.vue.getVc().getBoutonDonnerEau().addActionListener(e -> {
-            Son.jouer_Bruitage("bouton6.wav");
+            Son.jouer_Bruitage("src/Sounds/bouton6.wav");
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
             List<Joueur> cibles_possibles = new ArrayList<>();
 
@@ -185,7 +185,7 @@ public class Controleur implements Observer {
 
         // Bouton Equipement
         vue.getVc().getBouton_utiliser_equipement().addActionListener(e -> {
-            Son.jouer_Bruitage("bouton6.wav");
+            Son.jouer_Bruitage("src/Sounds/bouton6.wav");
             Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
 
             if(actif.get_equipement().isEmpty()){
@@ -206,13 +206,13 @@ public class Controleur implements Observer {
                     case RESERVE_D_EAU:
                         for(Joueur j : actif.getZone().getJoueurs()){
                             j.boire_eau(2);
-                            Son.jouer_Bruitage("boire.wav");
+                            Son.jouer_Bruitage("src/Sounds/boire.wav");
                         }
                         System.out.println("Tout le monde sur la case boit 2 d'eau");
                         break;
                     case BOUCLIER_SOLAIRE:
                         actif.getZone().set_protege_par_bouclier(true);
-                        Son.jouer_Bruitage("bouclier_solaire.wav");
+                        Son.jouer_Bruitage("src/Sounds/bouclier_solaire.wav");
                         vue.getVc().set_texte_erreur("Bouclier déployé sur cette case !");
                         break;
                     case BLASTER_DES_DUNES:
@@ -287,14 +287,14 @@ public class Controleur implements Observer {
                                     }
                                     j.setZone(zone);
                                     j.joue_action();
-                                    Son.jouer_Bruitage("deplacement.wav");
+                                    Son.jouer_Bruitage("src/Sounds/deplacement.wav");
                                     p.verifier_victoire();
                                     gerer_fin_de_partie();
                                 }
                                 break;
                             case CREUSER:
                                 if (zone != null && p.getZonesAccessibles().contains(zone)) {
-                                    Son.jouer_Bruitage("creuser.wav");
+                                    Son.jouer_Bruitage("src/Sounds/creuser.wav");
                                     j.creuserZone(zone);
                                     joueurs.get(p.getIndiceJoueurActif()).joue_action();
                                     p.notifyObservers();
@@ -302,7 +302,7 @@ public class Controleur implements Observer {
                                 break;
                             case UTILISER_BLASTER:
                                 if(zone != null && p.getZonesAccessibles().contains(zone)){
-                                    Son.jouer_Bruitage("laser.wav");
+                                    Son.jouer_Bruitage("src/Sounds/laser.wav");
                                     int sable_retire = zone.viderSable();
                                     p.enlever_sable(sable_retire);
                                     System.out.println("Boom ! Le Blaster a détruit " + sable_retire + "bloc(s) de sable");
@@ -318,7 +318,7 @@ public class Controleur implements Observer {
                                 objet_en_cours = null;
                                 break;
                             case UTILISER_JETPACK:
-                                Son.jouer_Bruitage("jetpack.wav");
+                                Son.jouer_Bruitage("src/Sounds/jetpack.wav");
                                 if(zone != null && p.getZonesAccessibles().contains(zone)){
                                     Joueur compagnon = alpinistePouvoir(j, zone);
                                     if(compagnon != null){
@@ -331,7 +331,7 @@ public class Controleur implements Observer {
                                 break;
                             case UTILISER_TERRASCOPE:
                                 if(zone != null && p.getZonesAccessibles().contains(zone)){
-                                    Son.jouer_Bruitage("revelation.wav");
+                                    Son.jouer_Bruitage("src/Sounds/revelation.wav");
                                     JOptionPane.showMessageDialog(vue,
                                             "l'analyse révèle : " + zone.getType(),
                                             "Terrascope", JOptionPane.INFORMATION_MESSAGE);
@@ -352,8 +352,8 @@ public class Controleur implements Observer {
 
         // Action des boutons de la page de lancement
         this.vue.getVl().getBouton_play().addActionListener(e -> {
-            Son.jouer_Bruitage("bouton4.wav");
-            Son.jouer_musique_boucle("musique_jeu_desert_interdit.wav");
+            Son.jouer_Bruitage("src/Sounds/bouton4.wav");
+            Son.jouer_musique_boucle("src/Sounds/musique_jeu_desert_interdit.wav");
             if (this.joueurs.size() < 2) {
                 this.vue.getVl().set_texte_erreur("Il faut au minimum 2 joueurs pour lancer la partie");
             } else {
@@ -371,7 +371,7 @@ public class Controleur implements Observer {
         });
 
         this.vue.getVl().getBouton_ajouter_joueur().addActionListener(e -> {
-            Son.jouer_Bruitage("bouton1.wav");
+            Son.jouer_Bruitage("src/Sounds/bouton1.wav");
             if (this.rolesDisponibles.isEmpty()) {
                 this.vue.getVl().set_texte_erreur("Nombre maximum de joueurs atteint (6).");
                 return;
@@ -404,7 +404,7 @@ public class Controleur implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (p.getEtat() == Plateau.EtatPartie.EN_COURS && !joueurs.isEmpty()) {
-                    Son.jouer_Bruitage("bouton3.wav");
+                    Son.jouer_Bruitage("src/Sounds/bouton3.wav");
                     p.revelerToutLePlateau();
                 }
             }
@@ -448,7 +448,7 @@ public class Controleur implements Observer {
             case NAVIGATRICE:
                 // Bouton deplacer un allié
                 this.vue.getBoutonsSpeciaux().get(Joueur.Role.NAVIGATRICE).addActionListener(e -> {
-                    Son.jouer_Bruitage("bouton3.wav");
+                    Son.jouer_Bruitage("src/Sounds/bouton3.wav");
                     Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
 
                     if(actif.getNb_action_restante() > 0) {
@@ -478,7 +478,7 @@ public class Controleur implements Observer {
             case METEOROLOGUE:
                 // Bouton Amortir la Tempête (Météorologue)
                 this.vue.getBoutonsSpeciaux().get(Joueur.Role.METEOROLOGUE).addActionListener(e -> {
-                    Son.jouer_Bruitage("bouton3.wav");
+                    Son.jouer_Bruitage("src/Sounds/bouton3.wav");
                     Joueur actif = this.joueurs.get(p.getIndiceJoueurActif());
                     if(actif.getRole()== Joueur.Role.METEOROLOGUE) {
                         if (actif.getNb_action_restante() > 0) {
@@ -500,7 +500,7 @@ public class Controleur implements Observer {
                 break;
             case PORTEUSE_EAU:
                 this.vue.getBoutonsSpeciaux().get(Joueur.Role.PORTEUSE_EAU).addActionListener(e -> {
-                    Son.jouer_Bruitage("bouton3.wav");
+                    Son.jouer_Bruitage("src/Sounds/bouton3.wav");
                     Joueur porteuse = null;
                     for(Joueur j : joueurs){
                         if(j.getRole() == Joueur.Role.PORTEUSE_EAU){
@@ -532,7 +532,7 @@ public class Controleur implements Observer {
                             JOptionPane.QUESTION_MESSAGE, null, cibles_possibles.toArray(), cibles_possibles.get(0));
                     if(cible != null){
                         if(porteuse.donner_eau(cible)){
-                            Son.jouer_Bruitage("boire.wav");
+                            Son.jouer_Bruitage("src/Sounds/boire.wav");
                             vue.getVc().reset_texte_erreur();
                             System.out.println(porteuse.getNom() + "donne de l'eau à" + cible.getNom());
                             p.notifyObservers();

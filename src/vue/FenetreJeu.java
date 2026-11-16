@@ -15,7 +15,7 @@ import modele.Plateau;
  * Elle assemble les différentes composantes de la Vue qui sont imbriquées les unes dans les autres
  */
 public class FenetreJeu extends JFrame {
-    public static String PathImages = "Images/";
+    public static String PathImages = "src/images/";
     private VuePlateau vp;
     private Plateau p;
     private VueCommande vc;

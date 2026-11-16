@@ -290,7 +290,7 @@ public class Plateau extends Observable {
         CarteTempete carte = paquetTempete.piocher();
         switch (carte.getType()){
             case VENT:
-                Son.jouer_Bruitage("vent.wav");
+                Son.jouer_Bruitage("src/Sounds/vent.wav");
                 leVentSouffle(carte.getDirection(),carte.getForce());
                 break;
             case DECHAINE:
@@ -360,7 +360,7 @@ public class Plateau extends Observable {
             boolean vivant = j.vagueDeChaleur();
             if (!vivant) {
                 declencher_defaite(j.getNom() + " est mort de soif !");
-                Son.jouer_Bruitage("death.wav");
+                Son.jouer_Bruitage("src/Sounds/death.wav");
             }
         }
     }
